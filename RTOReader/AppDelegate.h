@@ -6,10 +6,11 @@
 //  Copyright © 2020 ghy. All rights reserved.
 //
 
+//`RTO` means: refuse to obey
+
 #import <UIKit/UIKit.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
-
 
 @end
 

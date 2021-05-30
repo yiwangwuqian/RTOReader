@@ -1,9 +1,9 @@
 //
 //  ViewController.h
-//  RTOReader
+//  OpenGLESFreeTypeDemo
 //
-//  Created by ghy on 2020/3/25.
-//  Copyright © 2020 ghy. All rights reserved.
+//  Created by guohaoyang on 2019/11/6.
+//  Copyright © 2019 guohaoyang. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
