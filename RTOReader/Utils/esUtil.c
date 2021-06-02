@@ -157,13 +157,17 @@ uint8_t *hbBitmapFrom(char *text, int width, int height)
                     textureBuffer[pixelPosition] = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*(row-heightDelta)];
                 }else{
                     
-                    //不需要调试时加注释
-                    if (row == heightDelta - 1 || row == heightDelta+bitmap.rows) {
-                        textureBuffer[absX+totalWidth*absY] = 255;
+                    if (heightDelta == 0 && row>0 && row<bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width) {
+                        textureBuffer[pixelPosition] = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*row];
                     } else {
-                        textureBuffer[absX+totalWidth*absY] = 0;
+                        //不需要调试时加注释
+                        if (row == heightDelta - 1 || row == heightDelta+bitmap.rows) {
+                            textureBuffer[absX+totalWidth*absY] = 255;
+                        } else {
+                            textureBuffer[absX+totalWidth*absY] = 0;
+                        }
+//                        textureBuffer[absX+totalWidth*absY] = 0;
                     }
-//                    textureBuffer[absX+totalWidth*absY] = 0;
                 }
             }
         }
