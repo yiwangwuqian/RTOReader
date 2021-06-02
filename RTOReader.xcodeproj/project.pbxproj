@@ -13,6 +13,7 @@
 		868C4753242ED2AC00C84B88 /* esUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 868C474A242ED2AC00C84B88 /* esUtil.c */; };
 		868C4754242ED2AC00C84B88 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 868C474B242ED2AC00C84B88 /* FileWrapper.m */; };
 		868C4755242ED2AC00C84B88 /* Trebuchet MS.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 868C474D242ED2AC00C84B88 /* Trebuchet MS.ttf */; };
+		8693AC3E2667D5EE00773140 /* RTOReadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8693AC3D2667D5EE00773140 /* RTOReadView.m */; };
 		86A4116C242B99DE00E9F637 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A4116B242B99DE00E9F637 /* AppDelegate.m */; };
 		86A41172242B99DE00E9F637 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A41171242B99DE00E9F637 /* ViewController.m */; };
 		86A41177242B99E000E9F637 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 86A41176242B99E000E9F637 /* Assets.xcassets */; };
@@ -88,6 +89,8 @@
 		868C474A242ED2AC00C84B88 /* esUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = esUtil.c; sourceTree = "<group>"; };
 		868C474B242ED2AC00C84B88 /* FileWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWrapper.m; sourceTree = "<group>"; };
 		868C474D242ED2AC00C84B88 /* Trebuchet MS.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Trebuchet MS.ttf"; sourceTree = "<group>"; };
+		8693AC3C2667D5EE00773140 /* RTOReadView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOReadView.h; sourceTree = "<group>"; };
+		8693AC3D2667D5EE00773140 /* RTOReadView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOReadView.m; sourceTree = "<group>"; };
 		86A41167242B99DE00E9F637 /* RTOReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RTOReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86A4116A242B99DE00E9F637 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		86A4116B242B99DE00E9F637 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -238,9 +241,11 @@
 				86A4116B242B99DE00E9F637 /* AppDelegate.m */,
 				86A41170242B99DE00E9F637 /* ViewController.h */,
 				86A41171242B99DE00E9F637 /* ViewController.m */,
+				8693AC3C2667D5EE00773140 /* RTOReadView.h */,
+				8693AC3D2667D5EE00773140 /* RTOReadView.m */,
+				86A4117C242B99E000E9F637 /* main.m */,
 				86A41176242B99E000E9F637 /* Assets.xcassets */,
 				86A4117B242B99E000E9F637 /* Info.plist */,
-				86A4117C242B99E000E9F637 /* main.m */,
 				86F1D52C2460F23F00ABBDEF /* RTOReader-Prefix.pch */,
 			);
 			path = RTOReader;
@@ -469,6 +474,7 @@
 				86F1D5062460DD6C00ABBDEF /* hb-ot-color.cc in Sources */,
 				86F1D5002460DD6C00ABBDEF /* hb-ot-face.cc in Sources */,
 				86F1D5022460DD6C00ABBDEF /* hb-subset-cff2.cc in Sources */,
+				8693AC3E2667D5EE00773140 /* RTOReadView.m in Sources */,
 				868C4753242ED2AC00C84B88 /* esUtil.c in Sources */,
 				86F1D5012460DD6C00ABBDEF /* hb-gobject-structs.cc in Sources */,
 				86F1D5272460DD6C00ABBDEF /* hb-unicode.cc in Sources */,

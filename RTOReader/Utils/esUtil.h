@@ -51,6 +51,14 @@ extern "C" {
 
 uint8_t *hbBitmapFrom(char *text, int width, int height);
 
+/// 生成bitmap
+/// @param text 文字
+/// @param start 即游标
+/// @param end 结束位置
+/// @param width 最大宽度
+/// @param height 最大高度
+uint8_t *hbBitmapFrom2(char *text, size_t start, size_t *end, int width, int height);
+
 char *getBundleFileContent(const char *name);
 
 void esWindowSize(float* width,float* height);
