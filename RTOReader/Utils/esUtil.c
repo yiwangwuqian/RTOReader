@@ -199,7 +199,14 @@ uint8_t *hbBitmapFrom2(char *text, size_t start, size_t *end, int width, int hei
     
     hb_buffer_t *buf;
     buf = hb_buffer_create();
-    hb_buffer_add_utf8(buf, text, -1, 0, -1);
+    if (start > 0) {
+        char *des_text = calloc(sizeof(char) * (strlen(text) - start), sizeof(char));
+        memcpy(des_text, text+start, strlen(text) - start);
+        hb_buffer_add_utf8(buf, des_text, -1, 0, -1);
+        free(des_text);
+    } else {
+        hb_buffer_add_utf8(buf, text, -1, 0, -1);
+    }
     
     hb_buffer_set_direction(buf, HB_DIRECTION_LTR);
     //hb_buffer_set_script(buf, HB_SCRIPT_LATIN);
