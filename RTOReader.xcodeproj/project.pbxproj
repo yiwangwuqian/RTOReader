@@ -10,6 +10,7 @@
 		4488E39591505E5257DB2838 /* libPods-RTOReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB240430C4306B4C593811D /* libPods-RTOReader.a */; };
 		866817D7246AF36F00BA4E55 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 866817D6246AF36F00BA4E55 /* test.txt */; };
 		867563FC24699AB200A6D4EB /* 站酷庆科黄油体.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */; };
+		867DF75A2678CE91004C36CA /* RTOTXTWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = 867DF7592678CE91004C36CA /* RTOTXTWorker.c */; };
 		868C4753242ED2AC00C84B88 /* esUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 868C474A242ED2AC00C84B88 /* esUtil.c */; };
 		868C4754242ED2AC00C84B88 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 868C474B242ED2AC00C84B88 /* FileWrapper.m */; };
 		868C4755242ED2AC00C84B88 /* Trebuchet MS.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 868C474D242ED2AC00C84B88 /* Trebuchet MS.ttf */; };
@@ -84,6 +85,8 @@
 		2C1F116CF6E15399E6BA649C /* Pods-RTOReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RTOReader.debug.xcconfig"; path = "Target Support Files/Pods-RTOReader/Pods-RTOReader.debug.xcconfig"; sourceTree = "<group>"; };
 		866817D6246AF36F00BA4E55 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
 		867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "站酷庆科黄油体.ttf"; sourceTree = "<group>"; };
+		867DF7582678CE91004C36CA /* RTOTXTWorker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOTXTWorker.h; sourceTree = "<group>"; };
+		867DF7592678CE91004C36CA /* RTOTXTWorker.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RTOTXTWorker.c; sourceTree = "<group>"; };
 		868C4744242ED2AC00C84B88 /* esUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = esUtil.h; sourceTree = "<group>"; };
 		868C4746242ED2AC00C84B88 /* FileWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWrapper.h; sourceTree = "<group>"; };
 		868C474A242ED2AC00C84B88 /* esUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = esUtil.c; sourceTree = "<group>"; };
@@ -197,6 +200,8 @@
 			children = (
 				868C4744242ED2AC00C84B88 /* esUtil.h */,
 				868C474A242ED2AC00C84B88 /* esUtil.c */,
+				867DF7582678CE91004C36CA /* RTOTXTWorker.h */,
+				867DF7592678CE91004C36CA /* RTOTXTWorker.c */,
 				868C4746242ED2AC00C84B88 /* FileWrapper.h */,
 				868C474B242ED2AC00C84B88 /* FileWrapper.m */,
 			);
@@ -456,6 +461,7 @@
 				86F1D50D2460DD6C00ABBDEF /* hb-ot-meta.cc in Sources */,
 				86F1D51D2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc in Sources */,
 				86F1D4FA2460DD6C00ABBDEF /* hb-ot-shape-complex-indic-table.cc in Sources */,
+				867DF75A2678CE91004C36CA /* RTOTXTWorker.c in Sources */,
 				86F1D4FB2460DD6C00ABBDEF /* hb-ot-shape-fallback.cc in Sources */,
 				86F1D5092460DD6C00ABBDEF /* hb-ot-metrics.cc in Sources */,
 				86F1D5202460DD6C00ABBDEF /* hb-draw.cc in Sources */,
