@@ -66,7 +66,9 @@
         txt_worker_create(&_worker, content, drawWidth, drawHeight);
     }
     uint8_t *bitmap = txt_worker_bitmap_onepage(&_worker);
-    _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
+    if (bitmap != NULL) {
+        _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
+    }
 }
 
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale
