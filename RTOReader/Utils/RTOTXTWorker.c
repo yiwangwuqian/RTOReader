@@ -21,12 +21,16 @@ struct RTOTXTWorker_ {
     size_t utf8_length;
     
     size_t cursor;
+    
     int width;
     int height;
     
     FT_Library    *library;
     FT_Face       face;
     hb_buffer_t   *buf;
+    
+    size_t current_page;
+    size_t page_cursors[100];
 };
 
 bool txt_worker_previous_able(RTOTXTWorker *worker)
@@ -77,6 +81,8 @@ void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height)
             object->width = width;
             object->height = height;
             
+            object->current_page = -1;
+            
             *worker = object;
         } else {
             hb_buffer_destroy(buf);
@@ -89,7 +95,7 @@ void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height)
     }
 }
 
-uint8_t *txt_worker_bitmap_onepage(RTOTXTWorker *worker)
+uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
 {
     if (!txt_worker_next_able(worker)) {
         return NULL;
@@ -127,7 +133,8 @@ uint8_t *txt_worker_bitmap_onepage(RTOTXTWorker *worker)
     unsigned int aLineHeightMax=0;
     unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
     unsigned int aLineMinCount = totalWidth/(face->size->metrics.max_advance/64);
-    size_t before_cursor = (*worker)->cursor;
+    size_t before_cursor = page > 0 ? (*worker)->page_cursors[page-1] : 0;
+    size_t now_cursor = before_cursor;
     for (size_t i = before_cursor; i<glyph_count; i++) {
         
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
@@ -160,7 +167,7 @@ uint8_t *txt_worker_bitmap_onepage(RTOTXTWorker *worker)
         }
         //大于最大高度,停止
         if (typeSettingY + bitmap.rows > totalHeight){
-            (*worker)->cursor = i;
+            now_cursor = i;
             break;
         }
         //Y方向偏移量 根据字符各不相同
@@ -176,7 +183,7 @@ uint8_t *txt_worker_bitmap_onepage(RTOTXTWorker *worker)
                 unsigned int pixelPosition = absX+totalWidth*absY;
                 if (pixelPosition>textureBufLength){
                     //此时操作的像素已经不在纹理面积里,观察一下再说
-                    (*worker)->cursor = i;
+                    now_cursor = i;
                     break;
                 }else if (row>heightDelta-1 && row<heightDelta+bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width){
                     textureBuffer[pixelPosition] = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*(row-heightDelta)];
@@ -200,8 +207,31 @@ uint8_t *txt_worker_bitmap_onepage(RTOTXTWorker *worker)
         
         aLineHeightMax = wholeFontHeight;
     }
-    if (before_cursor == (*worker)->cursor) {
-        (*worker)->cursor += glyph_count - (*worker)->cursor;
+    if (before_cursor == now_cursor) {
+        now_cursor += glyph_count - before_cursor;
     }
+    (*worker)->page_cursors[page] = now_cursor;
     return textureBuffer;
+}
+
+
+uint8_t *txt_worker_bitmap_next_page(RTOTXTWorker *worker)
+{
+    size_t page = (*worker)->current_page;
+    if ((*worker)->page_cursors[page] == (*worker)->utf8_length) {
+        return NULL;
+    }
+    
+    (*worker)->current_page++;
+    return txt_worker_bitmap_one_page(worker, (*worker)->current_page);
+}
+
+uint8_t *txt_worker_bitmap_previous_page(RTOTXTWorker *worker)
+{
+    size_t page = (*worker)->current_page;
+    if (page == 0) {
+        return NULL;
+    }
+    (*worker)->current_page--;
+    return txt_worker_bitmap_one_page(worker, (*worker)->current_page);
 }

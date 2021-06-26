@@ -37,7 +37,7 @@
         [self addSubview:_imageView];
     }
     
-    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedView)];
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedView:)];
     [self addGestureRecognizer:tapRecognizer];
 }
 
@@ -52,9 +52,15 @@
     }
 }
 
-- (void)tappedView
+- (void)tappedView:(UITapGestureRecognizer *)sender
 {
-    [self toNextPage];
+    CGPoint point = [sender locationInView:sender.view];
+    CGFloat width = CGRectGetWidth(self.frame);
+    if (point.x < width*0.33) {
+        [self toPreviousPage];
+    } else if (point.x > width*0.67) {
+        [self toNextPage];
+    }
 }
 
 - (void)toNextPage
@@ -62,10 +68,20 @@
     CGFloat drawWidth = CGRectGetWidth(self.bounds) * [UIScreen mainScreen].scale;
     CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
     if (_worker == NULL) {
-        char *content = "郭襄见前後都出现了僧人，秀眉深蹙，急道：「你们两个婆婆妈妈，没点男子汉气概！到底走不走？」张君宝道：「师父，郭姑娘一片好意──」</p><p>便在此时，下面边门中又窜出四名黄衣僧人，飕飕飕的奔上坡来，手中都没兵器，但身法迅捷，衣襟带风，武功颇为了得。郭襄见这般情势，便想单独脱身亦已不能，索性凝气卓立，静观其变。当先一名僧人奔到离她四丈之处，朗声说道：「罗汉堂首座尊师传谕：着来人放下兵刃，在山下一苇亭中陈明详情，听由法谕。」郭襄冷笑道：「少林寺的大和尚官派十足，官腔打得倒好听。请问各位大和尚做的是大宋皇帝的官儿呢，还是做蒙古皇帝的官？」</p><p>这时淮水以北，大宋国土均已沦陷，少林寺所在之地自也早归蒙古该管，只是蒙古大军连年进攻襄阳不克，忙於调兵遣将，也无余力来理会少林寺观的事，因此少林寺一如其旧，与前并无不同。那僧人听郭襄讥刺之言甚是厉害，不由得脸上一红，心中也觉对外人下令传谕有些不妥，合十说道：「不知女施主何事光临敝寺，且请放下兵刃，赴山下一苇亭中奉茶说话。」</p><p>郭襄听他语转和缓，便想乘此收蓬，说道：「你们不让我进寺，我便希罕了？";
+        char *content = "北京的某片地区座落着大大小小的工厂和高矮不一的烟囱，它们为振兴民族工业和提高空气污染指数做出了巨大贡献。而今天，它们已处于瘫痪状态，等待着陆续被拆除，颇像地主家的大老婆，失去了生机与活力。一座座高耸入云的现代化建筑取而代之，在此处拔地而起，犹如刚过门的小媳妇，倍受青睐。大烟囱和摩登大厦鳞次栉比，交相辉映，挺立在北京市上空，构成海拔最高点。如若谁想鸟瞰北京城，可以喝着咖啡端坐在这些写字楼高层的窗前，或是拿着扫帚爬到烟囱顶端去打扫烟灰。\n我的学校便坐落在这些工厂和写字楼的包围之中，它就是北京XX大学，简称北X大，以“四大染缸”的美誉扬名北京，尤其在高中学生中间流传甚广，但每年仍会有愈来愈多的高中毕业生因扩招而源源不断地涌向这里，丝毫看不出计划生育作为一项基本国策已在北京实施多年的迹象，倒是录取分数线越降越低，以至让我产生了“这还是考大学吗”的疑惑。\n这所学校诞生过工程师、厂长、教授、总经理、小商贩、会计师、出纳员、网站CEO、小偷、警察、嫖客、妓女、诗人、作家、摇滚乐手、音乐制作人、画家、外籍华人、运动员、记者、骗子、白痴、技术员、建筑师、传销商、卖保险的、包工头、科长、处长和游手好闲职业者，惟独没有政治要员，这也许同学校的环境有关，但更多因素源于学生自身，但凡考到这里的学生，全无一例的没有政治头脑，此类学生早已坐到了清华、北大和人大的教室里。";
         txt_worker_create(&_worker, content, drawWidth, drawHeight);
     }
-    uint8_t *bitmap = txt_worker_bitmap_onepage(&_worker);
+    uint8_t *bitmap = txt_worker_bitmap_next_page(&_worker);
+    if (bitmap != NULL) {
+        _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
+    }
+}
+
+- (void)toPreviousPage
+{
+    CGFloat drawWidth = CGRectGetWidth(self.bounds) * [UIScreen mainScreen].scale;
+    CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
+    uint8_t *bitmap = txt_worker_bitmap_previous_page(&_worker);
     if (bitmap != NULL) {
         _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
     }
