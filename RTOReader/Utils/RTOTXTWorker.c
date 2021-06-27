@@ -192,13 +192,13 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
                     if (heightDelta == 0 && row>0 && row<bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width) {
                         textureBuffer[pixelPosition] = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*row];
                     } else {
-                        //不需要调试时加注释
-                        if (row == heightDelta - 1 || row == heightDelta+bitmap.rows) {
-                            textureBuffer[absX+totalWidth*absY] = 255;
-                        } else {
-                            textureBuffer[absX+totalWidth*absY] = 0;
-                        }
-//                        textureBuffer[absX+totalWidth*absY] = 0;
+//                        //不需要调试时加注释
+//                        if (row == heightDelta - 1 || row == heightDelta+bitmap.rows) {
+//                            textureBuffer[absX+totalWidth*absY] = 255;
+//                        } else {
+//                            textureBuffer[absX+totalWidth*absY] = 0;
+//                        }
+                        textureBuffer[absX+totalWidth*absY] = 0;
                     }
                 }
             }

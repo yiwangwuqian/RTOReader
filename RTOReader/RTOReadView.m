@@ -96,7 +96,7 @@
             NSInteger index = y*bWidth+x;
             uint8_t value = bytes[index];
             if (value) {
-                desBytes[index*componentsCount+3] = 255;
+                desBytes[index*componentsCount+3] = value;
             } else {
                 desBytes[index*componentsCount] = 255;
                 desBytes[index*componentsCount+1] = 255;
@@ -117,7 +117,7 @@
                                                     8,                          // Bits per component
                                                     width*componentsCount,              // Bytes per row
                                                     colorSpace,                 // Colorspace
-                                                    kCGImageAlphaNoneSkipLast); // Bitmap info flags
+                                                    kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big); // Bitmap info flags
     CGImageRef mainViewContentBitmapContext = CGBitmapContextCreateImage(contextRef);
     CGContextRelease(contextRef);
     free(desBytes);
