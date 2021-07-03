@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTOReadView : UIView
 
+@property(nonatomic)NSString*   filePath;
+
 @end
 
 NS_ASSUME_NONNULL_END

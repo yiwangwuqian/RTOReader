@@ -8,13 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		4488E39591505E5257DB2838 /* libPods-RTOReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB240430C4306B4C593811D /* libPods-RTOReader.a */; };
-		866817D7246AF36F00BA4E55 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 866817D6246AF36F00BA4E55 /* test.txt */; };
 		867563FC24699AB200A6D4EB /* 站酷庆科黄油体.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */; };
 		867DF75A2678CE91004C36CA /* RTOTXTWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = 867DF7592678CE91004C36CA /* RTOTXTWorker.c */; };
 		868C4753242ED2AC00C84B88 /* esUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 868C474A242ED2AC00C84B88 /* esUtil.c */; };
 		868C4754242ED2AC00C84B88 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 868C474B242ED2AC00C84B88 /* FileWrapper.m */; };
-		868C4755242ED2AC00C84B88 /* Trebuchet MS.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 868C474D242ED2AC00C84B88 /* Trebuchet MS.ttf */; };
 		8693AC3E2667D5EE00773140 /* RTOReadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8693AC3D2667D5EE00773140 /* RTOReadView.m */; };
+		869DCED82690A70800986E6D /* yitian1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 869DCED72690A70800986E6D /* yitian1.txt */; };
 		86A4116C242B99DE00E9F637 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A4116B242B99DE00E9F637 /* AppDelegate.m */; };
 		86A41172242B99DE00E9F637 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A41171242B99DE00E9F637 /* ViewController.m */; };
 		86A41177242B99E000E9F637 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 86A41176242B99E000E9F637 /* Assets.xcassets */; };
@@ -83,7 +82,6 @@
 
 /* Begin PBXFileReference section */
 		2C1F116CF6E15399E6BA649C /* Pods-RTOReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RTOReader.debug.xcconfig"; path = "Target Support Files/Pods-RTOReader/Pods-RTOReader.debug.xcconfig"; sourceTree = "<group>"; };
-		866817D6246AF36F00BA4E55 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
 		867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "站酷庆科黄油体.ttf"; sourceTree = "<group>"; };
 		867DF7582678CE91004C36CA /* RTOTXTWorker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOTXTWorker.h; sourceTree = "<group>"; };
 		867DF7592678CE91004C36CA /* RTOTXTWorker.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RTOTXTWorker.c; sourceTree = "<group>"; };
@@ -91,9 +89,9 @@
 		868C4746242ED2AC00C84B88 /* FileWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWrapper.h; sourceTree = "<group>"; };
 		868C474A242ED2AC00C84B88 /* esUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = esUtil.c; sourceTree = "<group>"; };
 		868C474B242ED2AC00C84B88 /* FileWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWrapper.m; sourceTree = "<group>"; };
-		868C474D242ED2AC00C84B88 /* Trebuchet MS.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Trebuchet MS.ttf"; sourceTree = "<group>"; };
 		8693AC3C2667D5EE00773140 /* RTOReadView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOReadView.h; sourceTree = "<group>"; };
 		8693AC3D2667D5EE00773140 /* RTOReadView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOReadView.m; sourceTree = "<group>"; };
+		869DCED72690A70800986E6D /* yitian1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = yitian1.txt; sourceTree = "<group>"; };
 		86A41167242B99DE00E9F637 /* RTOReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RTOReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86A4116A242B99DE00E9F637 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		86A4116B242B99DE00E9F637 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -211,9 +209,8 @@
 		868C474C242ED2AC00C84B88 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				869DCED72690A70800986E6D /* yitian1.txt */,
 				867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */,
-				868C474D242ED2AC00C84B88 /* Trebuchet MS.ttf */,
-				866817D6246AF36F00BA4E55 /* test.txt */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -390,10 +387,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				868C4755242ED2AC00C84B88 /* Trebuchet MS.ttf in Resources */,
 				867563FC24699AB200A6D4EB /* 站酷庆科黄油体.ttf in Resources */,
-				866817D7246AF36F00BA4E55 /* test.txt in Resources */,
 				86A41177242B99E000E9F637 /* Assets.xcassets in Resources */,
+				869DCED82690A70800986E6D /* yitian1.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

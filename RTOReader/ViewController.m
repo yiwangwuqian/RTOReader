@@ -23,6 +23,7 @@
     
     if (!_readView) {
         _readView = [[RTOReadView alloc] init];
+        _readView.filePath = [[NSBundle mainBundle] pathForResource:@"yitian1" ofType:@"txt"];
         [self.view addSubview:_readView];
     }
 }

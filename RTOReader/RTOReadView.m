@@ -11,10 +11,38 @@
 
 #import "RTOTXTWorker.h"
 
+#include <sys/stat.h>
+#include <sys/mman.h>
+
+void yw_file_content(const char *path, char** content,size_t *content_len)
+{
+    struct stat fdstat;
+    stat(path, &fdstat);
+    char *buf = NULL;
+    size_t buf_size;
+    
+    int fd;
+    fd = open(path, O_RDONLY);
+    /* set buffer size */
+    buf_size = fdstat.st_size;
+    
+    /* allocate the buffer storage */
+    if (buf_size > 0) {
+        buf = mmap(NULL, buf_size, PROT_READ, MAP_SHARED, fd, 0);
+        if (buf == MAP_FAILED) {
+            close(fd);
+            return;
+        }
+        *content = buf;
+        if (content_len) {
+            *content_len = buf_size;
+        }
+    }
+}
+
 @interface RTOReadView()
 
 @property(nonatomic)UIImageView*    imageView;
-@property(nonatomic)NSUInteger      lastWordsIndex;
 @property(nonatomic)RTOTXTWorker    worker;
 
 @end
@@ -68,7 +96,8 @@
     CGFloat drawWidth = CGRectGetWidth(self.bounds) * [UIScreen mainScreen].scale;
     CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
     if (_worker == NULL) {
-        char *content = "北京的某片地区座落着大大小小的工厂和高矮不一的烟囱，它们为振兴民族工业和提高空气污染指数做出了巨大贡献。而今天，它们已处于瘫痪状态，等待着陆续被拆除，颇像地主家的大老婆，失去了生机与活力。一座座高耸入云的现代化建筑取而代之，在此处拔地而起，犹如刚过门的小媳妇，倍受青睐。大烟囱和摩登大厦鳞次栉比，交相辉映，挺立在北京市上空，构成海拔最高点。如若谁想鸟瞰北京城，可以喝着咖啡端坐在这些写字楼高层的窗前，或是拿着扫帚爬到烟囱顶端去打扫烟灰。\n我的学校便坐落在这些工厂和写字楼的包围之中，它就是北京XX大学，简称北X大，以“四大染缸”的美誉扬名北京，尤其在高中学生中间流传甚广，但每年仍会有愈来愈多的高中毕业生因扩招而源源不断地涌向这里，丝毫看不出计划生育作为一项基本国策已在北京实施多年的迹象，倒是录取分数线越降越低，以至让我产生了“这还是考大学吗”的疑惑。\n这所学校诞生过工程师、厂长、教授、总经理、小商贩、会计师、出纳员、网站CEO、小偷、警察、嫖客、妓女、诗人、作家、摇滚乐手、音乐制作人、画家、外籍华人、运动员、记者、骗子、白痴、技术员、建筑师、传销商、卖保险的、包工头、科长、处长和游手好闲职业者，惟独没有政治要员，这也许同学校的环境有关，但更多因素源于学生自身，但凡考到这里的学生，全无一例的没有政治头脑，此类学生早已坐到了清华、北大和人大的教室里。";
+        char *content;
+        yw_file_content([self.filePath cStringUsingEncoding:NSUTF8StringEncoding], &content, NULL);
         txt_worker_create(&_worker, content, drawWidth, drawHeight);
     }
     uint8_t *bitmap = txt_worker_bitmap_next_page(&_worker);
