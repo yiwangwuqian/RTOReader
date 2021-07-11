@@ -78,7 +78,7 @@ bool txt_rect_array_add(struct RTOTXTRectArray_ *array,struct RTOTXTRect_ rect)
     return true;
 }
 
-void txt_rect_array_destory(RTOTXTRectArray *array)
+void txt_rect_array_destroy(RTOTXTRectArray *array)
 {
     free((*array)->data);
     free(*array);
@@ -127,10 +127,13 @@ bool txt_row_rect_array_add(struct RTOTXTRowRectArray_ *array,RTOTXTRectArray it
     return true;
 }
 
-void txt_row_rect_array_destory(RTOTXTRowRectArray *array)
+void txt_row_rect_array_destroy(RTOTXTRowRectArray *array)
 {
+    txt_rect_array_destroy((*array)->data);
     free((*array)->data);
+    
     free(*array);
+    *array = NULL;
 }
 
 bool txt_worker_previous_able(RTOTXTWorker *worker)
@@ -245,6 +248,9 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
     size_t now_cursor = before_cursor;
     RTOTXTRowRectArray row_rect_array;
     txt_row_rect_array_create(&row_rect_array);
+    if ((*worker)->array != NULL) {
+        txt_row_rect_array_destroy(&(*worker)->array);
+    }
     (*worker)->array = row_rect_array;
     for (size_t i = before_cursor; i<glyph_count; i++) {
         
@@ -365,7 +371,8 @@ uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,bool* contains
 {
     RTOTXTRowRectArray array = (*worker)->array;
     uint32_t result = 0;
-    size_t index = 0;
+    size_t page = (*worker)->current_page;
+    size_t index = page > 0 ? (*worker)->page_cursors[page-1] : 0 ;
     for (size_t i=0; i<array->count; i++) {
         RTOTXTRectArray *data = array->data;
         RTOTXTRectArray row_array = data[i];
