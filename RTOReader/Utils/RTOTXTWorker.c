@@ -14,7 +14,7 @@
 
 #include "hb-ft.h"
 
-#include <stdbool.h>
+typedef struct RTOTXTRowRectArray_* RTOTXTRowRectArray;
 
 struct RTOTXTWorker_ {
     char *content;
@@ -28,10 +28,110 @@ struct RTOTXTWorker_ {
     FT_Library    *library;
     FT_Face       face;
     hb_buffer_t   *buf;
+    hb_codepoint_t *codepoints;
+    RTOTXTRowRectArray array;
     
     size_t current_page;
-    size_t page_cursors[100];
+    size_t page_cursors[100];//这里还需要修改 页数过多时会有问题
 };
+
+struct RTOTXTRectArray_ {
+    struct RTOTXTRect_ *data;
+    size_t length;//真实长度
+    size_t count;//元素个数
+};
+
+//数组只有创建、新增元素、销毁操作
+typedef struct RTOTXTRectArray_* RTOTXTRectArray;
+
+struct RTOTXTRect_ {
+    int32_t x;
+    int32_t y;
+    int32_t xx;//x最大值
+    int32_t yy;//y最大值
+};
+
+void txt_rect_array_create(RTOTXTRectArray *array)
+{
+    RTOTXTRectArray object = calloc(1, sizeof(struct RTOTXTRectArray_));
+    
+    size_t length = 100;
+    object->length = length;
+    object->data = calloc(length, sizeof(struct RTOTXTRect_));
+    
+    *array = object;
+}
+
+bool txt_rect_array_add(struct RTOTXTRectArray_ *array,struct RTOTXTRect_ rect)
+{
+    if( !((*array).count < (*array).length) ) {
+        size_t length = (*array).length + 100;
+        struct RTOTXTRect_ *data = realloc((*array).data, (*array).length);
+        if (data == NULL) {
+            return false;
+        }
+        (*array).data = data;
+        (*array).length = length;
+    }
+    (*array).data[(*array).count] = rect;
+    (*array).count+=1;
+    return true;
+}
+
+void txt_rect_array_destory(RTOTXTRectArray *array)
+{
+    free((*array)->data);
+    free(*array);
+}
+
+struct RTOTXTRowRectArray_ {
+    RTOTXTRectArray *data;
+    size_t length;//真实长度
+    size_t count;//元素个数
+};
+
+//数组只有创建、新增元素、销毁操作
+
+void txt_row_rect_array_create(RTOTXTRowRectArray *array)
+{
+    RTOTXTRowRectArray object = calloc(1, sizeof(struct RTOTXTRowRectArray_));
+    
+    size_t length = 20;
+    object->length = length;
+    object->data = calloc(length, sizeof(RTOTXTRectArray));
+    
+    *array = object;
+}
+
+RTOTXTRectArray txt_row_rect_array_current(RTOTXTRowRectArray array)
+{
+    if (array->count) {
+        return array->data[array->count-1];
+    }
+    return NULL;
+}
+
+bool txt_row_rect_array_add(struct RTOTXTRowRectArray_ *array,RTOTXTRectArray item)
+{
+    if( !((*array).count < (*array).length) ) {
+        size_t length = (*array).length + 20;
+        RTOTXTRectArray *data = realloc((*array).data, (*array).length);
+        if (data == NULL) {
+            return false;
+        }
+        (*array).data = data;
+        (*array).length = length;
+    }
+    (*array).data[(*array).count] = item;
+    (*array).count+=1;
+    return true;
+}
+
+void txt_row_rect_array_destory(RTOTXTRowRectArray *array)
+{
+    free((*array)->data);
+    free(*array);
+}
 
 bool txt_worker_previous_able(RTOTXTWorker *worker)
 {
@@ -74,6 +174,14 @@ void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height)
             
             object->buf = buf;
             object->utf8_length = hb_buffer_get_length(buf);
+            
+            unsigned int glyph_count;
+            hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
+            hb_codepoint_t *codepoints = calloc(glyph_count, sizeof(hb_codepoint_t));
+            for (unsigned int i=0; i<glyph_count; i++) {
+                codepoints[i] = glyph_info[i].codepoint;
+            }
+            object->codepoints = codepoints;
             
             hb_font_t *font = hb_ft_font_create_referenced(face);
             hb_shape(font, buf, NULL, 0);
@@ -135,6 +243,9 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
     unsigned int aLineMinCount = totalWidth/(face->size->metrics.max_advance/64);
     size_t before_cursor = page > 0 ? (*worker)->page_cursors[page-1] : 0;
     size_t now_cursor = before_cursor;
+    RTOTXTRowRectArray row_rect_array;
+    txt_row_rect_array_create(&row_rect_array);
+    (*worker)->array = row_rect_array;
     for (size_t i = before_cursor; i<glyph_count; i++) {
         
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
@@ -165,11 +276,21 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
             typeSettingY += aLineHeightMax;
             aLineHeightMax = 0;
         }
+        if (typeSettingX == 0){
+            RTOTXTRectArray rect_array;
+            txt_rect_array_create(&rect_array);
+            txt_row_rect_array_add(row_rect_array, rect_array);
+        }
+        
         //大于最大高度,停止
         if (typeSettingY + bitmap.rows > totalHeight){
             now_cursor = i;
             break;
         }
+        
+        RTOTXTRectArray rect_array = txt_row_rect_array_current(row_rect_array);
+        struct RTOTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+bitmap.rows,typeSettingY+wholeFontHeight};
+        txt_rect_array_add(rect_array, one_rect);
         //Y方向偏移量 根据字符各不相同
         unsigned int heightDelta = (unsigned int)(face->size->metrics.ascender)/64 - face->glyph->bitmap_top;
         for (unsigned int row=0; row<wholeFontHeight; row++) {
@@ -234,4 +355,42 @@ uint8_t *txt_worker_bitmap_previous_page(RTOTXTWorker *worker)
     }
     (*worker)->current_page--;
     return txt_worker_bitmap_one_page(worker, (*worker)->current_page);
+}
+
+/// 指定坐标获取对应位置文字的codepoint，如果坐标对应位置有文字的话
+/// @param x x坐标
+/// @param y y坐标
+/// @param contains 坐标包含在文字区域内
+uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,bool* contains)
+{
+    RTOTXTRowRectArray array = (*worker)->array;
+    uint32_t result = 0;
+    size_t index = 0;
+    for (size_t i=0; i<array->count; i++) {
+        RTOTXTRectArray *data = array->data;
+        RTOTXTRectArray row_array = data[i];
+        for (size_t j=0; j<row_array->count; j++) {
+            struct RTOTXTRect_ one_rect = row_array->data[j];
+            if (y >= one_rect.y && y <= one_rect.yy) {
+                if (x >= one_rect.x && x <= one_rect.xx) {
+                    *contains = true;
+                    result = (*worker)->codepoints[index];
+                    //坐标匹配退出第二层for循环
+                    break;
+                }
+            } else {
+                //y坐标对比失败直接换下一行
+                index +=row_array->count;
+                break;
+            }
+            index +=1;
+        }
+        
+        if (*contains) {
+            //坐标匹配退出for循环
+            break;
+        }
+    }
+    
+    return result;
 }
