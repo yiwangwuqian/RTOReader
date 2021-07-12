@@ -92,28 +92,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
         bool contains = false;
         uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
         if (contains) {
-            uint8_t one = (code_point>>24)&0XFF;
-            uint8_t two = (code_point>>16)&0XFF;
-            uint8_t three = (code_point>>8)&0XFF;
-            uint8_t four = code_point&0XFF;
-            
-            //code point 最多四字节
-            
-            if (one == 0 && two == 0) {
-                if (three != 0) {
-                    
-                    if (three >= 8) {
-                        //三字节
-                        Byte byteData[] = {0xe0+((three>>4)&0xf), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
-                        NSLog(@"点选结果是:%@", [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding]);
-                    } else {
-                        //两字节
-                        Byte byteData[] = {0xc0+((three>>3)&0x1f), 0x80+(four&0x3f)};
-                        NSLog(@"点选结果是:%@", [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding]);
-                    }
-                }
-            }            
-            NSLog(@"%x %x %x %x code_point:%x", one, two, three, four, code_point);
+            [[self class] convertCodePoint:code_point];
         }
     }
 }
@@ -180,6 +159,42 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     free(bytes);
     UIImage *result = [UIImage imageWithCGImage:mainViewContentBitmapContext scale:scale orientation:UIImageOrientationUp];
     CGImageRelease(mainViewContentBitmapContext);
+    return result;
+}
+
++ (NSString *)convertCodePoint:(uint32_t)code_point
+{
+    uint8_t one = (code_point>>24)&0XFF;//按当前标准 这个字节忽略；只考虑后三个字节
+    uint8_t two = (code_point>>16)&0XFF;
+    uint8_t three = (code_point>>8)&0XFF;
+    uint8_t four = code_point&0XFF;
+    
+    NSString *result = nil;
+    if (two == 0) {
+        if (three != 0) {
+            if (three >= 8) {
+                //三字节
+                Byte byteData[] = {0xe0+((three>>4)&0xf), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
+                NSData *data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
+                result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            } else {
+                //两字节
+                Byte byteData[] = {0xc0+((three>>3)&0x1f), 0x80+(four&0x3f)};
+                result = [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding];
+            }
+        } else {
+            Byte byteData[] = {four};
+            result = [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding];
+        }
+    } else {
+        //四字节
+        //加注释的是按照utf8编码加了前缀的，不知道为什么错了
+//        Byte byteData[] = {0xf0 + ((two>>2)&0x7), 0x80+ ((three>>4)&0xf) + ((two<<4)&0x30), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
+        Byte byteData[] = {one,two,three,four};
+        result = [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding];
+    }
+    NSLog(@"点选结果是:%@", result);
+    NSLog(@"%x %x %x %x code_point:%x", one, two, three, four, code_point);
     return result;
 }
 
