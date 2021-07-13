@@ -295,7 +295,7 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
         }
         
         RTOTXTRectArray rect_array = txt_row_rect_array_current(row_rect_array);
-        struct RTOTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+bitmap.rows,typeSettingY+wholeFontHeight};
+        struct RTOTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+bitmap.width,typeSettingY+wholeFontHeight};
         txt_rect_array_add(rect_array, one_rect);
         //Y方向偏移量 根据字符各不相同
         unsigned int heightDelta = (unsigned int)(face->size->metrics.ascender)/64 - face->glyph->bitmap_top;

@@ -84,16 +84,17 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
 {
     CGPoint point = [sender locationInView:sender.view];
     CGFloat width = CGRectGetWidth(self.frame);
+    
+    bool contains = false;
+    uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
+    if (contains) {
+        [[self class] convertCodePoint:code_point];
+    }
+    
     if (point.x < width*0.33) {
         [self toPreviousPage];
     } else if (point.x > width*0.67) {
         [self toNextPage];
-    } else {
-        bool contains = false;
-        uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
-        if (contains) {
-            [[self class] convertCodePoint:code_point];
-        }
     }
 }
 
