@@ -295,7 +295,7 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
         }
         
         RTOTXTRectArray rect_array = txt_row_rect_array_current(row_rect_array);
-        struct RTOTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+bitmap.width,typeSettingY+wholeFontHeight};
+        struct RTOTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+(int)aCharAdvance,typeSettingY+wholeFontHeight};
         txt_rect_array_add(rect_array, one_rect);
         //Y方向偏移量 根据字符各不相同
         unsigned int heightDelta = (unsigned int)(face->size->metrics.ascender)/64 - face->glyph->bitmap_top;
@@ -319,13 +319,24 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
                     if (heightDelta == 0 && row>0 && row<bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width) {
                         textureBuffer[pixelPosition] = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*row];
                     } else {
-//                        //不需要调试时加注释
-//                        if (row == heightDelta - 1 || row == heightDelta+bitmap.rows) {
-//                            textureBuffer[absX+totalWidth*absY] = 255;
-//                        } else {
-//                            textureBuffer[absX+totalWidth*absY] = 0;
-//                        }
-                        textureBuffer[absX+totalWidth*absY] = 0;
+                        
+                        //显示竖线
+                        //不需要调试时加注释
+                        if (column == 0) {
+                            textureBuffer[absX+totalWidth*absY] = 255;
+                        } else {
+                            textureBuffer[absX+totalWidth*absY] = 0;
+                        }
+                        
+                        //显示横线
+                        //                        //不需要调试时加注释
+                        //                        if (row == heightDelta - 1 || row == heightDelta+bitmap.rows) {
+                        //                            textureBuffer[absX+totalWidth*absY] = 255;
+                        //                        } else {
+                        //                            textureBuffer[absX+totalWidth*absY] = 0;
+                        //                        }
+                        
+//                        textureBuffer[absX+totalWidth*absY] = 0;
                     }
                 }
             }
@@ -363,11 +374,21 @@ uint8_t *txt_worker_bitmap_previous_page(RTOTXTWorker *worker)
     return txt_worker_bitmap_one_page(worker, (*worker)->current_page);
 }
 
+void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy)
+{
+    if (rect != NULL) {
+        *x = (*rect)->x;
+        *y = (*rect)->y;
+        *xx = (*rect)->xx;
+        *yy = (*rect)->yy;
+    }
+}
+
 /// 指定坐标获取对应位置文字的codepoint，如果坐标对应位置有文字的话
 /// @param x x坐标
 /// @param y y坐标
 /// @param contains 坐标包含在文字区域内
-uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,bool* contains)
+uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,RTOTXTRect* contains)
 {
     RTOTXTRowRectArray array = (*worker)->array;
     uint32_t result = 0;
@@ -380,7 +401,11 @@ uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,bool* contains
             struct RTOTXTRect_ one_rect = row_array->data[j];
             if (y >= one_rect.y && y <= one_rect.yy) {
                 if (x >= one_rect.x && x <= one_rect.xx) {
-                    *contains = true;
+                    *contains = calloc(1, sizeof(struct RTOTXTRect_));
+                    (*contains)->x = one_rect.x;
+                    (*contains)->y = one_rect.y;
+                    (*contains)->xx = one_rect.xx;
+                    (*contains)->yy = one_rect.yy;
                     result = (*worker)->codepoints[index];
                     //坐标匹配退出第二层for循环
                     break;

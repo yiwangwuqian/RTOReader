@@ -20,6 +20,10 @@ uint8_t *txt_worker_bitmap_next_page(RTOTXTWorker *worker);
 
 uint8_t *txt_worker_bitmap_previous_page(RTOTXTWorker *worker);
 
-uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,bool* contains);
+typedef struct RTOTXTRect_* RTOTXTRect;
+
+void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy);
+
+uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,RTOTXTRect* contains);
 
 #endif /* RTOTXTWorker_h */

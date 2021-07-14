@@ -44,6 +44,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
 
 @property(nonatomic)UIImageView*    imageView;
 @property(nonatomic)RTOTXTWorker    worker;
+@property(nonatomic)UIView*         selectionView;
 
 @end
 
@@ -69,6 +70,15 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     [self addGestureRecognizer:tapRecognizer];
 }
 
+- (UIView *)selectionView
+{
+    if (!_selectionView) {
+        _selectionView = [[UIView alloc] init];
+        _selectionView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:1.0 alpha:0.4];
+    }
+    return _selectionView;
+}
+
 - (void)layoutSubviews
 {
     [super layoutSubviews];
@@ -85,10 +95,18 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     CGPoint point = [sender locationInView:sender.view];
     CGFloat width = CGRectGetWidth(self.frame);
     
-    bool contains = false;
+    RTOTXTRect contains = NULL;
     uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
     if (contains) {
         [[self class] convertCodePoint:code_point];
+        
+        int x,y,xx,yy;
+        txt_rect_values(&contains, &x, &y, &xx, &yy);
+        if (!self.selectionView.superview) {
+            [self addSubview:self.selectionView];
+        }
+        CGFloat scale = [UIScreen mainScreen].scale;
+        self.selectionView.frame = CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale);
     }
     
     if (point.x < width*0.33) {
