@@ -14,6 +14,7 @@
 		868C4754242ED2AC00C84B88 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 868C474B242ED2AC00C84B88 /* FileWrapper.m */; };
 		8693AC3E2667D5EE00773140 /* RTOReadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8693AC3D2667D5EE00773140 /* RTOReadView.m */; };
 		869DCED82690A70800986E6D /* yitian1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 869DCED72690A70800986E6D /* yitian1.txt */; };
+		86A23422269F35C900A5CF64 /* RTOReadSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A23421269F35C900A5CF64 /* RTOReadSelectionView.m */; };
 		86A4116C242B99DE00E9F637 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A4116B242B99DE00E9F637 /* AppDelegate.m */; };
 		86A41172242B99DE00E9F637 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A41171242B99DE00E9F637 /* ViewController.m */; };
 		86A41177242B99E000E9F637 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 86A41176242B99E000E9F637 /* Assets.xcassets */; };
@@ -92,6 +93,8 @@
 		8693AC3C2667D5EE00773140 /* RTOReadView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOReadView.h; sourceTree = "<group>"; };
 		8693AC3D2667D5EE00773140 /* RTOReadView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOReadView.m; sourceTree = "<group>"; };
 		869DCED72690A70800986E6D /* yitian1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = yitian1.txt; sourceTree = "<group>"; };
+		86A23420269F35C900A5CF64 /* RTOReadSelectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOReadSelectionView.h; sourceTree = "<group>"; };
+		86A23421269F35C900A5CF64 /* RTOReadSelectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOReadSelectionView.m; sourceTree = "<group>"; };
 		86A41167242B99DE00E9F637 /* RTOReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RTOReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		86A4116A242B99DE00E9F637 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		86A4116B242B99DE00E9F637 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -245,6 +248,8 @@
 				86A41171242B99DE00E9F637 /* ViewController.m */,
 				8693AC3C2667D5EE00773140 /* RTOReadView.h */,
 				8693AC3D2667D5EE00773140 /* RTOReadView.m */,
+				86A23420269F35C900A5CF64 /* RTOReadSelectionView.h */,
+				86A23421269F35C900A5CF64 /* RTOReadSelectionView.m */,
 				86A4117C242B99E000E9F637 /* main.m */,
 				86A41176242B99E000E9F637 /* Assets.xcassets */,
 				86A4117B242B99E000E9F637 /* Info.plist */,
@@ -428,6 +433,7 @@
 				86F1D5032460DD6C00ABBDEF /* hb-ot-shape-complex-use.cc in Sources */,
 				86F1D4F52460DD6C00ABBDEF /* hb-ot-cff2-table.cc in Sources */,
 				86F1D5212460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc in Sources */,
+				86A23422269F35C900A5CF64 /* RTOReadSelectionView.m in Sources */,
 				86F1D4FC2460DD6C00ABBDEF /* hb-map.cc in Sources */,
 				86F1D5252460DD6C00ABBDEF /* hb-coretext.cc in Sources */,
 				86F1D4F22460DD6C00ABBDEF /* hb-shape.cc in Sources */,

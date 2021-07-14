@@ -14,6 +14,8 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
+#import "RTOReadSelectionView.h"
+
 void yw_file_content(const char *path, char** content,size_t *content_len)
 {
     struct stat fdstat;
@@ -44,7 +46,8 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
 
 @property(nonatomic)UIImageView*    imageView;
 @property(nonatomic)RTOTXTWorker    worker;
-@property(nonatomic)UIView*         selectionView;
+
+@property(nonatomic)RTOReadSelectionView*   selectionView;
 
 @end
 
@@ -73,8 +76,8 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
 - (UIView *)selectionView
 {
     if (!_selectionView) {
-        _selectionView = [[UIView alloc] init];
-        _selectionView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:1.0 alpha:0.4];
+        _selectionView = [[RTOReadSelectionView alloc] initWithFrame:self.bounds];
+        [self addSubview:_selectionView];
     }
     return _selectionView;
 }
@@ -102,11 +105,12 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
         
         int x,y,xx,yy;
         txt_rect_values(&contains, &x, &y, &xx, &yy);
+        free(contains);
         if (!self.selectionView.superview) {
             [self addSubview:self.selectionView];
         }
         CGFloat scale = [UIScreen mainScreen].scale;
-        self.selectionView.frame = CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale);
+        self.selectionView.rectArray = @[[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
     }
     
     if (point.x < width*0.33) {
