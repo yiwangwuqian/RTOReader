@@ -160,7 +160,9 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
                 
                 self.selectionView.rectArray = array;
             }
-            txt_rect_array_destroy(&rect_array);
+            if (rect_array) {
+                txt_rect_array_destroy(&rect_array);
+            }
             
             if (sender.state == UIGestureRecognizerStateRecognized) {
             lastPoint = NULL;

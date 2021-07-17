@@ -502,6 +502,7 @@ void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_arra
                     break;
                 }
             } else if (!end_finded) {
+                bool record_row = false;
                 if (ey >= one_rect.y && ey <= one_rect.yy) {
                     if (ex >= one_rect.x && ex <= one_rect.xx) {
                         end_finded = true;
@@ -512,8 +513,16 @@ void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_arra
                         
                         //坐标匹配退出第二层for循环
                         break;
+                    } else if (j == row_array->count-1) {
+                        end_finded = true;
+                        //结束点没有落进最后一个文字的区域 也需要记录整行
+                        record_row = true;
                     }
                 } else {
+                    record_row = true;
+                }
+                
+                if (record_row) {
                     //记录这一行
                     struct RTOTXTRect_ first_rect = row_array->data[0];
                     struct RTOTXTRect_ last_rect = row_array->data[row_array->count-1];
