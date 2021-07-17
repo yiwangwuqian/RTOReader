@@ -65,7 +65,7 @@ bool txt_rect_array_add(struct RTOTXTRectArray_ *array,struct RTOTXTRect_ rect)
 {
     if( !((*array).count < (*array).length) ) {
         size_t length = (*array).length + 100;
-        struct RTOTXTRect_ *data = realloc((*array).data, (*array).length);
+        struct RTOTXTRect_ *data = realloc((*array).data, length*sizeof(struct RTOTXTRect_));
         if (data == NULL) {
             return false;
         }
@@ -116,7 +116,7 @@ bool txt_row_rect_array_add(struct RTOTXTRowRectArray_ *array,RTOTXTRectArray it
 {
     if( !((*array).count < (*array).length) ) {
         size_t length = (*array).length + 20;
-        RTOTXTRectArray *data = realloc((*array).data, (*array).length);
+        RTOTXTRectArray *data = realloc((*array).data, length*sizeof(struct RTOTXTRectArray_));
         if (data == NULL) {
             return false;
         }
@@ -325,11 +325,11 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
                         
                         //显示竖线
                         //不需要调试时加注释
-                        if (column == 0) {
-                            textureBuffer[absX+totalWidth*absY] = 255;
-                        } else {
-                            textureBuffer[absX+totalWidth*absY] = 0;
-                        }
+//                        if (column == 0) {
+//                            textureBuffer[absX+totalWidth*absY] = 255;
+//                        } else {
+//                            textureBuffer[absX+totalWidth*absY] = 0;
+//                        }
                         
                         //显示横线
                         //                        //不需要调试时加注释
@@ -339,7 +339,7 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
                         //                            textureBuffer[absX+totalWidth*absY] = 0;
                         //                        }
                         
-                        //                        textureBuffer[absX+totalWidth*absY] = 0;
+                        textureBuffer[absX+totalWidth*absY] = 0;
                     }
                 }
             }
