@@ -34,9 +34,10 @@
     CGContextSetFillColorWithColor(context, [UIColor colorWithRed:0 green:0 blue:1.0 alpha:0.4].CGColor);
 
     if (self.rectArray.count) {
-        NSValue *rectValue = self.rectArray.firstObject;
-        CGContextMoveToPoint(context, [rectValue CGRectValue].origin.x, [rectValue CGRectValue].origin.y);
-        CGContextAddRect(context, [rectValue CGRectValue]);
+        for (NSValue *rectValue in self.rectArray) {
+            CGContextMoveToPoint(context, [rectValue CGRectValue].origin.x, [rectValue CGRectValue].origin.y);
+            CGContextAddRect(context, [rectValue CGRectValue]);
+        }
     }
     CGContextFillPath(context);
     

@@ -71,6 +71,9 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedView:)];
     [self addGestureRecognizer:tapRecognizer];
+    
+    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(pannedView:)];
+    [self addGestureRecognizer:panRecognizer];
 }
 
 - (UIView *)selectionView
@@ -98,6 +101,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     CGPoint point = [sender locationInView:sender.view];
     CGFloat width = CGRectGetWidth(self.frame);
     
+    /*
     RTOTXTRect contains = NULL;
     uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
     if (contains) {
@@ -112,11 +116,63 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
         CGFloat scale = [UIScreen mainScreen].scale;
         self.selectionView.rectArray = @[[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
     }
+     */
+    
+    if (self.selectionView.rectArray) {
+        self.selectionView.rectArray = nil;
+    }
     
     if (point.x < width*0.33) {
         [self toPreviousPage];
     } else if (point.x > width*0.67) {
         [self toNextPage];
+    }
+}
+
+- (void)pannedView:(UIPanGestureRecognizer *)sender
+{
+    static NSValue *lastPoint = NULL;
+    CGPoint nPoint = [sender locationInView:sender.view];
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan:
+            lastPoint = [NSValue valueWithCGPoint:nPoint];
+            break;
+        case UIGestureRecognizerStateChanged:
+        case UIGestureRecognizerStateRecognized:
+        {
+            RTOTXTRectArray rect_array=NULL;
+            CGPoint point = [lastPoint CGPointValue];
+            CGFloat scale = [UIScreen mainScreen].scale;
+            txt_worker_rect_array_from(&_worker, &rect_array, point.x*scale, point.y*scale, nPoint.x*scale, nPoint.y*scale);
+            
+            if (rect_array) {
+                NSMutableArray *array = [NSMutableArray array];
+                for (int i=0; i<txt_worker_rect_array_get_count(&rect_array); i++) {
+                    int x,y,xx,yy;
+                    RTOTXTRect one_rect = txt_worker_rect_array_object_at(&rect_array, i);
+                    txt_rect_values(&one_rect, &x, &y, &xx, &yy);
+                    [array addObject:[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
+                }
+                
+                if (!self.selectionView.superview) {
+                    [self addSubview:self.selectionView];
+                }
+                
+                self.selectionView.rectArray = array;
+            }
+            txt_rect_array_destroy(&rect_array);
+            
+            if (sender.state == UIGestureRecognizerStateRecognized) {
+            lastPoint = NULL;
+            }
+        }
+            break;
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+            lastPoint = NULL;
+            break;
+        default:
+            break;
     }
 }
 

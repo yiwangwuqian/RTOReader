@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTOReadSelectionView : UIView
 
-@property(nonatomic)NSArray*    rectArray;
+@property(nonatomic,nullable)NSArray*    rectArray;
 
 @end
 

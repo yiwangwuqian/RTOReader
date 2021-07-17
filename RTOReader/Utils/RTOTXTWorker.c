@@ -35,14 +35,13 @@ struct RTOTXTWorker_ {
     size_t page_cursors[100];//这里还需要修改 页数过多时会有问题
 };
 
+//------RTOTXTRectArray_ 数组只有创建、新增元素、销毁操作
+
 struct RTOTXTRectArray_ {
     struct RTOTXTRect_ *data;
     size_t length;//真实长度
     size_t count;//元素个数
 };
-
-//数组只有创建、新增元素、销毁操作
-typedef struct RTOTXTRectArray_* RTOTXTRectArray;
 
 struct RTOTXTRect_ {
     int32_t x;
@@ -84,13 +83,15 @@ void txt_rect_array_destroy(RTOTXTRectArray *array)
     free(*array);
 }
 
+//------
+
+//------RTOTXTRowRectArray_ 数组只有创建、新增元素、销毁操作
+
 struct RTOTXTRowRectArray_ {
     RTOTXTRectArray *data;
     size_t length;//真实长度
     size_t count;//元素个数
 };
-
-//数组只有创建、新增元素、销毁操作
 
 void txt_row_rect_array_create(RTOTXTRowRectArray *array)
 {
@@ -136,6 +137,8 @@ void txt_row_rect_array_destroy(RTOTXTRowRectArray *array)
     *array = NULL;
 }
 
+//------
+
 bool txt_worker_previous_able(RTOTXTWorker *worker)
 {
     return false;
@@ -154,9 +157,9 @@ void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height)
 {
     FT_Library    library;
     FT_Face       face;
-
+    
     FT_Error      error;
-
+    
     error = FT_Init_FreeType( &library );
     const char *fontPath = GetBundleFileName("站酷庆科黄油体.ttf");
     if (!error) {
@@ -213,7 +216,7 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
     }
     
     FT_Face       face = (*worker)->face;
-
+    
     FT_GlyphSlot  slot;
     FT_Error      error;
     
@@ -227,7 +230,7 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
                              0,
                              screenDpi,
                              0 );                /* set character size */
-
+    
     unsigned int glyph_count;
     hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
     hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
@@ -258,9 +261,9 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
         FT_Int32 flags =  FT_LOAD_DEFAULT;
         
         error = FT_Load_Glyph(face,
-                      glyphid,
-                      flags
-                      );
+                              glyphid,
+                              flags
+                              );
         if ( error ) {
             printf("FT_Load_Glyph error code: %d",error);
         }
@@ -336,7 +339,7 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
                         //                            textureBuffer[absX+totalWidth*absY] = 0;
                         //                        }
                         
-//                        textureBuffer[absX+totalWidth*absY] = 0;
+                        //                        textureBuffer[absX+totalWidth*absY] = 0;
                     }
                 }
             }
@@ -426,3 +429,117 @@ uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,RTOTXTRect* co
     
     return result;
 }
+
+void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey)
+{
+    RTOTXTRowRectArray array = (*worker)->array;
+    
+    bool start_finded = false;
+    bool end_finded = false;
+    
+    for (size_t i=0; i<array->count; i++) {
+        RTOTXTRectArray *data = array->data;
+        RTOTXTRectArray row_array = data[i];
+        for (size_t j=0; j<row_array->count; j++) {
+            struct RTOTXTRect_ one_rect = row_array->data[j];
+            if (!start_finded) {
+                if (sy >= one_rect.y && sy <= one_rect.yy) {
+                    //开始和结束在同一行
+                    if (ey >= one_rect.y && ey <= one_rect.yy) {
+                        
+                        //同一个字
+                        if (sx >= one_rect.x && sx <= one_rect.xx && ex >= one_rect.x && ex <= one_rect.xx) {
+                            start_finded = true;
+                            end_finded = true;
+                            
+                            if (*rect_array == NULL) {
+                                txt_rect_array_create(rect_array);
+                            }
+                            txt_rect_array_add(*rect_array, one_rect);
+                            
+                            //坐标匹配退出第二层for循环
+                            break;
+                        } else if (sx >= one_rect.x && sx <= one_rect.xx) {
+                            start_finded = true;
+                            
+                            
+                            if (*rect_array == NULL) {
+                                txt_rect_array_create(rect_array);
+                            }
+                            
+                            for (size_t k=j; k<row_array->count; k++) {
+                                struct RTOTXTRect_ k_one_rect = row_array->data[k];
+                                if (ex >= k_one_rect.x && ex <= k_one_rect.xx) {
+                                    end_finded = true;
+                                    
+                                    struct RTOTXTRect_ result = {one_rect.x, one_rect.y, k_one_rect.xx, k_one_rect.yy};
+                                    txt_rect_array_add(*rect_array, result);
+                                    break;
+                                }
+                            }
+                            
+                            //坐标匹配退出第二层for循环
+                            break;
+                        }
+                        
+                    } else {
+                        if (sx >= one_rect.x && sx <= one_rect.xx) {
+                            start_finded = true;
+                            
+                            struct RTOTXTRect_ last_rect = row_array->data[row_array->count-1];
+                            if (*rect_array == NULL) {
+                                txt_rect_array_create(rect_array);
+                            }
+                            struct RTOTXTRect_ result = {one_rect.x, one_rect.y, last_rect.xx, last_rect.yy};
+                            txt_rect_array_add(*rect_array, result);
+                            
+                            //坐标匹配退出第二层for循环
+                            break;
+                        }
+                    }
+                } else {
+                    //退出第二层for循环 比较下一行
+                    break;
+                }
+            } else if (!end_finded) {
+                if (ey >= one_rect.y && ey <= one_rect.yy) {
+                    if (ex >= one_rect.x && ex <= one_rect.xx) {
+                        end_finded = true;
+                        
+                        struct RTOTXTRect_ first_rect = row_array->data[0];
+                        struct RTOTXTRect_ result = {first_rect.x, first_rect.y, one_rect.xx, one_rect.yy};
+                        txt_rect_array_add(*rect_array, result);
+                        
+                        //坐标匹配退出第二层for循环
+                        break;
+                    }
+                } else {
+                    //记录这一行
+                    struct RTOTXTRect_ first_rect = row_array->data[0];
+                    struct RTOTXTRect_ last_rect = row_array->data[row_array->count-1];
+                    struct RTOTXTRect_ result = {first_rect.x, first_rect.y, last_rect.xx, last_rect.yy};
+                    txt_rect_array_add(*rect_array, result);
+                    
+                    //退出第二层for循环 比较下一行
+                    break;
+                }
+            }
+        }
+        
+        //不需要再循环了
+        if (start_finded && end_finded) {
+            break;
+        }
+    }
+}
+
+size_t txt_worker_rect_array_get_count(RTOTXTRectArray *rect_array)
+{
+    return (*rect_array)->count;
+}
+
+RTOTXTRect txt_worker_rect_array_object_at(RTOTXTRectArray *rect_array, int index)
+{
+    return &(*rect_array)->data[index];
+}
+
