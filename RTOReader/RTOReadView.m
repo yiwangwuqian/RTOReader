@@ -101,7 +101,6 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     CGPoint point = [sender locationInView:sender.view];
     CGFloat width = CGRectGetWidth(self.frame);
     
-    /*
     RTOTXTRect contains = NULL;
     uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
     if (contains) {
@@ -115,11 +114,6 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
         }
         CGFloat scale = [UIScreen mainScreen].scale;
         self.selectionView.rectArray = @[[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
-    }
-     */
-    
-    if (self.selectionView.rectArray) {
-        self.selectionView.rectArray = nil;
     }
     
     if (point.x < width*0.33) {
@@ -251,7 +245,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     uint8_t four = code_point&0XFF;
     
     NSString *result = nil;
-    if (two == 0) {
+    if (one == 0 && two == 0) {
         if (three != 0) {
             if (three >= 8) {
                 //三字节
@@ -269,9 +263,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
         }
     } else {
         //四字节
-        //加注释的是按照utf8编码加了前缀的，不知道为什么错了
-//        Byte byteData[] = {0xf0 + ((two>>2)&0x7), 0x80+ ((three>>4)&0xf) + ((two<<4)&0x30), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
-        Byte byteData[] = {one,two,three,four};
+        Byte byteData[] = {0xf0 + ((two>>2)&0x7), 0x80+ ((three>>4)&0xf) + ((two<<4)&0x30), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
         result = [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding];
     }
     NSLog(@"点选结果是:%@", result);
