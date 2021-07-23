@@ -48,6 +48,8 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
 @property(nonatomic)RTOTXTWorker    worker;
 
 @property(nonatomic)RTOReadSelectionView*   selectionView;
+@property(nonatomic)NSNumber*               selectionSNumber;
+@property(nonatomic)NSNumber*               selectionENumber;
 
 @end
 
@@ -137,7 +139,11 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
             RTOTXTRectArray rect_array=NULL;
             CGPoint point = [lastPoint CGPointValue];
             CGFloat scale = [UIScreen mainScreen].scale;
-            txt_worker_rect_array_from(&_worker, &rect_array, point.x*scale, point.y*scale, nPoint.x*scale, nPoint.y*scale);
+            size_t s_index;
+            size_t e_index;
+            txt_worker_rect_array_from(&_worker, &rect_array, point.x*scale, point.y*scale, nPoint.x*scale, nPoint.y*scale, &s_index, &e_index);
+            self.selectionSNumber = @(s_index);
+            self.selectionENumber = @(e_index);
             
             if (rect_array) {
                 NSMutableArray *array = [NSMutableArray array];
@@ -159,7 +165,13 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
             }
             
             if (sender.state == UIGestureRecognizerStateRecognized) {
-            lastPoint = NULL;
+                lastPoint = NULL;
+                
+                size_t count;
+                uint32_t *code_points = txt_worker_codepoint_in_range(&_worker, s_index, e_index, &count);
+                if (code_points) {
+                    [[self class] convertCodePoints:code_points count:count];
+                }
             }
         }
             break;
@@ -269,6 +281,49 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     NSLog(@"点选结果是:%@", result);
     NSLog(@"%x %x %x %x code_point:%x", one, two, three, four, code_point);
     return result;
+}
+
++ (NSData *)dataWithCodePoint:(uint32_t)code_point
+{
+    uint8_t one = (code_point>>24)&0XFF;
+    uint8_t two = (code_point>>16)&0XFF;
+    uint8_t three = (code_point>>8)&0XFF;
+    uint8_t four = code_point&0XFF;
+    
+    NSData *data;
+    if (one == 0 && two == 0) {
+        if (three != 0) {
+            if (three >= 8) {
+                //三字节
+                Byte byteData[] = {0xe0+((three>>4)&0xf), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
+                data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
+            } else {
+                //两字节
+                Byte byteData[] = {0xc0+((three>>3)&0x1f), 0x80+(four&0x3f)};
+                data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
+            }
+        } else {
+            Byte byteData[] = {four};
+            data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
+        }
+    } else {
+        //四字节
+        Byte byteData[] = {0xf0 + ((two>>2)&0x7), 0x80+ ((three>>4)&0xf) + ((two<<4)&0x30), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
+        data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
+    }
+    return data;
+}
+
++ (NSString *)convertCodePoints:(uint32_t*)code_points count:(size_t)count
+{
+    NSMutableData *result = [NSMutableData data];
+    for (size_t i=0; i<count; i++) {
+        NSData *data = [self dataWithCodePoint:code_points[i]];
+        [result appendData:data];
+    }
+    NSString *string = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
+    NSLog(@"⚠️：%@", string);
+    return string;
 }
 
 @end

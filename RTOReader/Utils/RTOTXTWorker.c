@@ -112,6 +112,26 @@ RTOTXTRectArray txt_row_rect_array_current(RTOTXTRowRectArray array)
     return NULL;
 }
 
+size_t txt_row_rect_array_index_from(RTOTXTRowRectArray array, size_t r_index, size_t c_index)
+{
+    size_t result=0;
+    for (size_t i=0; i<array->count; i++) {
+        RTOTXTRectArray *data = array->data;
+        RTOTXTRectArray row_array = data[i];
+        if (r_index == i) {
+            for (size_t j=0; j<row_array->count; j++) {
+                if (c_index == j) {
+                    result += j;
+                    break;
+                }
+            }
+            break;
+        }
+        result += row_array->count;
+    }
+    return result;
+}
+
 bool txt_row_rect_array_add(struct RTOTXTRowRectArray_ *array,RTOTXTRectArray item)
 {
     if( !((*array).count < (*array).length) ) {
@@ -387,6 +407,21 @@ void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy)
     }
 }
 
+uint32_t* txt_worker_codepoint_in_range(RTOTXTWorker *worker, size_t start, size_t end, size_t *count)
+{
+    size_t length = end - start + 1;
+    if (length > 0) {
+        uint32_t *result = calloc(length, sizeof(uint32_t));
+        for (size_t i=0; i<length; i++) {
+            result[i] = (*worker)->codepoints[start+i];
+        }
+        *count = length;
+        
+        return result;
+    }
+    return NULL;
+}
+
 /// 指定坐标获取对应位置文字的codepoint，如果坐标对应位置有文字的话
 /// @param x x坐标
 /// @param y y坐标
@@ -430,12 +465,15 @@ uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,RTOTXTRect* co
     return result;
 }
 
-void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey)
+void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index)
 {
     RTOTXTRowRectArray array = (*worker)->array;
     
     bool start_finded = false;
     bool end_finded = false;
+    
+    size_t page = (*worker)->current_page;
+    size_t index = page > 0 ? (*worker)->page_cursors[page-1] : 0 ;
     
     for (size_t i=0; i<array->count; i++) {
         RTOTXTRectArray *data = array->data;
@@ -457,11 +495,15 @@ void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_arra
                             }
                             txt_rect_array_add(*rect_array, one_rect);
                             
+                            *s_index = txt_row_rect_array_index_from(array, i, j);
+                            *e_index = *s_index;
+                            
                             //坐标匹配退出第二层for循环
                             break;
                         } else if (sx >= one_rect.x && sx <= one_rect.xx) {
                             start_finded = true;
                             
+                            *s_index = txt_row_rect_array_index_from(array, i, j);
                             
                             if (*rect_array == NULL) {
                                 txt_rect_array_create(rect_array);
@@ -474,6 +516,8 @@ void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_arra
                                     
                                     struct RTOTXTRect_ result = {one_rect.x, one_rect.y, k_one_rect.xx, k_one_rect.yy};
                                     txt_rect_array_add(*rect_array, result);
+                                    
+                                    *e_index = txt_row_rect_array_index_from(array, i, k);
                                     break;
                                 }
                             }
@@ -493,6 +537,8 @@ void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_arra
                             struct RTOTXTRect_ result = {one_rect.x, one_rect.y, last_rect.xx, last_rect.yy};
                             txt_rect_array_add(*rect_array, result);
                             
+                            *s_index = txt_row_rect_array_index_from(array, i, j);
+                            
                             //坐标匹配退出第二层for循环
                             break;
                         }
@@ -510,6 +556,8 @@ void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_arra
                         struct RTOTXTRect_ first_rect = row_array->data[0];
                         struct RTOTXTRect_ result = {first_rect.x, first_rect.y, one_rect.xx, one_rect.yy};
                         txt_rect_array_add(*rect_array, result);
+                        
+                        *e_index = txt_row_rect_array_index_from(array, i, j);
                         
                         //坐标匹配退出第二层for循环
                         break;
@@ -529,6 +577,10 @@ void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_arra
                     struct RTOTXTRect_ result = {first_rect.x, first_rect.y, last_rect.xx, last_rect.yy};
                     txt_rect_array_add(*rect_array, result);
                     
+                    if (end_finded) {
+                        *e_index = txt_row_rect_array_index_from(array, i, row_array->count-1);
+                    }
+                    
                     //退出第二层for循环 比较下一行
                     break;
                 }
@@ -540,6 +592,9 @@ void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_arra
             break;
         }
     }
+    
+    *s_index += index;
+    *e_index += index;
 }
 
 size_t txt_worker_rect_array_get_count(RTOTXTRectArray *rect_array)

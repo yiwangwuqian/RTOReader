@@ -24,6 +24,8 @@ typedef struct RTOTXTRect_* RTOTXTRect;
 
 void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy);
 
+uint32_t* txt_worker_codepoint_in_range(RTOTXTWorker *worker, size_t start, size_t end, size_t *count);
+
 uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,RTOTXTRect* contains);
 
 typedef struct RTOTXTRectArray_* RTOTXTRectArray;
@@ -35,7 +37,7 @@ typedef struct RTOTXTRectArray_* RTOTXTRectArray;
 /// @param sy 开始y
 /// @param ex 结束x
 /// @param ey 结束y
-void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey);
+void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index);
 
 /// 获取元素数量
 /// @param rect_array 数组对象
