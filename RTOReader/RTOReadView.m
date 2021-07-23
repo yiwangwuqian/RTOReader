@@ -15,6 +15,7 @@
 #include <sys/mman.h>
 
 #import "RTOReadSelectionView.h"
+#import "GMenuController.h"
 
 void yw_file_content(const char *path, char** content,size_t *content_len)
 {
@@ -98,6 +99,16 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     }
 }
 
+- (void)pressedCopyButton
+{
+    size_t count;
+    uint32_t *code_points = txt_worker_codepoint_in_range(&_worker, [self.selectionSNumber integerValue], [self.selectionENumber integerValue], &count);
+    if (code_points) {
+        [UIPasteboard generalPasteboard].string = [[self class] convertCodePoints:code_points count:count];
+    }
+    [[GMenuController sharedMenuController] setMenuVisible:NO];
+}
+
 - (void)tappedView:(UITapGestureRecognizer *)sender
 {
     CGPoint point = [sender locationInView:sender.view];
@@ -167,11 +178,12 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
             if (sender.state == UIGestureRecognizerStateRecognized) {
                 lastPoint = NULL;
                 
-                size_t count;
-                uint32_t *code_points = txt_worker_codepoint_in_range(&_worker, s_index, e_index, &count);
-                if (code_points) {
-                    [[self class] convertCodePoints:code_points count:count];
-                }
+                GMenuItem *item2 = [[GMenuItem alloc] initWithTitle:@"复制" target:self action:@selector(pressedCopyButton)];
+                NSArray* arr1 = @[item2];
+                [[GMenuController sharedMenuController] setMenuItems:arr1];
+                [[GMenuController sharedMenuController] setTargetRect:[self.selectionView.rectArray.firstObject CGRectValue] inView:self.selectionView];
+                [[GMenuController sharedMenuController] setMenuVisible:YES];
+                [GMenuController sharedMenuController].menuViewContainer.hasAutoHide = YES;
             }
         }
             break;
@@ -322,7 +334,6 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
         [result appendData:data];
     }
     NSString *string = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
-    NSLog(@"⚠️：%@", string);
     return string;
 }
 
