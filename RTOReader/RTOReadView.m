@@ -114,25 +114,25 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     CGPoint point = [sender locationInView:sender.view];
     CGFloat width = CGRectGetWidth(self.frame);
     
-    RTOTXTRect contains = NULL;
-    uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
-    if (contains) {
-        [[self class] convertCodePoint:code_point];
-        
-        int x,y,xx,yy;
-        txt_rect_values(&contains, &x, &y, &xx, &yy);
-        free(contains);
-        if (!self.selectionView.superview) {
-            [self addSubview:self.selectionView];
-        }
-        CGFloat scale = [UIScreen mainScreen].scale;
-        self.selectionView.rectArray = @[[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
-    }
-    
     if (point.x < width*0.33) {
         [self toPreviousPage];
     } else if (point.x > width*0.67) {
         [self toNextPage];
+    } else {
+        RTOTXTRect contains = NULL;
+        uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
+        if (contains) {
+            [[self class] convertCodePoint:code_point];
+            
+            int x,y,xx,yy;
+            txt_rect_values(&contains, &x, &y, &xx, &yy);
+            free(contains);
+            if (!self.selectionView.superview) {
+                [self addSubview:self.selectionView];
+            }
+            CGFloat scale = [UIScreen mainScreen].scale;
+            self.selectionView.rectArray = @[[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
+        }
     }
 }
 
@@ -208,6 +208,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     uint8_t *bitmap = txt_worker_bitmap_next_page(&_worker);
     if (bitmap != NULL) {
         _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
+        [[self class] turnPageToNext:YES forView:_imageView];
     }
 }
 
@@ -218,6 +219,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     uint8_t *bitmap = txt_worker_bitmap_previous_page(&_worker);
     if (bitmap != NULL) {
         _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
+        [[self class] turnPageToNext:NO forView:_imageView];
     }
 }
 
@@ -335,6 +337,17 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     }
     NSString *string = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
     return string;
+}
+
++ (void)turnPageToNext:(BOOL)next forView:(UIView *) view
+{
+    CATransition *animation = [CATransition animation];
+    animation.duration = 1.0;
+    //push pageCurl reveal moveIn
+    animation.type = @"pageCurl";
+    animation.subtype = next ? kCATransitionFromRight : kCATransitionFromLeft;
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    [view.layer addAnimation:animation forKey:@"animation"];
 }
 
 @end
