@@ -107,6 +107,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
         [UIPasteboard generalPasteboard].string = [[self class] convertCodePoints:code_points count:count];
     }
     [[GMenuController sharedMenuController] setMenuVisible:NO];
+    self.selectionView.rectArray = nil;
 }
 
 - (void)tappedView:(UITapGestureRecognizer *)sender
@@ -209,6 +210,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     if (bitmap != NULL) {
         _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
         [[self class] turnPageToNext:YES forView:_imageView];
+        self.selectionView.rectArray = nil;
     }
 }
 
@@ -220,6 +222,7 @@ void yw_file_content(const char *path, char** content,size_t *content_len)
     if (bitmap != NULL) {
         _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
         [[self class] turnPageToNext:NO forView:_imageView];
+        self.selectionView.rectArray = nil;
     }
 }
 
