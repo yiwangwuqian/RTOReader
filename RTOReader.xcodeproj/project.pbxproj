@@ -26,6 +26,7 @@
 		86A41172242B99DE00E9F637 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A41171242B99DE00E9F637 /* ViewController.m */; };
 		86A41177242B99E000E9F637 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 86A41176242B99E000E9F637 /* Assets.xcassets */; };
 		86A4117D242B99E000E9F637 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A4117C242B99E000E9F637 /* main.m */; };
+		86E3A779272D7235002F5DDB /* TXTUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 86E3A778272D7235002F5DDB /* TXTUtil.c */; };
 		86F1D4EB2460DD6C00ABBDEF /* hb-ot-shape-complex-hebrew.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AD2460DD6A00ABBDEF /* hb-ot-shape-complex-hebrew.cc */; };
 		86F1D4EC2460DD6C00ABBDEF /* hb-ucd.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AE2460DD6A00ABBDEF /* hb-ucd.cc */; };
 		86F1D4ED2460DD6C00ABBDEF /* hb-buffer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AF2460DD6A00ABBDEF /* hb-buffer.cc */; };
@@ -117,6 +118,8 @@
 		86A41176242B99E000E9F637 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		86A4117B242B99E000E9F637 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		86A4117C242B99E000E9F637 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		86E3A777272D7235002F5DDB /* TXTUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TXTUtil.h; sourceTree = "<group>"; };
+		86E3A778272D7235002F5DDB /* TXTUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TXTUtil.c; sourceTree = "<group>"; };
 		86F1D4AD2460DD6A00ABBDEF /* hb-ot-shape-complex-hebrew.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-hebrew.cc"; path = "harfbuzz/src/hb-ot-shape-complex-hebrew.cc"; sourceTree = "<group>"; };
 		86F1D4AE2460DD6A00ABBDEF /* hb-ucd.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ucd.cc"; path = "harfbuzz/src/hb-ucd.cc"; sourceTree = "<group>"; };
 		86F1D4AF2460DD6A00ABBDEF /* hb-buffer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-buffer.cc"; path = "harfbuzz/src/hb-buffer.cc"; sourceTree = "<group>"; };
@@ -245,6 +248,8 @@
 				867DF7592678CE91004C36CA /* RTOTXTWorker.c */,
 				868C4746242ED2AC00C84B88 /* FileWrapper.h */,
 				868C474B242ED2AC00C84B88 /* FileWrapper.m */,
+				86E3A777272D7235002F5DDB /* TXTUtil.h */,
+				86E3A778272D7235002F5DDB /* TXTUtil.c */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -505,6 +510,7 @@
 				86F1D4FB2460DD6C00ABBDEF /* hb-ot-shape-fallback.cc in Sources */,
 				86F1D5092460DD6C00ABBDEF /* hb-ot-metrics.cc in Sources */,
 				862C1C47272428C900ECD9E3 /* hb-gdi.cc in Sources */,
+				86E3A779272D7235002F5DDB /* TXTUtil.c in Sources */,
 				86F1D5202460DD6C00ABBDEF /* hb-draw.cc in Sources */,
 				86F1D5042460DD6C00ABBDEF /* hb-ot-shape-complex-default.cc in Sources */,
 				86F1D5082460DD6C00ABBDEF /* hb-font.cc in Sources */,

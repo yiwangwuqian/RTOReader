@@ -14,6 +14,7 @@
 
 #import "RTOReadSelectionView.h"
 #import "GMenuController.h"
+#include "TXTUtil.h"
 
 @interface RTOReadView()
 
