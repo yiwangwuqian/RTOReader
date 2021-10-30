@@ -12,6 +12,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+
+extern "C" {
+#endif
+
 typedef struct RTOTXTWorker_* RTOTXTWorker;
 
 void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height);
@@ -51,5 +56,9 @@ RTOTXTRect txt_worker_rect_array_object_at(RTOTXTRectArray *rect_array, int inde
 /// 销毁对象
 /// @param array 待销毁对象
 void txt_rect_array_destroy(RTOTXTRectArray *array);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* RTOTXTWorker_h */

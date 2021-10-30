@@ -33,6 +33,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 
 ///
 /// \brief Given a fileName, convert into a path that can be used to open from
@@ -42,6 +44,7 @@
 ///
 const char *GetBundleFileName( const char *fileName )
 {
+#ifdef __APPLE__
     NSString* fileNameNS = [NSString stringWithUTF8String:fileName];
     NSString* baseName = [fileNameNS stringByDeletingPathExtension];
     NSString* extension = [fileNameNS pathExtension];
@@ -49,13 +52,19 @@ const char *GetBundleFileName( const char *fileName )
     fileName = [path cStringUsingEncoding:NSUTF8StringEncoding];
     
     return fileName;
+#else
+    return NULL;
+#endif
 }
 
 void GetScreenSize(float* width,float* height)
 {
+#ifdef __APPLE__
     CGSize size = [UIScreen mainScreen].bounds.size;
     *width = size.width;
     *height = size.height;
+#else
+#endif
 }
 
 void esWindowSize(float* width,float* height)
@@ -65,6 +74,7 @@ void esWindowSize(float* width,float* height)
 
 unsigned int GetScreenDpi()
 {
+#ifdef __APPLE__
     unsigned int dpi=0;
     float scale = 1;
     
@@ -80,4 +90,33 @@ unsigned int GetScreenDpi()
         dpi = 160 * scale;
     }
     return dpi;
+#else
+    return 0;
+#endif
+}
+
+void txt_file_content(const char *path, char** content,size_t *content_len)
+{
+    struct stat fdstat;
+    stat(path, &fdstat);
+    char *buf = NULL;
+    size_t buf_size;
+    
+    int fd;
+    fd = open(path, O_RDONLY);
+    /* set buffer size */
+    buf_size = fdstat.st_size;
+    
+    /* allocate the buffer storage */
+    if (buf_size > 0) {
+        buf = mmap(NULL, buf_size, PROT_READ, MAP_SHARED, fd, 0);
+        if (buf == MAP_FAILED) {
+            close(fd);
+            return;
+        }
+        *content = buf;
+        if (content_len) {
+            *content_len = buf_size;
+        }
+    }
 }

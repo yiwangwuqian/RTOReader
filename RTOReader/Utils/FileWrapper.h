@@ -35,8 +35,21 @@
 /// \return Path that can be used to fopen() from the mainBundle
 ///
 
+#include <stddef.h>
+
+#ifdef __cplusplus
+
+extern "C" {
+#endif
+
 const char *GetBundleFileName ( const char *fileName );
 
 void GetScreenSize(float* width,float* height);
 
 unsigned int GetScreenDpi(void);
+
+void txt_file_content(const char *path, char** content,size_t *content_len);
+
+#ifdef __cplusplus
+}
+#endif

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4488E39591505E5257DB2838 /* libPods-RTOReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB240430C4306B4C593811D /* libPods-RTOReader.a */; };
+		862C1C4627240AA400ECD9E3 /* hb-ot-shape-complex-use.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C52460DD6B00ABBDEF /* hb-ot-shape-complex-use.cc */; };
+		862C1C47272428C900ECD9E3 /* hb-gdi.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BA2460DD6B00ABBDEF /* hb-gdi.cc */; };
 		867563FC24699AB200A6D4EB /* 站酷庆科黄油体.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */; };
 		867BC50726AB199100AC154D /* GAdjustButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC4FD26AB199100AC154D /* GAdjustButton.m */; };
 		867BC50826AB199100AC154D /* GMenuDefaultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC4FE26AB199100AC154D /* GMenuDefaultView.m */; };
@@ -30,14 +32,12 @@
 		86F1D4EE2460DD6C00ABBDEF /* hb-blob.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B02460DD6A00ABBDEF /* hb-blob.cc */; };
 		86F1D4EF2460DD6C00ABBDEF /* hb-ot-layout.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B12460DD6B00ABBDEF /* hb-ot-layout.cc */; };
 		86F1D4F02460DD6C00ABBDEF /* hb-ot-shape-complex-hangul.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B22460DD6B00ABBDEF /* hb-ot-shape-complex-hangul.cc */; };
-		86F1D4F12460DD6C00ABBDEF /* hb-subset.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B32460DD6B00ABBDEF /* hb-subset.cc */; };
 		86F1D4F22460DD6C00ABBDEF /* hb-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B42460DD6B00ABBDEF /* hb-shape.cc */; };
 		86F1D4F32460DD6C00ABBDEF /* hb-ot-shape-complex-myanmar.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B52460DD6B00ABBDEF /* hb-ot-shape-complex-myanmar.cc */; };
 		86F1D4F42460DD6C00ABBDEF /* hb-common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B62460DD6B00ABBDEF /* hb-common.cc */; };
 		86F1D4F52460DD6C00ABBDEF /* hb-ot-cff2-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B72460DD6B00ABBDEF /* hb-ot-cff2-table.cc */; };
 		86F1D4F62460DD6C00ABBDEF /* hb-ot-map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B82460DD6B00ABBDEF /* hb-ot-map.cc */; };
 		86F1D4F72460DD6C00ABBDEF /* hb-ot-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B92460DD6B00ABBDEF /* hb-ot-shape.cc */; };
-		86F1D4F82460DD6C00ABBDEF /* hb-gdi.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BA2460DD6B00ABBDEF /* hb-gdi.cc */; };
 		86F1D4F92460DD6C00ABBDEF /* hb-ot-var.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BB2460DD6B00ABBDEF /* hb-ot-var.cc */; };
 		86F1D4FA2460DD6C00ABBDEF /* hb-ot-shape-complex-indic-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BC2460DD6B00ABBDEF /* hb-ot-shape-complex-indic-table.cc */; };
 		86F1D4FB2460DD6C00ABBDEF /* hb-ot-shape-fallback.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BD2460DD6B00ABBDEF /* hb-ot-shape-fallback.cc */; };
@@ -47,7 +47,6 @@
 		86F1D5002460DD6C00ABBDEF /* hb-ot-face.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C22460DD6B00ABBDEF /* hb-ot-face.cc */; };
 		86F1D5012460DD6C00ABBDEF /* hb-gobject-structs.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C32460DD6B00ABBDEF /* hb-gobject-structs.cc */; };
 		86F1D5022460DD6C00ABBDEF /* hb-subset-cff2.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C42460DD6B00ABBDEF /* hb-subset-cff2.cc */; };
-		86F1D5032460DD6C00ABBDEF /* hb-ot-shape-complex-use.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C52460DD6B00ABBDEF /* hb-ot-shape-complex-use.cc */; };
 		86F1D5042460DD6C00ABBDEF /* hb-ot-shape-complex-default.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C62460DD6B00ABBDEF /* hb-ot-shape-complex-default.cc */; };
 		86F1D5062460DD6C00ABBDEF /* hb-ot-color.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C82460DD6B00ABBDEF /* hb-ot-color.cc */; };
 		86F1D5072460DD6C00ABBDEF /* hb-subset-input.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C92460DD6B00ABBDEF /* hb-subset-input.cc */; };
@@ -65,7 +64,6 @@
 		86F1D5132460DD6C00ABBDEF /* hb-graphite2.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D52460DD6B00ABBDEF /* hb-graphite2.cc */; };
 		86F1D5142460DD6C00ABBDEF /* hb-set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D62460DD6C00ABBDEF /* hb-set.cc */; };
 		86F1D5152460DD6C00ABBDEF /* hb-ot-font.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D72460DD6C00ABBDEF /* hb-ot-font.cc */; };
-		86F1D5162460DD6C00ABBDEF /* hb-glib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D82460DD6C00ABBDEF /* hb-glib.cc */; };
 		86F1D5172460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D92460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc */; };
 		86F1D5182460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DA2460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc */; };
 		86F1D5192460DD6C00ABBDEF /* hb-ot-shape-normalize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DB2460DD6C00ABBDEF /* hb-ot-shape-normalize.cc */; };
@@ -80,7 +78,6 @@
 		86F1D5222460DD6C00ABBDEF /* hb-aat-layout.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E42460DD6C00ABBDEF /* hb-aat-layout.cc */; };
 		86F1D5232460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E52460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc */; };
 		86F1D5242460DD6C00ABBDEF /* hb-buffer-serialize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E62460DD6C00ABBDEF /* hb-buffer-serialize.cc */; };
-		86F1D5252460DD6C00ABBDEF /* hb-coretext.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E72460DD6C00ABBDEF /* hb-coretext.cc */; };
 		86F1D5262460DD6C00ABBDEF /* hb-static.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E82460DD6C00ABBDEF /* hb-static.cc */; };
 		86F1D5272460DD6C00ABBDEF /* hb-unicode.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E92460DD6C00ABBDEF /* hb-unicode.cc */; };
 		86F1D5282460DD6C00ABBDEF /* hb-subset-cff1.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4EA2460DD6C00ABBDEF /* hb-subset-cff1.cc */; };
@@ -161,7 +158,6 @@
 		86F1D4D52460DD6B00ABBDEF /* hb-graphite2.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-graphite2.cc"; path = "harfbuzz/src/hb-graphite2.cc"; sourceTree = "<group>"; };
 		86F1D4D62460DD6C00ABBDEF /* hb-set.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-set.cc"; path = "harfbuzz/src/hb-set.cc"; sourceTree = "<group>"; };
 		86F1D4D72460DD6C00ABBDEF /* hb-ot-font.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-font.cc"; path = "harfbuzz/src/hb-ot-font.cc"; sourceTree = "<group>"; };
-		86F1D4D82460DD6C00ABBDEF /* hb-glib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-glib.cc"; path = "harfbuzz/src/hb-glib.cc"; sourceTree = "<group>"; };
 		86F1D4D92460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-arabic.cc"; path = "harfbuzz/src/hb-ot-shape-complex-arabic.cc"; sourceTree = "<group>"; };
 		86F1D4DA2460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-use-table.cc"; path = "harfbuzz/src/hb-ot-shape-complex-use-table.cc"; sourceTree = "<group>"; };
 		86F1D4DB2460DD6C00ABBDEF /* hb-ot-shape-normalize.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-normalize.cc"; path = "harfbuzz/src/hb-ot-shape-normalize.cc"; sourceTree = "<group>"; };
@@ -176,7 +172,6 @@
 		86F1D4E42460DD6C00ABBDEF /* hb-aat-layout.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-aat-layout.cc"; path = "harfbuzz/src/hb-aat-layout.cc"; sourceTree = "<group>"; };
 		86F1D4E52460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-thai.cc"; path = "harfbuzz/src/hb-ot-shape-complex-thai.cc"; sourceTree = "<group>"; };
 		86F1D4E62460DD6C00ABBDEF /* hb-buffer-serialize.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-buffer-serialize.cc"; path = "harfbuzz/src/hb-buffer-serialize.cc"; sourceTree = "<group>"; };
-		86F1D4E72460DD6C00ABBDEF /* hb-coretext.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-coretext.cc"; path = "harfbuzz/src/hb-coretext.cc"; sourceTree = "<group>"; };
 		86F1D4E82460DD6C00ABBDEF /* hb-static.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-static.cc"; path = "harfbuzz/src/hb-static.cc"; sourceTree = "<group>"; };
 		86F1D4E92460DD6C00ABBDEF /* hb-unicode.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-unicode.cc"; path = "harfbuzz/src/hb-unicode.cc"; sourceTree = "<group>"; };
 		86F1D4EA2460DD6C00ABBDEF /* hb-subset-cff1.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-subset-cff1.cc"; path = "harfbuzz/src/hb-subset-cff1.cc"; sourceTree = "<group>"; };
@@ -312,7 +307,6 @@
 				86F1D4E62460DD6C00ABBDEF /* hb-buffer-serialize.cc */,
 				86F1D4AF2460DD6A00ABBDEF /* hb-buffer.cc */,
 				86F1D4B62460DD6B00ABBDEF /* hb-common.cc */,
-				86F1D4E72460DD6C00ABBDEF /* hb-coretext.cc */,
 				86F1D4CE2460DD6B00ABBDEF /* hb-directwrite.cc */,
 				86F1D4E22460DD6C00ABBDEF /* hb-draw.cc */,
 				86F1D4D32460DD6B00ABBDEF /* hb-face.cc */,
@@ -320,7 +314,6 @@
 				86F1D4CA2460DD6B00ABBDEF /* hb-font.cc */,
 				86F1D4E02460DD6C00ABBDEF /* hb-ft.cc */,
 				86F1D4BA2460DD6B00ABBDEF /* hb-gdi.cc */,
-				86F1D4D82460DD6C00ABBDEF /* hb-glib.cc */,
 				86F1D4C32460DD6B00ABBDEF /* hb-gobject-structs.cc */,
 				86F1D4D52460DD6B00ABBDEF /* hb-graphite2.cc */,
 				86F1D4BE2460DD6B00ABBDEF /* hb-map.cc */,
@@ -475,13 +468,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86F1D5032460DD6C00ABBDEF /* hb-ot-shape-complex-use.cc in Sources */,
 				86F1D4F52460DD6C00ABBDEF /* hb-ot-cff2-table.cc in Sources */,
+				862C1C4627240AA400ECD9E3 /* hb-ot-shape-complex-use.cc in Sources */,
 				867BC50B26AB199100AC154D /* GMenuController.m in Sources */,
 				86F1D5212460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc in Sources */,
 				86A23422269F35C900A5CF64 /* RTOReadSelectionView.m in Sources */,
 				86F1D4FC2460DD6C00ABBDEF /* hb-map.cc in Sources */,
-				86F1D5252460DD6C00ABBDEF /* hb-coretext.cc in Sources */,
 				86F1D4F22460DD6C00ABBDEF /* hb-shape.cc in Sources */,
 				86A41172242B99DE00E9F637 /* ViewController.m in Sources */,
 				86F1D50C2460DD6C00ABBDEF /* hb-directwrite.cc in Sources */,
@@ -492,7 +484,6 @@
 				867BC50726AB199100AC154D /* GAdjustButton.m in Sources */,
 				86F1D51A2460DD6C00ABBDEF /* hb-fallback-shape.cc in Sources */,
 				86F1D50B2460DD6C00ABBDEF /* hb-subset-cff-common.cc in Sources */,
-				86F1D5162460DD6C00ABBDEF /* hb-glib.cc in Sources */,
 				86F1D51F2460DD6C00ABBDEF /* hb-subset-plan.cc in Sources */,
 				86F1D50A2460DD6C00ABBDEF /* hb-shape-plan.cc in Sources */,
 				86F1D51E2460DD6C00ABBDEF /* hb-ft.cc in Sources */,
@@ -507,13 +498,13 @@
 				86F1D5132460DD6C00ABBDEF /* hb-graphite2.cc in Sources */,
 				86F1D51C2460DD6C00ABBDEF /* hb-ot-math.cc in Sources */,
 				86A4117D242B99E000E9F637 /* main.m in Sources */,
-				86F1D4F82460DD6C00ABBDEF /* hb-gdi.cc in Sources */,
 				86F1D50D2460DD6C00ABBDEF /* hb-ot-meta.cc in Sources */,
 				86F1D51D2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc in Sources */,
 				86F1D4FA2460DD6C00ABBDEF /* hb-ot-shape-complex-indic-table.cc in Sources */,
 				867DF75A2678CE91004C36CA /* RTOTXTWorker.c in Sources */,
 				86F1D4FB2460DD6C00ABBDEF /* hb-ot-shape-fallback.cc in Sources */,
 				86F1D5092460DD6C00ABBDEF /* hb-ot-metrics.cc in Sources */,
+				862C1C47272428C900ECD9E3 /* hb-gdi.cc in Sources */,
 				86F1D5202460DD6C00ABBDEF /* hb-draw.cc in Sources */,
 				86F1D5042460DD6C00ABBDEF /* hb-ot-shape-complex-default.cc in Sources */,
 				86F1D5082460DD6C00ABBDEF /* hb-font.cc in Sources */,
@@ -541,7 +532,6 @@
 				86F1D50F2460DD6C00ABBDEF /* hb-number.cc in Sources */,
 				86F1D4FD2460DD6C00ABBDEF /* hb-ot-cff1-table.cc in Sources */,
 				86F1D5102460DD6C00ABBDEF /* hb-aat-map.cc in Sources */,
-				86F1D4F12460DD6C00ABBDEF /* hb-subset.cc in Sources */,
 				86F1D4ED2460DD6C00ABBDEF /* hb-buffer.cc in Sources */,
 				868C4754242ED2AC00C84B88 /* FileWrapper.m in Sources */,
 				86F1D4F72460DD6C00ABBDEF /* hb-ot-shape.cc in Sources */,
