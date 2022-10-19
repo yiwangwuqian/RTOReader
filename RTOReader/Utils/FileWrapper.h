@@ -50,6 +50,7 @@ void GetScreenSize(float* width,float* height);
 
 unsigned int GetScreenDpi(void);
 
+unsigned int GetDeviceFontSize(int designedSize);
 #ifdef __cplusplus
 }
 #endif

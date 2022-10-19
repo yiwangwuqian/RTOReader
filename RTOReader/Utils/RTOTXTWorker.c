@@ -242,14 +242,19 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
     
     hb_buffer_t *buf = (*worker)->buf;
     
-    unsigned int screenDpi = GetScreenDpi();
     
-    /* use 50pt at 100dpi */
-    error = FT_Set_Char_Size( face,
-                             40/1136.0*screenDpi * 64,
-                             0,
-                             screenDpi,
-                             0 );                /* set character size */
+    //First method to set font size
+//    unsigned int screenDpi = GetScreenDpi();
+//
+//    /* use 50pt at 100dpi */
+//    error = FT_Set_Char_Size( face,
+//                             40/1136.0*screenDpi * 64,
+//                             0,
+//                             screenDpi,
+//                             0 );                /* set character size */
+    
+    //Second method to set font size
+    FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
     
     unsigned int glyph_count;
     hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);

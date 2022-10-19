@@ -102,3 +102,10 @@ unsigned int GetScreenDpi()
     return 0;
 #endif
 }
+
+unsigned int GetDeviceFontSize(int designedSize)
+{
+    CGSize size = [UIScreen mainScreen].bounds.size;
+    unsigned int result = size.width/360*designedSize * [UIScreen mainScreen].scale;
+    return result;
+}
