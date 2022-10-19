@@ -5,3 +5,7 @@ platform :ios, '8.0'
 target 'RTOReader' do
     pod 'freetype'
 end
+
+target 'TextLayout' do
+    pod 'freetype'
+end

@@ -7,19 +7,85 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B6B43CF28FFA804002929A9 /* CGFontToFontData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B43CE28FFA804002929A9 /* CGFontToFontData.m */; };
-		2B6B43D228FFAE86002929A9 /* RTOFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B43D128FFAE86002929A9 /* RTOFontManager.m */; };
+		2B6B445A29001ACD002929A9 /* TextLayout.docc in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B445929001ACD002929A9 /* TextLayout.docc */; };
+		2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B445829001ACD002929A9 /* TextLayout.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B445E29001ACD002929A9 /* TextLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6B445629001ACD002929A9 /* TextLayout.framework */; };
+		2B6B445F29001ACD002929A9 /* TextLayout.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6B445629001ACD002929A9 /* TextLayout.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2B6B446429001AEC002929A9 /* hb-aat-layout.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E42460DD6C00ABBDEF /* hb-aat-layout.cc */; };
+		2B6B446529001AEF002929A9 /* hb-aat-map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D22460DD6B00ABBDEF /* hb-aat-map.cc */; };
+		2B6B446629001AF1002929A9 /* hb-blob.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B02460DD6A00ABBDEF /* hb-blob.cc */; };
+		2B6B446729001AF3002929A9 /* hb-buffer-serialize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E62460DD6C00ABBDEF /* hb-buffer-serialize.cc */; };
+		2B6B446829001AF5002929A9 /* hb-buffer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AF2460DD6A00ABBDEF /* hb-buffer.cc */; };
+		2B6B446929001AF7002929A9 /* hb-common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B62460DD6B00ABBDEF /* hb-common.cc */; };
+		2B6B446A29001AF9002929A9 /* hb-directwrite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CE2460DD6B00ABBDEF /* hb-directwrite.cc */; };
+		2B6B446B29001AFB002929A9 /* hb-draw.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E22460DD6C00ABBDEF /* hb-draw.cc */; };
+		2B6B446C29001AFE002929A9 /* hb-face.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D32460DD6B00ABBDEF /* hb-face.cc */; };
+		2B6B446D29001B02002929A9 /* hb-fallback-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DC2460DD6C00ABBDEF /* hb-fallback-shape.cc */; };
+		2B6B446E29001B05002929A9 /* hb-font.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CA2460DD6B00ABBDEF /* hb-font.cc */; };
+		2B6B446F29001B07002929A9 /* hb-ft.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E02460DD6C00ABBDEF /* hb-ft.cc */; };
+		2B6B447029001B09002929A9 /* hb-gdi.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BA2460DD6B00ABBDEF /* hb-gdi.cc */; };
+		2B6B447129001B0C002929A9 /* hb-gobject-structs.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C32460DD6B00ABBDEF /* hb-gobject-structs.cc */; };
+		2B6B447229001B0D002929A9 /* hb-graphite2.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D52460DD6B00ABBDEF /* hb-graphite2.cc */; };
+		2B6B447329001B10002929A9 /* hb-map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BE2460DD6B00ABBDEF /* hb-map.cc */; };
+		2B6B447429001B51002929A9 /* hb-number.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D12460DD6B00ABBDEF /* hb-number.cc */; };
+		2B6B447529001B54002929A9 /* hb-ot-cff1-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BF2460DD6B00ABBDEF /* hb-ot-cff1-table.cc */; };
+		2B6B447629001B56002929A9 /* hb-ot-cff2-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B72460DD6B00ABBDEF /* hb-ot-cff2-table.cc */; };
+		2B6B447729001B58002929A9 /* hb-ot-color.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C82460DD6B00ABBDEF /* hb-ot-color.cc */; };
+		2B6B447829001B5A002929A9 /* hb-ot-face.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C22460DD6B00ABBDEF /* hb-ot-face.cc */; };
+		2B6B447929001B5C002929A9 /* hb-ot-font.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D72460DD6C00ABBDEF /* hb-ot-font.cc */; };
+		2B6B447A29001B5E002929A9 /* hb-ot-layout.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B12460DD6B00ABBDEF /* hb-ot-layout.cc */; };
+		2B6B447B29001B60002929A9 /* hb-ot-map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B82460DD6B00ABBDEF /* hb-ot-map.cc */; };
+		2B6B447C29001B63002929A9 /* hb-ot-math.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DE2460DD6C00ABBDEF /* hb-ot-math.cc */; };
+		2B6B447D29001B65002929A9 /* hb-ot-meta.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CF2460DD6B00ABBDEF /* hb-ot-meta.cc */; };
+		2B6B447E29001B68002929A9 /* hb-ot-metrics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CB2460DD6B00ABBDEF /* hb-ot-metrics.cc */; };
+		2B6B447F29001B69002929A9 /* hb-ot-name.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C12460DD6B00ABBDEF /* hb-ot-name.cc */; };
+		2B6B448029001B6C002929A9 /* hb-ot-shape-complex-arabic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D92460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc */; };
+		2B6B448129001B6E002929A9 /* hb-ot-shape-complex-default.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C62460DD6B00ABBDEF /* hb-ot-shape-complex-default.cc */; };
+		2B6B448229001B71002929A9 /* hb-ot-shape-complex-hangul.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B22460DD6B00ABBDEF /* hb-ot-shape-complex-hangul.cc */; };
+		2B6B448329001B73002929A9 /* hb-ot-shape-complex-hebrew.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AD2460DD6A00ABBDEF /* hb-ot-shape-complex-hebrew.cc */; };
+		2B6B448429001B76002929A9 /* hb-ot-shape-complex-indic-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BC2460DD6B00ABBDEF /* hb-ot-shape-complex-indic-table.cc */; };
+		2B6B448529001B79002929A9 /* hb-ot-shape-complex-indic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E32460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc */; };
+		2B6B448629001B7B002929A9 /* hb-ot-shape-complex-khmer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D02460DD6B00ABBDEF /* hb-ot-shape-complex-khmer.cc */; };
+		2B6B448729001B7D002929A9 /* hb-ot-shape-complex-myanmar.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B52460DD6B00ABBDEF /* hb-ot-shape-complex-myanmar.cc */; };
+		2B6B448829001B88002929A9 /* hb-ot-shape-complex-thai.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E52460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc */; };
+		2B6B448929001B8B002929A9 /* hb-ot-shape-complex-use-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DA2460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc */; };
+		2B6B448A29001B8D002929A9 /* hb-ot-shape-complex-use.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C52460DD6B00ABBDEF /* hb-ot-shape-complex-use.cc */; };
+		2B6B448B29001B8F002929A9 /* hb-ot-shape-complex-vowel-constraints.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DF2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc */; };
+		2B6B448C29001B94002929A9 /* hb-ot-shape-fallback.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BD2460DD6B00ABBDEF /* hb-ot-shape-fallback.cc */; };
+		2B6B448D29001B97002929A9 /* hb-ot-shape-normalize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DB2460DD6C00ABBDEF /* hb-ot-shape-normalize.cc */; };
+		2B6B448E29001B9A002929A9 /* hb-ot-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B92460DD6B00ABBDEF /* hb-ot-shape.cc */; };
+		2B6B448F29001B9C002929A9 /* hb-ot-tag.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DD2460DD6C00ABBDEF /* hb-ot-tag.cc */; };
+		2B6B449029001B9E002929A9 /* hb-ot-var.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BB2460DD6B00ABBDEF /* hb-ot-var.cc */; };
+		2B6B449129001BA0002929A9 /* hb-set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D62460DD6C00ABBDEF /* hb-set.cc */; };
+		2B6B449229001BA3002929A9 /* hb-shape-plan.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CC2460DD6B00ABBDEF /* hb-shape-plan.cc */; };
+		2B6B449329001BA7002929A9 /* hb-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B42460DD6B00ABBDEF /* hb-shape.cc */; };
+		2B6B449429001BA9002929A9 /* hb-shaper.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D42460DD6B00ABBDEF /* hb-shaper.cc */; };
+		2B6B449529001BAB002929A9 /* hb-static.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E82460DD6C00ABBDEF /* hb-static.cc */; };
+		2B6B449629001BAE002929A9 /* hb-subset-cff-common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CD2460DD6B00ABBDEF /* hb-subset-cff-common.cc */; };
+		2B6B449729001BB2002929A9 /* hb-subset-cff1.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4EA2460DD6C00ABBDEF /* hb-subset-cff1.cc */; };
+		2B6B449829001BB4002929A9 /* hb-subset-cff2.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C42460DD6B00ABBDEF /* hb-subset-cff2.cc */; };
+		2B6B449929001BB7002929A9 /* hb-subset-input.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C92460DD6B00ABBDEF /* hb-subset-input.cc */; };
+		2B6B449A29001BB9002929A9 /* hb-subset-plan.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E12460DD6C00ABBDEF /* hb-subset-plan.cc */; };
+		2B6B449B29001BBE002929A9 /* hb-ucd.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AE2460DD6A00ABBDEF /* hb-ucd.cc */; };
+		2B6B449C29001BC0002929A9 /* hb-unicode.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E92460DD6C00ABBDEF /* hb-unicode.cc */; };
+		2B6B44A329001E7D002929A9 /* RTOTXTWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B449D29001E7C002929A9 /* RTOTXTWorker.c */; };
+		2B6B44A429001E7D002929A9 /* FileWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B449E29001E7C002929A9 /* FileWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B44A529001E7D002929A9 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B449F29001E7C002929A9 /* FileWrapper.m */; };
+		2B6B44A629001E7D002929A9 /* RTOTXTWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A029001E7C002929A9 /* RTOTXTWorker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B44A729001E7D002929A9 /* TXTUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44A129001E7C002929A9 /* TXTUtil.c */; };
+		2B6B44A829001E7D002929A9 /* TXTUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A229001E7D002929A9 /* TXTUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B44AB29001F4F002929A9 /* RTOFontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A929001F4F002929A9 /* RTOFontManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B44AC29001F4F002929A9 /* RTOFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AA29001F4F002929A9 /* RTOFontManager.m */; };
+		2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */; };
+		2B6B44B029001FC0002929A9 /* CGFontToFontData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */; };
+		2D92229F054BF74D702D88FC /* libPods-TextLayout.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E375EDC9A91E25839E0C285D /* libPods-TextLayout.a */; };
 		4488E39591505E5257DB2838 /* libPods-RTOReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB240430C4306B4C593811D /* libPods-RTOReader.a */; };
-		862C1C4627240AA400ECD9E3 /* hb-ot-shape-complex-use.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C52460DD6B00ABBDEF /* hb-ot-shape-complex-use.cc */; };
-		862C1C47272428C900ECD9E3 /* hb-gdi.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BA2460DD6B00ABBDEF /* hb-gdi.cc */; };
 		867563FC24699AB200A6D4EB /* 站酷庆科黄油体.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */; };
 		867BC50726AB199100AC154D /* GAdjustButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC4FD26AB199100AC154D /* GAdjustButton.m */; };
 		867BC50826AB199100AC154D /* GMenuDefaultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC4FE26AB199100AC154D /* GMenuDefaultView.m */; };
 		867BC50926AB199100AC154D /* GMenuEffectsWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC50026AB199100AC154D /* GMenuEffectsWindow.m */; };
 		867BC50A26AB199100AC154D /* GMenuViewContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC50126AB199100AC154D /* GMenuViewContainer.m */; };
 		867BC50B26AB199100AC154D /* GMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC50626AB199100AC154D /* GMenuController.m */; };
-		867DF75A2678CE91004C36CA /* RTOTXTWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = 867DF7592678CE91004C36CA /* RTOTXTWorker.c */; };
-		868C4754242ED2AC00C84B88 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 868C474B242ED2AC00C84B88 /* FileWrapper.m */; };
 		8693AC3E2667D5EE00773140 /* RTOReadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8693AC3D2667D5EE00773140 /* RTOReadView.m */; };
 		869DCED82690A70800986E6D /* yitian1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 869DCED72690A70800986E6D /* yitian1.txt */; };
 		86A23422269F35C900A5CF64 /* RTOReadSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A23421269F35C900A5CF64 /* RTOReadSelectionView.m */; };
@@ -27,69 +93,46 @@
 		86A41172242B99DE00E9F637 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A41171242B99DE00E9F637 /* ViewController.m */; };
 		86A41177242B99E000E9F637 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 86A41176242B99E000E9F637 /* Assets.xcassets */; };
 		86A4117D242B99E000E9F637 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 86A4117C242B99E000E9F637 /* main.m */; };
-		86E3A779272D7235002F5DDB /* TXTUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 86E3A778272D7235002F5DDB /* TXTUtil.c */; };
-		86F1D4EB2460DD6C00ABBDEF /* hb-ot-shape-complex-hebrew.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AD2460DD6A00ABBDEF /* hb-ot-shape-complex-hebrew.cc */; };
-		86F1D4EC2460DD6C00ABBDEF /* hb-ucd.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AE2460DD6A00ABBDEF /* hb-ucd.cc */; };
-		86F1D4ED2460DD6C00ABBDEF /* hb-buffer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AF2460DD6A00ABBDEF /* hb-buffer.cc */; };
-		86F1D4EE2460DD6C00ABBDEF /* hb-blob.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B02460DD6A00ABBDEF /* hb-blob.cc */; };
-		86F1D4EF2460DD6C00ABBDEF /* hb-ot-layout.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B12460DD6B00ABBDEF /* hb-ot-layout.cc */; };
-		86F1D4F02460DD6C00ABBDEF /* hb-ot-shape-complex-hangul.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B22460DD6B00ABBDEF /* hb-ot-shape-complex-hangul.cc */; };
-		86F1D4F22460DD6C00ABBDEF /* hb-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B42460DD6B00ABBDEF /* hb-shape.cc */; };
-		86F1D4F32460DD6C00ABBDEF /* hb-ot-shape-complex-myanmar.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B52460DD6B00ABBDEF /* hb-ot-shape-complex-myanmar.cc */; };
-		86F1D4F42460DD6C00ABBDEF /* hb-common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B62460DD6B00ABBDEF /* hb-common.cc */; };
-		86F1D4F52460DD6C00ABBDEF /* hb-ot-cff2-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B72460DD6B00ABBDEF /* hb-ot-cff2-table.cc */; };
-		86F1D4F62460DD6C00ABBDEF /* hb-ot-map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B82460DD6B00ABBDEF /* hb-ot-map.cc */; };
-		86F1D4F72460DD6C00ABBDEF /* hb-ot-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B92460DD6B00ABBDEF /* hb-ot-shape.cc */; };
-		86F1D4F92460DD6C00ABBDEF /* hb-ot-var.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BB2460DD6B00ABBDEF /* hb-ot-var.cc */; };
-		86F1D4FA2460DD6C00ABBDEF /* hb-ot-shape-complex-indic-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BC2460DD6B00ABBDEF /* hb-ot-shape-complex-indic-table.cc */; };
-		86F1D4FB2460DD6C00ABBDEF /* hb-ot-shape-fallback.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BD2460DD6B00ABBDEF /* hb-ot-shape-fallback.cc */; };
-		86F1D4FC2460DD6C00ABBDEF /* hb-map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BE2460DD6B00ABBDEF /* hb-map.cc */; };
-		86F1D4FD2460DD6C00ABBDEF /* hb-ot-cff1-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BF2460DD6B00ABBDEF /* hb-ot-cff1-table.cc */; };
-		86F1D4FF2460DD6C00ABBDEF /* hb-ot-name.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C12460DD6B00ABBDEF /* hb-ot-name.cc */; };
-		86F1D5002460DD6C00ABBDEF /* hb-ot-face.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C22460DD6B00ABBDEF /* hb-ot-face.cc */; };
-		86F1D5012460DD6C00ABBDEF /* hb-gobject-structs.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C32460DD6B00ABBDEF /* hb-gobject-structs.cc */; };
-		86F1D5022460DD6C00ABBDEF /* hb-subset-cff2.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C42460DD6B00ABBDEF /* hb-subset-cff2.cc */; };
-		86F1D5042460DD6C00ABBDEF /* hb-ot-shape-complex-default.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C62460DD6B00ABBDEF /* hb-ot-shape-complex-default.cc */; };
-		86F1D5062460DD6C00ABBDEF /* hb-ot-color.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C82460DD6B00ABBDEF /* hb-ot-color.cc */; };
-		86F1D5072460DD6C00ABBDEF /* hb-subset-input.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C92460DD6B00ABBDEF /* hb-subset-input.cc */; };
-		86F1D5082460DD6C00ABBDEF /* hb-font.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CA2460DD6B00ABBDEF /* hb-font.cc */; };
-		86F1D5092460DD6C00ABBDEF /* hb-ot-metrics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CB2460DD6B00ABBDEF /* hb-ot-metrics.cc */; };
-		86F1D50A2460DD6C00ABBDEF /* hb-shape-plan.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CC2460DD6B00ABBDEF /* hb-shape-plan.cc */; };
-		86F1D50B2460DD6C00ABBDEF /* hb-subset-cff-common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CD2460DD6B00ABBDEF /* hb-subset-cff-common.cc */; };
-		86F1D50C2460DD6C00ABBDEF /* hb-directwrite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CE2460DD6B00ABBDEF /* hb-directwrite.cc */; };
-		86F1D50D2460DD6C00ABBDEF /* hb-ot-meta.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CF2460DD6B00ABBDEF /* hb-ot-meta.cc */; };
-		86F1D50E2460DD6C00ABBDEF /* hb-ot-shape-complex-khmer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D02460DD6B00ABBDEF /* hb-ot-shape-complex-khmer.cc */; };
-		86F1D50F2460DD6C00ABBDEF /* hb-number.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D12460DD6B00ABBDEF /* hb-number.cc */; };
-		86F1D5102460DD6C00ABBDEF /* hb-aat-map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D22460DD6B00ABBDEF /* hb-aat-map.cc */; };
-		86F1D5112460DD6C00ABBDEF /* hb-face.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D32460DD6B00ABBDEF /* hb-face.cc */; };
-		86F1D5122460DD6C00ABBDEF /* hb-shaper.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D42460DD6B00ABBDEF /* hb-shaper.cc */; };
-		86F1D5132460DD6C00ABBDEF /* hb-graphite2.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D52460DD6B00ABBDEF /* hb-graphite2.cc */; };
-		86F1D5142460DD6C00ABBDEF /* hb-set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D62460DD6C00ABBDEF /* hb-set.cc */; };
-		86F1D5152460DD6C00ABBDEF /* hb-ot-font.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D72460DD6C00ABBDEF /* hb-ot-font.cc */; };
-		86F1D5172460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D92460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc */; };
-		86F1D5182460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DA2460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc */; };
-		86F1D5192460DD6C00ABBDEF /* hb-ot-shape-normalize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DB2460DD6C00ABBDEF /* hb-ot-shape-normalize.cc */; };
-		86F1D51A2460DD6C00ABBDEF /* hb-fallback-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DC2460DD6C00ABBDEF /* hb-fallback-shape.cc */; };
-		86F1D51B2460DD6C00ABBDEF /* hb-ot-tag.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DD2460DD6C00ABBDEF /* hb-ot-tag.cc */; };
-		86F1D51C2460DD6C00ABBDEF /* hb-ot-math.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DE2460DD6C00ABBDEF /* hb-ot-math.cc */; };
-		86F1D51D2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DF2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc */; };
-		86F1D51E2460DD6C00ABBDEF /* hb-ft.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E02460DD6C00ABBDEF /* hb-ft.cc */; };
-		86F1D51F2460DD6C00ABBDEF /* hb-subset-plan.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E12460DD6C00ABBDEF /* hb-subset-plan.cc */; };
-		86F1D5202460DD6C00ABBDEF /* hb-draw.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E22460DD6C00ABBDEF /* hb-draw.cc */; };
-		86F1D5212460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E32460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc */; };
-		86F1D5222460DD6C00ABBDEF /* hb-aat-layout.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E42460DD6C00ABBDEF /* hb-aat-layout.cc */; };
-		86F1D5232460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E52460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc */; };
-		86F1D5242460DD6C00ABBDEF /* hb-buffer-serialize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E62460DD6C00ABBDEF /* hb-buffer-serialize.cc */; };
-		86F1D5262460DD6C00ABBDEF /* hb-static.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E82460DD6C00ABBDEF /* hb-static.cc */; };
-		86F1D5272460DD6C00ABBDEF /* hb-unicode.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E92460DD6C00ABBDEF /* hb-unicode.cc */; };
-		86F1D5282460DD6C00ABBDEF /* hb-subset-cff1.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4EA2460DD6C00ABBDEF /* hb-subset-cff1.cc */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2B6B445C29001ACD002929A9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 86A4115F242B99DE00E9F637 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B6B445529001ACD002929A9;
+			remoteInfo = TextLayout;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2B6B446029001ACD002929A9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2B6B445F29001ACD002929A9 /* TextLayout.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		2B6B43CD28FFA804002929A9 /* CGFontToFontData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CGFontToFontData.h; sourceTree = "<group>"; };
-		2B6B43CE28FFA804002929A9 /* CGFontToFontData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CGFontToFontData.m; sourceTree = "<group>"; };
-		2B6B43D028FFAE86002929A9 /* RTOFontManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOFontManager.h; sourceTree = "<group>"; };
-		2B6B43D128FFAE86002929A9 /* RTOFontManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOFontManager.m; sourceTree = "<group>"; };
+		2B6B445629001ACD002929A9 /* TextLayout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TextLayout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B6B445829001ACD002929A9 /* TextLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextLayout.h; sourceTree = "<group>"; };
+		2B6B445929001ACD002929A9 /* TextLayout.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = TextLayout.docc; sourceTree = "<group>"; };
+		2B6B449D29001E7C002929A9 /* RTOTXTWorker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = RTOTXTWorker.c; sourceTree = "<group>"; };
+		2B6B449E29001E7C002929A9 /* FileWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWrapper.h; sourceTree = "<group>"; };
+		2B6B449F29001E7C002929A9 /* FileWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWrapper.m; sourceTree = "<group>"; };
+		2B6B44A029001E7C002929A9 /* RTOTXTWorker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTOTXTWorker.h; sourceTree = "<group>"; };
+		2B6B44A129001E7C002929A9 /* TXTUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TXTUtil.c; sourceTree = "<group>"; };
+		2B6B44A229001E7D002929A9 /* TXTUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXTUtil.h; sourceTree = "<group>"; };
+		2B6B44A929001F4F002929A9 /* RTOFontManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTOFontManager.h; sourceTree = "<group>"; };
+		2B6B44AA29001F4F002929A9 /* RTOFontManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTOFontManager.m; sourceTree = "<group>"; };
+		2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGFontToFontData.h; sourceTree = "<group>"; };
+		2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGFontToFontData.m; sourceTree = "<group>"; };
 		2C1F116CF6E15399E6BA649C /* Pods-RTOReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RTOReader.debug.xcconfig"; path = "Target Support Files/Pods-RTOReader/Pods-RTOReader.debug.xcconfig"; sourceTree = "<group>"; };
 		867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "站酷庆科黄油体.ttf"; sourceTree = "<group>"; };
 		867BC4FB26AB199100AC154D /* GMenuViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMenuViewContainer.h; sourceTree = "<group>"; };
@@ -104,10 +147,6 @@
 		867BC50426AB199100AC154D /* GMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMenuController.h; sourceTree = "<group>"; };
 		867BC50526AB199100AC154D /* GMenuControllerHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMenuControllerHeader.h; sourceTree = "<group>"; };
 		867BC50626AB199100AC154D /* GMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GMenuController.m; sourceTree = "<group>"; };
-		867DF7582678CE91004C36CA /* RTOTXTWorker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOTXTWorker.h; sourceTree = "<group>"; };
-		867DF7592678CE91004C36CA /* RTOTXTWorker.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RTOTXTWorker.c; sourceTree = "<group>"; };
-		868C4746242ED2AC00C84B88 /* FileWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWrapper.h; sourceTree = "<group>"; };
-		868C474B242ED2AC00C84B88 /* FileWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWrapper.m; sourceTree = "<group>"; };
 		8693AC3C2667D5EE00773140 /* RTOReadView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOReadView.h; sourceTree = "<group>"; };
 		8693AC3D2667D5EE00773140 /* RTOReadView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOReadView.m; sourceTree = "<group>"; };
 		869DCED72690A70800986E6D /* yitian1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = yitian1.txt; sourceTree = "<group>"; };
@@ -121,8 +160,6 @@
 		86A41176242B99E000E9F637 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		86A4117B242B99E000E9F637 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		86A4117C242B99E000E9F637 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		86E3A777272D7235002F5DDB /* TXTUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TXTUtil.h; sourceTree = "<group>"; };
-		86E3A778272D7235002F5DDB /* TXTUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TXTUtil.c; sourceTree = "<group>"; };
 		86F1D4AD2460DD6A00ABBDEF /* hb-ot-shape-complex-hebrew.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-hebrew.cc"; path = "harfbuzz/src/hb-ot-shape-complex-hebrew.cc"; sourceTree = "<group>"; };
 		86F1D4AE2460DD6A00ABBDEF /* hb-ucd.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ucd.cc"; path = "harfbuzz/src/hb-ucd.cc"; sourceTree = "<group>"; };
 		86F1D4AF2460DD6A00ABBDEF /* hb-buffer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-buffer.cc"; path = "harfbuzz/src/hb-buffer.cc"; sourceTree = "<group>"; };
@@ -184,24 +221,56 @@
 		86F1D52C2460F23F00ABBDEF /* RTOReader-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RTOReader-Prefix.pch"; sourceTree = "<group>"; };
 		9FB240430C4306B4C593811D /* libPods-RTOReader.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RTOReader.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2BA8279EBBC720B3E3E8B54 /* Pods-RTOReader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RTOReader.release.xcconfig"; path = "Target Support Files/Pods-RTOReader/Pods-RTOReader.release.xcconfig"; sourceTree = "<group>"; };
+		C3DCA42E6A349CA3B258FEED /* Pods-TextLayout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TextLayout.release.xcconfig"; path = "Target Support Files/Pods-TextLayout/Pods-TextLayout.release.xcconfig"; sourceTree = "<group>"; };
+		E375EDC9A91E25839E0C285D /* libPods-TextLayout.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TextLayout.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5A54520E4F3F70682EBC9E8 /* Pods-TextLayout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TextLayout.debug.xcconfig"; path = "Target Support Files/Pods-TextLayout/Pods-TextLayout.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2B6B445329001ACD002929A9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D92229F054BF74D702D88FC /* libPods-TextLayout.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		86A41164242B99DE00E9F637 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				4488E39591505E5257DB2838 /* libPods-RTOReader.a in Frameworks */,
+				2B6B445E29001ACD002929A9 /* TextLayout.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2B6B445729001ACD002929A9 /* TextLayout */ = {
+			isa = PBXGroup;
+			children = (
+				2B6B445829001ACD002929A9 /* TextLayout.h */,
+				2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */,
+				2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */,
+				2B6B44A929001F4F002929A9 /* RTOFontManager.h */,
+				2B6B44AA29001F4F002929A9 /* RTOFontManager.m */,
+				2B6B449E29001E7C002929A9 /* FileWrapper.h */,
+				2B6B449F29001E7C002929A9 /* FileWrapper.m */,
+				2B6B449D29001E7C002929A9 /* RTOTXTWorker.c */,
+				2B6B44A029001E7C002929A9 /* RTOTXTWorker.h */,
+				2B6B44A129001E7C002929A9 /* TXTUtil.c */,
+				2B6B44A229001E7D002929A9 /* TXTUtil.h */,
+				2B6B445929001ACD002929A9 /* TextLayout.docc */,
+			);
+			path = TextLayout;
+			sourceTree = "<group>";
+		};
 		539FAAB98CA5BC9D1A9237DF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				9FB240430C4306B4C593811D /* libPods-RTOReader.a */,
+				E375EDC9A91E25839E0C285D /* libPods-TextLayout.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -242,19 +311,6 @@
 			path = Internal;
 			sourceTree = "<group>";
 		};
-		868C4741242ED2AC00C84B88 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				867DF7582678CE91004C36CA /* RTOTXTWorker.h */,
-				867DF7592678CE91004C36CA /* RTOTXTWorker.c */,
-				868C4746242ED2AC00C84B88 /* FileWrapper.h */,
-				868C474B242ED2AC00C84B88 /* FileWrapper.m */,
-				86E3A777272D7235002F5DDB /* TXTUtil.h */,
-				86E3A778272D7235002F5DDB /* TXTUtil.c */,
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
 		868C474C242ED2AC00C84B88 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -268,6 +324,7 @@
 			isa = PBXGroup;
 			children = (
 				86A41169242B99DE00E9F637 /* RTOReader */,
+				2B6B445729001ACD002929A9 /* TextLayout */,
 				86A41168242B99DE00E9F637 /* Products */,
 				DE8FD40401311C07CA5419FF /* Pods */,
 				539FAAB98CA5BC9D1A9237DF /* Frameworks */,
@@ -278,6 +335,7 @@
 			isa = PBXGroup;
 			children = (
 				86A41167242B99DE00E9F637 /* RTOReader.app */,
+				2B6B445629001ACD002929A9 /* TextLayout.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -287,7 +345,6 @@
 			children = (
 				8645A047245DBDE70087B0C7 /* Third */,
 				868C474C242ED2AC00C84B88 /* Resources */,
-				868C4741242ED2AC00C84B88 /* Utils */,
 				86A4116A242B99DE00E9F637 /* AppDelegate.h */,
 				86A4116B242B99DE00E9F637 /* AppDelegate.m */,
 				86A41170242B99DE00E9F637 /* ViewController.h */,
@@ -296,10 +353,6 @@
 				8693AC3D2667D5EE00773140 /* RTOReadView.m */,
 				86A23420269F35C900A5CF64 /* RTOReadSelectionView.h */,
 				86A23421269F35C900A5CF64 /* RTOReadSelectionView.m */,
-				2B6B43CD28FFA804002929A9 /* CGFontToFontData.h */,
-				2B6B43CE28FFA804002929A9 /* CGFontToFontData.m */,
-				2B6B43D028FFAE86002929A9 /* RTOFontManager.h */,
-				2B6B43D128FFAE86002929A9 /* RTOFontManager.m */,
 				86A4117C242B99E000E9F637 /* main.m */,
 				86A41176242B99E000E9F637 /* Assets.xcassets */,
 				86A4117B242B99E000E9F637 /* Info.plist */,
@@ -378,13 +431,50 @@
 			children = (
 				2C1F116CF6E15399E6BA649C /* Pods-RTOReader.debug.xcconfig */,
 				A2BA8279EBBC720B3E3E8B54 /* Pods-RTOReader.release.xcconfig */,
+				F5A54520E4F3F70682EBC9E8 /* Pods-TextLayout.debug.xcconfig */,
+				C3DCA42E6A349CA3B258FEED /* Pods-TextLayout.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		2B6B445129001ACD002929A9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B6B44A429001E7D002929A9 /* FileWrapper.h in Headers */,
+				2B6B44A829001E7D002929A9 /* TXTUtil.h in Headers */,
+				2B6B44AB29001F4F002929A9 /* RTOFontManager.h in Headers */,
+				2B6B44A629001E7D002929A9 /* RTOTXTWorker.h in Headers */,
+				2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */,
+				2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		2B6B445529001ACD002929A9 /* TextLayout */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2B6B446329001ACD002929A9 /* Build configuration list for PBXNativeTarget "TextLayout" */;
+			buildPhases = (
+				98FDE0CCED826C234F2B04BD /* [CP] Check Pods Manifest.lock */,
+				2B6B445129001ACD002929A9 /* Headers */,
+				2B6B445229001ACD002929A9 /* Sources */,
+				2B6B445329001ACD002929A9 /* Frameworks */,
+				2B6B445429001ACD002929A9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TextLayout;
+			productName = TextLayout;
+			productReference = 2B6B445629001ACD002929A9 /* TextLayout.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		86A41166242B99DE00E9F637 /* RTOReader */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 86A41180242B99E000E9F637 /* Build configuration list for PBXNativeTarget "RTOReader" */;
@@ -393,10 +483,12 @@
 				86A41163242B99DE00E9F637 /* Sources */,
 				86A41164242B99DE00E9F637 /* Frameworks */,
 				86A41165242B99DE00E9F637 /* Resources */,
+				2B6B446029001ACD002929A9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2B6B445D29001ACD002929A9 /* PBXTargetDependency */,
 			);
 			name = RTOReader;
 			productName = RTOReader;
@@ -412,6 +504,9 @@
 				LastUpgradeCheck = 1110;
 				ORGANIZATIONNAME = ghy;
 				TargetAttributes = {
+					2B6B445529001ACD002929A9 = {
+						CreatedOnToolsVersion = 14.0;
+					};
 					86A41166242B99DE00E9F637 = {
 						CreatedOnToolsVersion = 11.1;
 					};
@@ -431,11 +526,19 @@
 			projectRoot = "";
 			targets = (
 				86A41166242B99DE00E9F637 /* RTOReader */,
+				2B6B445529001ACD002929A9 /* TextLayout */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		2B6B445429001ACD002929A9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		86A41165242B99DE00E9F637 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -449,6 +552,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		98FDE0CCED826C234F2B04BD /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-TextLayout-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		DEB927C5CCFBE8D89B26B75A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -474,88 +599,200 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2B6B445229001ACD002929A9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B6B447229001B0D002929A9 /* hb-graphite2.cc in Sources */,
+				2B6B448029001B6C002929A9 /* hb-ot-shape-complex-arabic.cc in Sources */,
+				2B6B449329001BA7002929A9 /* hb-shape.cc in Sources */,
+				2B6B446E29001B05002929A9 /* hb-font.cc in Sources */,
+				2B6B446D29001B02002929A9 /* hb-fallback-shape.cc in Sources */,
+				2B6B448429001B76002929A9 /* hb-ot-shape-complex-indic-table.cc in Sources */,
+				2B6B449629001BAE002929A9 /* hb-subset-cff-common.cc in Sources */,
+				2B6B44A329001E7D002929A9 /* RTOTXTWorker.c in Sources */,
+				2B6B447729001B58002929A9 /* hb-ot-color.cc in Sources */,
+				2B6B44A529001E7D002929A9 /* FileWrapper.m in Sources */,
+				2B6B449029001B9E002929A9 /* hb-ot-var.cc in Sources */,
+				2B6B446C29001AFE002929A9 /* hb-face.cc in Sources */,
+				2B6B447529001B54002929A9 /* hb-ot-cff1-table.cc in Sources */,
+				2B6B448329001B73002929A9 /* hb-ot-shape-complex-hebrew.cc in Sources */,
+				2B6B44AC29001F4F002929A9 /* RTOFontManager.m in Sources */,
+				2B6B447E29001B68002929A9 /* hb-ot-metrics.cc in Sources */,
+				2B6B446729001AF3002929A9 /* hb-buffer-serialize.cc in Sources */,
+				2B6B449B29001BBE002929A9 /* hb-ucd.cc in Sources */,
+				2B6B447B29001B60002929A9 /* hb-ot-map.cc in Sources */,
+				2B6B449129001BA0002929A9 /* hb-set.cc in Sources */,
+				2B6B447929001B5C002929A9 /* hb-ot-font.cc in Sources */,
+				2B6B447F29001B69002929A9 /* hb-ot-name.cc in Sources */,
+				2B6B448D29001B97002929A9 /* hb-ot-shape-normalize.cc in Sources */,
+				2B6B447A29001B5E002929A9 /* hb-ot-layout.cc in Sources */,
+				2B6B449C29001BC0002929A9 /* hb-unicode.cc in Sources */,
+				2B6B447D29001B65002929A9 /* hb-ot-meta.cc in Sources */,
+				2B6B446629001AF1002929A9 /* hb-blob.cc in Sources */,
+				2B6B449229001BA3002929A9 /* hb-shape-plan.cc in Sources */,
+				2B6B446A29001AF9002929A9 /* hb-directwrite.cc in Sources */,
+				2B6B44B029001FC0002929A9 /* CGFontToFontData.m in Sources */,
+				2B6B448C29001B94002929A9 /* hb-ot-shape-fallback.cc in Sources */,
+				2B6B449729001BB2002929A9 /* hb-subset-cff1.cc in Sources */,
+				2B6B449829001BB4002929A9 /* hb-subset-cff2.cc in Sources */,
+				2B6B446929001AF7002929A9 /* hb-common.cc in Sources */,
+				2B6B447429001B51002929A9 /* hb-number.cc in Sources */,
+				2B6B448729001B7D002929A9 /* hb-ot-shape-complex-myanmar.cc in Sources */,
+				2B6B448F29001B9C002929A9 /* hb-ot-tag.cc in Sources */,
+				2B6B449429001BA9002929A9 /* hb-shaper.cc in Sources */,
+				2B6B448A29001B8D002929A9 /* hb-ot-shape-complex-use.cc in Sources */,
+				2B6B449529001BAB002929A9 /* hb-static.cc in Sources */,
+				2B6B447829001B5A002929A9 /* hb-ot-face.cc in Sources */,
+				2B6B44A729001E7D002929A9 /* TXTUtil.c in Sources */,
+				2B6B448629001B7B002929A9 /* hb-ot-shape-complex-khmer.cc in Sources */,
+				2B6B448129001B6E002929A9 /* hb-ot-shape-complex-default.cc in Sources */,
+				2B6B446F29001B07002929A9 /* hb-ft.cc in Sources */,
+				2B6B447029001B09002929A9 /* hb-gdi.cc in Sources */,
+				2B6B447629001B56002929A9 /* hb-ot-cff2-table.cc in Sources */,
+				2B6B446429001AEC002929A9 /* hb-aat-layout.cc in Sources */,
+				2B6B447329001B10002929A9 /* hb-map.cc in Sources */,
+				2B6B449A29001BB9002929A9 /* hb-subset-plan.cc in Sources */,
+				2B6B445A29001ACD002929A9 /* TextLayout.docc in Sources */,
+				2B6B448229001B71002929A9 /* hb-ot-shape-complex-hangul.cc in Sources */,
+				2B6B448B29001B8F002929A9 /* hb-ot-shape-complex-vowel-constraints.cc in Sources */,
+				2B6B446529001AEF002929A9 /* hb-aat-map.cc in Sources */,
+				2B6B446B29001AFB002929A9 /* hb-draw.cc in Sources */,
+				2B6B447129001B0C002929A9 /* hb-gobject-structs.cc in Sources */,
+				2B6B449929001BB7002929A9 /* hb-subset-input.cc in Sources */,
+				2B6B448E29001B9A002929A9 /* hb-ot-shape.cc in Sources */,
+				2B6B448929001B8B002929A9 /* hb-ot-shape-complex-use-table.cc in Sources */,
+				2B6B447C29001B63002929A9 /* hb-ot-math.cc in Sources */,
+				2B6B448829001B88002929A9 /* hb-ot-shape-complex-thai.cc in Sources */,
+				2B6B448529001B79002929A9 /* hb-ot-shape-complex-indic.cc in Sources */,
+				2B6B446829001AF5002929A9 /* hb-buffer.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		86A41163242B99DE00E9F637 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86F1D4F52460DD6C00ABBDEF /* hb-ot-cff2-table.cc in Sources */,
-				862C1C4627240AA400ECD9E3 /* hb-ot-shape-complex-use.cc in Sources */,
-				2B6B43D228FFAE86002929A9 /* RTOFontManager.m in Sources */,
 				867BC50B26AB199100AC154D /* GMenuController.m in Sources */,
-				86F1D5212460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc in Sources */,
 				86A23422269F35C900A5CF64 /* RTOReadSelectionView.m in Sources */,
-				86F1D4FC2460DD6C00ABBDEF /* hb-map.cc in Sources */,
-				86F1D4F22460DD6C00ABBDEF /* hb-shape.cc in Sources */,
 				86A41172242B99DE00E9F637 /* ViewController.m in Sources */,
-				86F1D50C2460DD6C00ABBDEF /* hb-directwrite.cc in Sources */,
-				86F1D5222460DD6C00ABBDEF /* hb-aat-layout.cc in Sources */,
-				86F1D5112460DD6C00ABBDEF /* hb-face.cc in Sources */,
-				86F1D4F92460DD6C00ABBDEF /* hb-ot-var.cc in Sources */,
-				86F1D5192460DD6C00ABBDEF /* hb-ot-shape-normalize.cc in Sources */,
 				867BC50726AB199100AC154D /* GAdjustButton.m in Sources */,
-				86F1D51A2460DD6C00ABBDEF /* hb-fallback-shape.cc in Sources */,
-				86F1D50B2460DD6C00ABBDEF /* hb-subset-cff-common.cc in Sources */,
-				86F1D51F2460DD6C00ABBDEF /* hb-subset-plan.cc in Sources */,
-				2B6B43CF28FFA804002929A9 /* CGFontToFontData.m in Sources */,
-				86F1D50A2460DD6C00ABBDEF /* hb-shape-plan.cc in Sources */,
-				86F1D51E2460DD6C00ABBDEF /* hb-ft.cc in Sources */,
-				86F1D5142460DD6C00ABBDEF /* hb-set.cc in Sources */,
-				86F1D5152460DD6C00ABBDEF /* hb-ot-font.cc in Sources */,
 				86A4116C242B99DE00E9F637 /* AppDelegate.m in Sources */,
 				867BC50826AB199100AC154D /* GMenuDefaultView.m in Sources */,
-				86F1D5282460DD6C00ABBDEF /* hb-subset-cff1.cc in Sources */,
-				86F1D4FF2460DD6C00ABBDEF /* hb-ot-name.cc in Sources */,
-				86F1D5262460DD6C00ABBDEF /* hb-static.cc in Sources */,
-				86F1D5072460DD6C00ABBDEF /* hb-subset-input.cc in Sources */,
-				86F1D5132460DD6C00ABBDEF /* hb-graphite2.cc in Sources */,
-				86F1D51C2460DD6C00ABBDEF /* hb-ot-math.cc in Sources */,
 				86A4117D242B99E000E9F637 /* main.m in Sources */,
-				86F1D50D2460DD6C00ABBDEF /* hb-ot-meta.cc in Sources */,
-				86F1D51D2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc in Sources */,
-				86F1D4FA2460DD6C00ABBDEF /* hb-ot-shape-complex-indic-table.cc in Sources */,
-				867DF75A2678CE91004C36CA /* RTOTXTWorker.c in Sources */,
-				86F1D4FB2460DD6C00ABBDEF /* hb-ot-shape-fallback.cc in Sources */,
-				86F1D5092460DD6C00ABBDEF /* hb-ot-metrics.cc in Sources */,
-				862C1C47272428C900ECD9E3 /* hb-gdi.cc in Sources */,
-				86E3A779272D7235002F5DDB /* TXTUtil.c in Sources */,
-				86F1D5202460DD6C00ABBDEF /* hb-draw.cc in Sources */,
-				86F1D5042460DD6C00ABBDEF /* hb-ot-shape-complex-default.cc in Sources */,
-				86F1D5082460DD6C00ABBDEF /* hb-font.cc in Sources */,
-				86F1D5172460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc in Sources */,
-				86F1D5182460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc in Sources */,
-				86F1D4F42460DD6C00ABBDEF /* hb-common.cc in Sources */,
-				86F1D5122460DD6C00ABBDEF /* hb-shaper.cc in Sources */,
-				86F1D5242460DD6C00ABBDEF /* hb-buffer-serialize.cc in Sources */,
-				86F1D4EB2460DD6C00ABBDEF /* hb-ot-shape-complex-hebrew.cc in Sources */,
-				86F1D4EC2460DD6C00ABBDEF /* hb-ucd.cc in Sources */,
-				86F1D4F32460DD6C00ABBDEF /* hb-ot-shape-complex-myanmar.cc in Sources */,
 				867BC50A26AB199100AC154D /* GMenuViewContainer.m in Sources */,
-				86F1D4F02460DD6C00ABBDEF /* hb-ot-shape-complex-hangul.cc in Sources */,
 				867BC50926AB199100AC154D /* GMenuEffectsWindow.m in Sources */,
-				86F1D4EE2460DD6C00ABBDEF /* hb-blob.cc in Sources */,
-				86F1D5062460DD6C00ABBDEF /* hb-ot-color.cc in Sources */,
-				86F1D5002460DD6C00ABBDEF /* hb-ot-face.cc in Sources */,
-				86F1D5022460DD6C00ABBDEF /* hb-subset-cff2.cc in Sources */,
 				8693AC3E2667D5EE00773140 /* RTOReadView.m in Sources */,
-				86F1D5012460DD6C00ABBDEF /* hb-gobject-structs.cc in Sources */,
-				86F1D5272460DD6C00ABBDEF /* hb-unicode.cc in Sources */,
-				86F1D4F62460DD6C00ABBDEF /* hb-ot-map.cc in Sources */,
-				86F1D51B2460DD6C00ABBDEF /* hb-ot-tag.cc in Sources */,
-				86F1D50F2460DD6C00ABBDEF /* hb-number.cc in Sources */,
-				86F1D4FD2460DD6C00ABBDEF /* hb-ot-cff1-table.cc in Sources */,
-				86F1D5102460DD6C00ABBDEF /* hb-aat-map.cc in Sources */,
-				86F1D4ED2460DD6C00ABBDEF /* hb-buffer.cc in Sources */,
-				868C4754242ED2AC00C84B88 /* FileWrapper.m in Sources */,
-				86F1D4F72460DD6C00ABBDEF /* hb-ot-shape.cc in Sources */,
-				86F1D5232460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc in Sources */,
-				86F1D4EF2460DD6C00ABBDEF /* hb-ot-layout.cc in Sources */,
-				86F1D50E2460DD6C00ABBDEF /* hb-ot-shape-complex-khmer.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		2B6B445D29001ACD002929A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2B6B445529001ACD002929A9 /* TextLayout */;
+			targetProxy = 2B6B445C29001ACD002929A9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		2B6B446129001ACD002929A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F5A54520E4F3F70682EBC9E8 /* Pods-TextLayout.debug.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"HAVE_FREETYPE=1",
+					"HAVE_FALLBACK=1",
+					HB_NO_OPEN,
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/freetype\"",
+					"\"$(PODS_ROOT)/freetype/include\"",
+					"\"$(SRCROOT)/RTOReader/Third/harfbuzz/src\"",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 ghy. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ghy.TextLayout;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		2B6B446229001ACD002929A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C3DCA42E6A349CA3B258FEED /* Pods-TextLayout.release.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"COCOAPODS=1",
+					"HAVE_FREETYPE=1",
+					"HAVE_FALLBACK=1",
+					HB_NO_OPEN,
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/freetype\"",
+					"\"$(PODS_ROOT)/freetype/include\"",
+					"\"$(SRCROOT)/RTOReader/Third/harfbuzz/src\"",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 ghy. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ghy.TextLayout;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		86A4117E242B99E000E9F637 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -746,6 +983,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2B6B446329001ACD002929A9 /* Build configuration list for PBXNativeTarget "TextLayout" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B6B446129001ACD002929A9 /* Debug */,
+				2B6B446229001ACD002929A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		86A41162242B99DE00E9F637 /* Build configuration list for PBXProject "RTOReader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

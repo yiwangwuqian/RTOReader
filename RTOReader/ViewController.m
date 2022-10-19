@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import "RTOReadView.h"
-#import "RTOFontManager.h"
+#import <TextLayout/RTOFontManager.h>
 
 @interface ViewController ()
 @property(nonatomic)RTOReadView*    readView;

@@ -8,12 +8,12 @@
 
 #import "RTOReadView.h"
 
-#import "RTOTXTWorker.h"
-#import "FileWrapper.h"
+#import <TextLayout/RTOTXTWorker.h>
+#import <TextLayout/FileWrapper.h>
+#import <TextLayout/TXTUtil.h>
 
 #import "RTOReadSelectionView.h"
 #import "GMenuController.h"
-#include "TXTUtil.h"
 
 @interface RTOReadView()
 
