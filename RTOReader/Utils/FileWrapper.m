@@ -33,6 +33,16 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import "RTOFontManager.h"
+
+const char *GetDefaultFontPath(void)
+{
+#ifdef __APPLE__
+    return [[RTOFontManager defaultFontPath] UTF8String];
+#else
+    return NULL;
+#endif
+}
 
 ///
 /// \brief Given a fileName, convert into a path that can be used to open from

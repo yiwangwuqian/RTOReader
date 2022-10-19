@@ -42,6 +42,8 @@
 extern "C" {
 #endif
 
+const char *GetDefaultFontPath(void);
+
 const char *GetBundleFileName ( const char *fileName );
 
 void GetScreenSize(float* width,float* height);

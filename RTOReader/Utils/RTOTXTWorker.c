@@ -181,7 +181,7 @@ void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height)
     FT_Error      error;
     
     error = FT_Init_FreeType( &library );
-    const char *fontPath = GetBundleFileName("站酷庆科黄油体.ttf");
+    const char *fontPath = GetDefaultFontPath();
     if (!error) {
         hb_buffer_t *buf;
         buf = hb_buffer_create();

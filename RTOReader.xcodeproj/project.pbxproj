@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B6B43CF28FFA804002929A9 /* CGFontToFontData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B43CE28FFA804002929A9 /* CGFontToFontData.m */; };
+		2B6B43D228FFAE86002929A9 /* RTOFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B43D128FFAE86002929A9 /* RTOFontManager.m */; };
 		4488E39591505E5257DB2838 /* libPods-RTOReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB240430C4306B4C593811D /* libPods-RTOReader.a */; };
 		862C1C4627240AA400ECD9E3 /* hb-ot-shape-complex-use.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C52460DD6B00ABBDEF /* hb-ot-shape-complex-use.cc */; };
 		862C1C47272428C900ECD9E3 /* hb-gdi.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BA2460DD6B00ABBDEF /* hb-gdi.cc */; };
@@ -17,7 +19,6 @@
 		867BC50A26AB199100AC154D /* GMenuViewContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC50126AB199100AC154D /* GMenuViewContainer.m */; };
 		867BC50B26AB199100AC154D /* GMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC50626AB199100AC154D /* GMenuController.m */; };
 		867DF75A2678CE91004C36CA /* RTOTXTWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = 867DF7592678CE91004C36CA /* RTOTXTWorker.c */; };
-		868C4753242ED2AC00C84B88 /* esUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 868C474A242ED2AC00C84B88 /* esUtil.c */; };
 		868C4754242ED2AC00C84B88 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 868C474B242ED2AC00C84B88 /* FileWrapper.m */; };
 		8693AC3E2667D5EE00773140 /* RTOReadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8693AC3D2667D5EE00773140 /* RTOReadView.m */; };
 		869DCED82690A70800986E6D /* yitian1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 869DCED72690A70800986E6D /* yitian1.txt */; };
@@ -85,6 +86,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B6B43CD28FFA804002929A9 /* CGFontToFontData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CGFontToFontData.h; sourceTree = "<group>"; };
+		2B6B43CE28FFA804002929A9 /* CGFontToFontData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CGFontToFontData.m; sourceTree = "<group>"; };
+		2B6B43D028FFAE86002929A9 /* RTOFontManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOFontManager.h; sourceTree = "<group>"; };
+		2B6B43D128FFAE86002929A9 /* RTOFontManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOFontManager.m; sourceTree = "<group>"; };
 		2C1F116CF6E15399E6BA649C /* Pods-RTOReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RTOReader.debug.xcconfig"; path = "Target Support Files/Pods-RTOReader/Pods-RTOReader.debug.xcconfig"; sourceTree = "<group>"; };
 		867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "站酷庆科黄油体.ttf"; sourceTree = "<group>"; };
 		867BC4FB26AB199100AC154D /* GMenuViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMenuViewContainer.h; sourceTree = "<group>"; };
@@ -101,9 +106,7 @@
 		867BC50626AB199100AC154D /* GMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GMenuController.m; sourceTree = "<group>"; };
 		867DF7582678CE91004C36CA /* RTOTXTWorker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOTXTWorker.h; sourceTree = "<group>"; };
 		867DF7592678CE91004C36CA /* RTOTXTWorker.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RTOTXTWorker.c; sourceTree = "<group>"; };
-		868C4744242ED2AC00C84B88 /* esUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = esUtil.h; sourceTree = "<group>"; };
 		868C4746242ED2AC00C84B88 /* FileWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWrapper.h; sourceTree = "<group>"; };
-		868C474A242ED2AC00C84B88 /* esUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = esUtil.c; sourceTree = "<group>"; };
 		868C474B242ED2AC00C84B88 /* FileWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWrapper.m; sourceTree = "<group>"; };
 		8693AC3C2667D5EE00773140 /* RTOReadView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOReadView.h; sourceTree = "<group>"; };
 		8693AC3D2667D5EE00773140 /* RTOReadView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOReadView.m; sourceTree = "<group>"; };
@@ -242,8 +245,6 @@
 		868C4741242ED2AC00C84B88 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				868C4744242ED2AC00C84B88 /* esUtil.h */,
-				868C474A242ED2AC00C84B88 /* esUtil.c */,
 				867DF7582678CE91004C36CA /* RTOTXTWorker.h */,
 				867DF7592678CE91004C36CA /* RTOTXTWorker.c */,
 				868C4746242ED2AC00C84B88 /* FileWrapper.h */,
@@ -295,6 +296,10 @@
 				8693AC3D2667D5EE00773140 /* RTOReadView.m */,
 				86A23420269F35C900A5CF64 /* RTOReadSelectionView.h */,
 				86A23421269F35C900A5CF64 /* RTOReadSelectionView.m */,
+				2B6B43CD28FFA804002929A9 /* CGFontToFontData.h */,
+				2B6B43CE28FFA804002929A9 /* CGFontToFontData.m */,
+				2B6B43D028FFAE86002929A9 /* RTOFontManager.h */,
+				2B6B43D128FFAE86002929A9 /* RTOFontManager.m */,
 				86A4117C242B99E000E9F637 /* main.m */,
 				86A41176242B99E000E9F637 /* Assets.xcassets */,
 				86A4117B242B99E000E9F637 /* Info.plist */,
@@ -475,6 +480,7 @@
 			files = (
 				86F1D4F52460DD6C00ABBDEF /* hb-ot-cff2-table.cc in Sources */,
 				862C1C4627240AA400ECD9E3 /* hb-ot-shape-complex-use.cc in Sources */,
+				2B6B43D228FFAE86002929A9 /* RTOFontManager.m in Sources */,
 				867BC50B26AB199100AC154D /* GMenuController.m in Sources */,
 				86F1D5212460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc in Sources */,
 				86A23422269F35C900A5CF64 /* RTOReadSelectionView.m in Sources */,
@@ -490,6 +496,7 @@
 				86F1D51A2460DD6C00ABBDEF /* hb-fallback-shape.cc in Sources */,
 				86F1D50B2460DD6C00ABBDEF /* hb-subset-cff-common.cc in Sources */,
 				86F1D51F2460DD6C00ABBDEF /* hb-subset-plan.cc in Sources */,
+				2B6B43CF28FFA804002929A9 /* CGFontToFontData.m in Sources */,
 				86F1D50A2460DD6C00ABBDEF /* hb-shape-plan.cc in Sources */,
 				86F1D51E2460DD6C00ABBDEF /* hb-ft.cc in Sources */,
 				86F1D5142460DD6C00ABBDEF /* hb-set.cc in Sources */,
@@ -530,7 +537,6 @@
 				86F1D5002460DD6C00ABBDEF /* hb-ot-face.cc in Sources */,
 				86F1D5022460DD6C00ABBDEF /* hb-subset-cff2.cc in Sources */,
 				8693AC3E2667D5EE00773140 /* RTOReadView.m in Sources */,
-				868C4753242ED2AC00C84B88 /* esUtil.c in Sources */,
 				86F1D5012460DD6C00ABBDEF /* hb-gobject-structs.cc in Sources */,
 				86F1D5272460DD6C00ABBDEF /* hb-unicode.cc in Sources */,
 				86F1D4F62460DD6C00ABBDEF /* hb-ot-map.cc in Sources */,
