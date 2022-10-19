@@ -1,5 +1,5 @@
 //
-//  RTOFontManager.h
+//  TLFontManager.h
 //  RTOReader
 //
 //  Created by guohy on 2022/10/19.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RTOFontManager : NSObject
+@interface TLFontManager : NSObject
 
 + (void)configSystemFont;
 

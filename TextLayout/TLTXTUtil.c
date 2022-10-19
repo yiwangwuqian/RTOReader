@@ -1,12 +1,12 @@
 //
-//  TXTUtil.c
+//  TLTXTUtil.c
 //  RTOReader
 //
 //  Created by ghy on 2021/10/30.
 //  Copyright © 2021 ghy. All rights reserved.
 //
 
-#include "TXTUtil.h"
+#include "TLTXTUtil.h"
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/mman.h>

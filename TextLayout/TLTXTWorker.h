@@ -1,13 +1,13 @@
 //
-//  RTOTXTWorker.h
+//  TLTXTWorker.h
 //  RTOReader
 //
 //  Created by ghy on 2021/6/15.
 //  Copyright © 2021 ghy. All rights reserved.
 //
 
-#ifndef RTOTXTWorker_h
-#define RTOTXTWorker_h
+#ifndef TLTXTWorker_h
+#define TLTXTWorker_h
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -17,21 +17,21 @@
 extern "C" {
 #endif
 
-typedef struct RTOTXTWorker_* RTOTXTWorker;
+typedef struct TLTXTWorker_* TLTXTWorker;
 
-void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height);
+void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height);
 
-uint8_t *txt_worker_bitmap_next_page(RTOTXTWorker *worker);
+uint8_t *txt_worker_bitmap_next_page(TLTXTWorker *worker);
 
-uint8_t *txt_worker_bitmap_previous_page(RTOTXTWorker *worker);
+uint8_t *txt_worker_bitmap_previous_page(TLTXTWorker *worker);
 
 typedef struct RTOTXTRect_* RTOTXTRect;
 
 void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy);
 
-uint32_t* txt_worker_codepoint_in_range(RTOTXTWorker *worker, size_t start, size_t end, size_t *count);
+uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_t end, size_t *count);
 
-uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,RTOTXTRect* contains);
+uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,RTOTXTRect* contains);
 
 typedef struct RTOTXTRectArray_* RTOTXTRectArray;
 
@@ -42,7 +42,7 @@ typedef struct RTOTXTRectArray_* RTOTXTRectArray;
 /// @param sy 开始y
 /// @param ex 结束x
 /// @param ey 结束y
-void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index);
+void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index);
 
 /// 获取元素数量
 /// @param rect_array 数组对象
@@ -61,4 +61,4 @@ void txt_rect_array_destroy(RTOTXTRectArray *array);
 }
 #endif
 
-#endif /* RTOTXTWorker_h */
+#endif /* TLTXTWorker_h */

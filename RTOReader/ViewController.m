@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import "RTOReadView.h"
-#import <TextLayout/RTOFontManager.h>
+#import <TextLayout/TLFontManager.h>
 
 @interface ViewController ()
 @property(nonatomic)RTOReadView*    readView;
@@ -22,10 +22,10 @@
     
     self.view.backgroundColor = [UIColor lightGrayColor];
     
-    NSString *fontPath = [RTOFontManager systemFontPath];
+    NSString *fontPath = [TLFontManager systemFontPath];
     if (![[NSFileManager defaultManager] fileExistsAtPath:fontPath]) {
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [RTOFontManager configSystemFont];
+            [TLFontManager configSystemFont];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self setupReadView];
             });

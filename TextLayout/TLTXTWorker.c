@@ -1,12 +1,12 @@
 //
-//  RTOTXTWorker.c
+//  TLTXTWorker.c
 //  RTOReader
 //
 //  Created by ghy on 2021/6/15.
 //  Copyright © 2021 ghy. All rights reserved.
 //
 
-#include "RTOTXTWorker.h"
+#include "TLTXTWorker.h"
 #include "FileWrapper.h"
 
 #include <ft2build.h>
@@ -16,7 +16,7 @@
 
 typedef struct RTOTXTRowRectArray_* RTOTXTRowRectArray;
 
-struct RTOTXTWorker_ {
+struct TLTXTWorker_ {
     char *content;
     size_t utf8_length;
     
@@ -159,12 +159,12 @@ void txt_row_rect_array_destroy(RTOTXTRowRectArray *array)
 
 //------
 
-bool txt_worker_previous_able(RTOTXTWorker *worker)
+bool txt_worker_previous_able(TLTXTWorker *worker)
 {
     return false;
 }
 
-bool txt_worker_next_able(RTOTXTWorker *worker)
+bool txt_worker_next_able(TLTXTWorker *worker)
 {
     if ((*worker)->utf8_length == (*worker)->cursor) {
         return false;
@@ -173,7 +173,7 @@ bool txt_worker_next_able(RTOTXTWorker *worker)
     return true;
 }
 
-void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height)
+void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
 {
     FT_Library    library;
     FT_Face       face;
@@ -194,7 +194,7 @@ void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height)
         error = FT_New_Face( library, fontPath, 0, &face );/* create face object */
         if (!error) {
             
-            RTOTXTWorker object = calloc(1, sizeof(struct RTOTXTWorker_));
+            TLTXTWorker object = calloc(1, sizeof(struct TLTXTWorker_));
             object->library = &library;
             object->face = face;
             
@@ -229,7 +229,7 @@ void txt_worker_create(RTOTXTWorker *worker, char *text, int width, int height)
     }
 }
 
-uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
+uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
 {
     if (!txt_worker_next_able(worker)) {
         return NULL;
@@ -388,7 +388,7 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
 }
 
 
-uint8_t *txt_worker_bitmap_next_page(RTOTXTWorker *worker)
+uint8_t *txt_worker_bitmap_next_page(TLTXTWorker *worker)
 {
     size_t page = (*worker)->current_page;
     if ((*worker)->page_cursors[page] == (*worker)->utf8_length) {
@@ -399,7 +399,7 @@ uint8_t *txt_worker_bitmap_next_page(RTOTXTWorker *worker)
     return txt_worker_bitmap_one_page(worker, (*worker)->current_page);
 }
 
-uint8_t *txt_worker_bitmap_previous_page(RTOTXTWorker *worker)
+uint8_t *txt_worker_bitmap_previous_page(TLTXTWorker *worker)
 {
     size_t page = (*worker)->current_page;
     if (page == 0) {
@@ -419,7 +419,7 @@ void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy)
     }
 }
 
-uint32_t* txt_worker_codepoint_in_range(RTOTXTWorker *worker, size_t start, size_t end, size_t *count)
+uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_t end, size_t *count)
 {
     size_t length = end - start + 1;
     if (length > 0) {
@@ -438,7 +438,7 @@ uint32_t* txt_worker_codepoint_in_range(RTOTXTWorker *worker, size_t start, size
 /// @param x x坐标
 /// @param y y坐标
 /// @param contains 坐标包含在文字区域内
-uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,RTOTXTRect* contains)
+uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,RTOTXTRect* contains)
 {
     RTOTXTRowRectArray array = (*worker)->array;
     uint32_t result = 0;
@@ -477,7 +477,7 @@ uint32_t txt_worker_codepoint_at(RTOTXTWorker *worker,int x,int y,RTOTXTRect* co
     return result;
 }
 
-void txt_worker_rect_array_from(RTOTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index)
+void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index)
 {
     RTOTXTRowRectArray array = (*worker)->array;
     

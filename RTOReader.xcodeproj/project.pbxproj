@@ -68,14 +68,14 @@
 		2B6B449A29001BB9002929A9 /* hb-subset-plan.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E12460DD6C00ABBDEF /* hb-subset-plan.cc */; };
 		2B6B449B29001BBE002929A9 /* hb-ucd.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AE2460DD6A00ABBDEF /* hb-ucd.cc */; };
 		2B6B449C29001BC0002929A9 /* hb-unicode.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E92460DD6C00ABBDEF /* hb-unicode.cc */; };
-		2B6B44A329001E7D002929A9 /* RTOTXTWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B449D29001E7C002929A9 /* RTOTXTWorker.c */; };
+		2B6B44A329001E7D002929A9 /* TLTXTWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B449D29001E7C002929A9 /* TLTXTWorker.c */; };
 		2B6B44A429001E7D002929A9 /* FileWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B449E29001E7C002929A9 /* FileWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6B44A529001E7D002929A9 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B449F29001E7C002929A9 /* FileWrapper.m */; };
-		2B6B44A629001E7D002929A9 /* RTOTXTWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A029001E7C002929A9 /* RTOTXTWorker.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B6B44A729001E7D002929A9 /* TXTUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44A129001E7C002929A9 /* TXTUtil.c */; };
-		2B6B44A829001E7D002929A9 /* TXTUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A229001E7D002929A9 /* TXTUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B6B44AB29001F4F002929A9 /* RTOFontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A929001F4F002929A9 /* RTOFontManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2B6B44AC29001F4F002929A9 /* RTOFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AA29001F4F002929A9 /* RTOFontManager.m */; };
+		2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A029001E7C002929A9 /* TLTXTWorker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B44A729001E7D002929A9 /* TLTXTUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44A129001E7C002929A9 /* TLTXTUtil.c */; };
+		2B6B44A829001E7D002929A9 /* TLTXTUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A229001E7D002929A9 /* TLTXTUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B44AB29001F4F002929A9 /* TLFontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A929001F4F002929A9 /* TLFontManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B44AC29001F4F002929A9 /* TLFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AA29001F4F002929A9 /* TLFontManager.m */; };
 		2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */; };
 		2B6B44B029001FC0002929A9 /* CGFontToFontData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */; };
 		2D92229F054BF74D702D88FC /* libPods-TextLayout.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E375EDC9A91E25839E0C285D /* libPods-TextLayout.a */; };
@@ -123,14 +123,14 @@
 		2B6B445629001ACD002929A9 /* TextLayout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TextLayout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B6B445829001ACD002929A9 /* TextLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextLayout.h; sourceTree = "<group>"; };
 		2B6B445929001ACD002929A9 /* TextLayout.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = TextLayout.docc; sourceTree = "<group>"; };
-		2B6B449D29001E7C002929A9 /* RTOTXTWorker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = RTOTXTWorker.c; sourceTree = "<group>"; };
+		2B6B449D29001E7C002929A9 /* TLTXTWorker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TLTXTWorker.c; sourceTree = "<group>"; };
 		2B6B449E29001E7C002929A9 /* FileWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWrapper.h; sourceTree = "<group>"; };
 		2B6B449F29001E7C002929A9 /* FileWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWrapper.m; sourceTree = "<group>"; };
-		2B6B44A029001E7C002929A9 /* RTOTXTWorker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTOTXTWorker.h; sourceTree = "<group>"; };
-		2B6B44A129001E7C002929A9 /* TXTUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TXTUtil.c; sourceTree = "<group>"; };
-		2B6B44A229001E7D002929A9 /* TXTUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TXTUtil.h; sourceTree = "<group>"; };
-		2B6B44A929001F4F002929A9 /* RTOFontManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTOFontManager.h; sourceTree = "<group>"; };
-		2B6B44AA29001F4F002929A9 /* RTOFontManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTOFontManager.m; sourceTree = "<group>"; };
+		2B6B44A029001E7C002929A9 /* TLTXTWorker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLTXTWorker.h; sourceTree = "<group>"; };
+		2B6B44A129001E7C002929A9 /* TLTXTUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TLTXTUtil.c; sourceTree = "<group>"; };
+		2B6B44A229001E7D002929A9 /* TLTXTUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLTXTUtil.h; sourceTree = "<group>"; };
+		2B6B44A929001F4F002929A9 /* TLFontManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLFontManager.h; sourceTree = "<group>"; };
+		2B6B44AA29001F4F002929A9 /* TLFontManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLFontManager.m; sourceTree = "<group>"; };
 		2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGFontToFontData.h; sourceTree = "<group>"; };
 		2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGFontToFontData.m; sourceTree = "<group>"; };
 		2C1F116CF6E15399E6BA649C /* Pods-RTOReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RTOReader.debug.xcconfig"; path = "Target Support Files/Pods-RTOReader/Pods-RTOReader.debug.xcconfig"; sourceTree = "<group>"; };
@@ -253,14 +253,14 @@
 				2B6B445829001ACD002929A9 /* TextLayout.h */,
 				2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */,
 				2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */,
-				2B6B44A929001F4F002929A9 /* RTOFontManager.h */,
-				2B6B44AA29001F4F002929A9 /* RTOFontManager.m */,
+				2B6B44A929001F4F002929A9 /* TLFontManager.h */,
+				2B6B44AA29001F4F002929A9 /* TLFontManager.m */,
 				2B6B449E29001E7C002929A9 /* FileWrapper.h */,
 				2B6B449F29001E7C002929A9 /* FileWrapper.m */,
-				2B6B449D29001E7C002929A9 /* RTOTXTWorker.c */,
-				2B6B44A029001E7C002929A9 /* RTOTXTWorker.h */,
-				2B6B44A129001E7C002929A9 /* TXTUtil.c */,
-				2B6B44A229001E7D002929A9 /* TXTUtil.h */,
+				2B6B44A029001E7C002929A9 /* TLTXTWorker.h */,
+				2B6B449D29001E7C002929A9 /* TLTXTWorker.c */,
+				2B6B44A229001E7D002929A9 /* TLTXTUtil.h */,
+				2B6B44A129001E7C002929A9 /* TLTXTUtil.c */,
 				2B6B445929001ACD002929A9 /* TextLayout.docc */,
 			);
 			path = TextLayout;
@@ -445,9 +445,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B6B44A429001E7D002929A9 /* FileWrapper.h in Headers */,
-				2B6B44A829001E7D002929A9 /* TXTUtil.h in Headers */,
-				2B6B44AB29001F4F002929A9 /* RTOFontManager.h in Headers */,
-				2B6B44A629001E7D002929A9 /* RTOTXTWorker.h in Headers */,
+				2B6B44A829001E7D002929A9 /* TLTXTUtil.h in Headers */,
+				2B6B44AB29001F4F002929A9 /* TLFontManager.h in Headers */,
+				2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */,
 				2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */,
 				2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */,
 			);
@@ -610,14 +610,14 @@
 				2B6B446D29001B02002929A9 /* hb-fallback-shape.cc in Sources */,
 				2B6B448429001B76002929A9 /* hb-ot-shape-complex-indic-table.cc in Sources */,
 				2B6B449629001BAE002929A9 /* hb-subset-cff-common.cc in Sources */,
-				2B6B44A329001E7D002929A9 /* RTOTXTWorker.c in Sources */,
+				2B6B44A329001E7D002929A9 /* TLTXTWorker.c in Sources */,
 				2B6B447729001B58002929A9 /* hb-ot-color.cc in Sources */,
 				2B6B44A529001E7D002929A9 /* FileWrapper.m in Sources */,
 				2B6B449029001B9E002929A9 /* hb-ot-var.cc in Sources */,
 				2B6B446C29001AFE002929A9 /* hb-face.cc in Sources */,
 				2B6B447529001B54002929A9 /* hb-ot-cff1-table.cc in Sources */,
 				2B6B448329001B73002929A9 /* hb-ot-shape-complex-hebrew.cc in Sources */,
-				2B6B44AC29001F4F002929A9 /* RTOFontManager.m in Sources */,
+				2B6B44AC29001F4F002929A9 /* TLFontManager.m in Sources */,
 				2B6B447E29001B68002929A9 /* hb-ot-metrics.cc in Sources */,
 				2B6B446729001AF3002929A9 /* hb-buffer-serialize.cc in Sources */,
 				2B6B449B29001BBE002929A9 /* hb-ucd.cc in Sources */,
@@ -644,7 +644,7 @@
 				2B6B448A29001B8D002929A9 /* hb-ot-shape-complex-use.cc in Sources */,
 				2B6B449529001BAB002929A9 /* hb-static.cc in Sources */,
 				2B6B447829001B5A002929A9 /* hb-ot-face.cc in Sources */,
-				2B6B44A729001E7D002929A9 /* TXTUtil.c in Sources */,
+				2B6B44A729001E7D002929A9 /* TLTXTUtil.c in Sources */,
 				2B6B448629001B7B002929A9 /* hb-ot-shape-complex-khmer.cc in Sources */,
 				2B6B448129001B6E002929A9 /* hb-ot-shape-complex-default.cc in Sources */,
 				2B6B446F29001B07002929A9 /* hb-ft.cc in Sources */,

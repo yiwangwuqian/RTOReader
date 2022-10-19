@@ -8,9 +8,9 @@
 
 #import "RTOReadView.h"
 
-#import <TextLayout/RTOTXTWorker.h>
+#import <TextLayout/TLTXTWorker.h>
 #import <TextLayout/FileWrapper.h>
-#import <TextLayout/TXTUtil.h>
+#import <TextLayout/TLTXTUtil.h>
 
 #import "RTOReadSelectionView.h"
 #import "GMenuController.h"
@@ -18,7 +18,7 @@
 @interface RTOReadView()
 
 @property(nonatomic)UIImageView*    imageView;
-@property(nonatomic)RTOTXTWorker    worker;
+@property(nonatomic)TLTXTWorker    worker;
 
 @property(nonatomic)RTOReadSelectionView*   selectionView;
 @property(nonatomic)NSNumber*               selectionSNumber;

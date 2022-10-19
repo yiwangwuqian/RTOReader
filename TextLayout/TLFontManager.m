@@ -1,5 +1,5 @@
 //
-//  RTOFontManager.m
+//  TLFontManager.m
 //  RTOReader
 //
 //  Created by guohy on 2022/10/19.
@@ -8,10 +8,10 @@
 
 #define kSystemFontName @"System.ttf"
 
-#import "RTOFontManager.h"
+#import "TLFontManager.h"
 #import "CGFontToFontData.h"
 
-@implementation RTOFontManager
+@implementation TLFontManager
 
 + (void)configSystemFont
 {

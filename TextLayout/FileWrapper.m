@@ -33,12 +33,12 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "RTOFontManager.h"
+#import "TLFontManager.h"
 
 const char *GetDefaultFontPath(void)
 {
 #ifdef __APPLE__
-    return [[RTOFontManager defaultFontPath] UTF8String];
+    return [[TLFontManager defaultFontPath] UTF8String];
 #else
     return NULL;
 #endif
