@@ -299,11 +299,18 @@ uint8_t *txt_worker_bitmap_one_page(RTOTXTWorker *worker, size_t page)
         //一个字符占位宽
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
         FT_Pos aCharHoriBearingX = face->glyph->metrics.horiBearingX/64;
-        //大于最大宽度,换行
+        /*
+         1.大于最大宽度,换行
+         2.遇到换行符,换行并继续循环
+         */
         if (typeSettingX + aCharAdvance > totalWidth){
             typeSettingX = 0;
             typeSettingY += aLineHeightMax;
             aLineHeightMax = 0;
+        } else if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
+            typeSettingX = 0;
+            typeSettingY += wholeFontHeight;
+            continue;
         }
         if (typeSettingX == 0){
             RTOTXTRectArray rect_array;
