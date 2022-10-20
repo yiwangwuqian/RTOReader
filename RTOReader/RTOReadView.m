@@ -6,6 +6,8 @@
 //  Copyright © 2021 ghy. All rights reserved.
 //
 
+#define GetTimeDeltaValue(a) [[NSDate date] timeIntervalSince1970] - [(a) timeIntervalSince1970]
+
 #import "RTOReadView.h"
 
 #import <TextLayout/TLTXTWorker.h>
@@ -171,6 +173,9 @@
 
 - (void)toNextPage
 {
+#if DEBUG
+    NSDate *date = [NSDate date];
+#endif
     CGFloat drawWidth = CGRectGetWidth(self.bounds) * [UIScreen mainScreen].scale;
     CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
     if (_worker == NULL) {
@@ -178,12 +183,35 @@
         txt_file_content([self.filePath cStringUsingEncoding:NSUTF8StringEncoding], &content, NULL);
         txt_worker_create(&_worker, content, drawWidth, drawHeight);
     }
+#if DEBUG
+    NSDate *bitmapStartDate = [NSDate date];
+#endif
     uint8_t *bitmap = txt_worker_bitmap_next_page(&_worker);
+#if DEBUG
+    NSLog(@"%s bitmap using time:%@", __func__, @(GetTimeDeltaValue(bitmapStartDate) ));
+#endif
     if (bitmap != NULL) {
-        _imageView.image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
+#if DEBUG
+        NSDate *imageStartDate = [NSDate date];
+#endif
+        UIImage *image = [[self class] imageWith:bitmap width:drawWidth height:drawHeight scale:1];
+#if DEBUG
+        NSLog(@"%s image create using time:%@", __func__, @(GetTimeDeltaValue(imageStartDate) ));
+#endif
+        
+#if DEBUG
+        NSDate *imageAssignDate = [NSDate date];
+#endif
+        _imageView.image = image;
+#if DEBUG
+        NSLog(@"%s image assign using time:%@", __func__, @( GetTimeDeltaValue(imageAssignDate) ));
+#endif
         [[self class] turnPageToNext:YES forView:_imageView];
         self.selectionView.rectArray = nil;
     }
+#if DEBUG
+    NSLog(@"%s using time:%@", __func__, @(GetTimeDeltaValue(date) ));
+#endif
 }
 
 - (void)toPreviousPage
