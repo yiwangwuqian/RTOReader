@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B2E4A022900F09700A41EEA /* TLTXTCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B2E4A002900F09700A41EEA /* TLTXTCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B2E4A032900F09700A41EEA /* TLTXTCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B2E4A012900F09700A41EEA /* TLTXTCore.m */; };
 		2B6B445A29001ACD002929A9 /* TextLayout.docc in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B445929001ACD002929A9 /* TextLayout.docc */; };
 		2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B445829001ACD002929A9 /* TextLayout.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6B445E29001ACD002929A9 /* TextLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6B445629001ACD002929A9 /* TextLayout.framework */; };
@@ -120,6 +122,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2B2E4A002900F09700A41EEA /* TLTXTCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLTXTCore.h; sourceTree = "<group>"; };
+		2B2E4A012900F09700A41EEA /* TLTXTCore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLTXTCore.m; sourceTree = "<group>"; };
 		2B6B445629001ACD002929A9 /* TextLayout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TextLayout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B6B445829001ACD002929A9 /* TextLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextLayout.h; sourceTree = "<group>"; };
 		2B6B445929001ACD002929A9 /* TextLayout.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = TextLayout.docc; sourceTree = "<group>"; };
@@ -261,6 +265,8 @@
 				2B6B449D29001E7C002929A9 /* TLTXTWorker.c */,
 				2B6B44A229001E7D002929A9 /* TLTXTUtil.h */,
 				2B6B44A129001E7C002929A9 /* TLTXTUtil.c */,
+				2B2E4A002900F09700A41EEA /* TLTXTCore.h */,
+				2B2E4A012900F09700A41EEA /* TLTXTCore.m */,
 				2B6B445929001ACD002929A9 /* TextLayout.docc */,
 			);
 			path = TextLayout;
@@ -448,6 +454,7 @@
 				2B6B44A829001E7D002929A9 /* TLTXTUtil.h in Headers */,
 				2B6B44AB29001F4F002929A9 /* TLFontManager.h in Headers */,
 				2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */,
+				2B2E4A022900F09700A41EEA /* TLTXTCore.h in Headers */,
 				2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */,
 				2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */,
 			);
@@ -618,6 +625,7 @@
 				2B6B447529001B54002929A9 /* hb-ot-cff1-table.cc in Sources */,
 				2B6B448329001B73002929A9 /* hb-ot-shape-complex-hebrew.cc in Sources */,
 				2B6B44AC29001F4F002929A9 /* TLFontManager.m in Sources */,
+				2B2E4A032900F09700A41EEA /* TLTXTCore.m in Sources */,
 				2B6B447E29001B68002929A9 /* hb-ot-metrics.cc in Sources */,
 				2B6B446729001AF3002929A9 /* hb-buffer-serialize.cc in Sources */,
 				2B6B449B29001BBE002929A9 /* hb-ucd.cc in Sources */,
