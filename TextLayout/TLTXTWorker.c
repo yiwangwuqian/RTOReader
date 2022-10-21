@@ -28,6 +28,7 @@ struct TLTXTWorker_ {
     FT_Library    library;
     FT_Face       face;
     hb_buffer_t   *buf;
+    hb_font_t     *font;
     hb_codepoint_t *codepoints;
     RTOTXTRowRectArray array;
     
@@ -81,6 +82,7 @@ void txt_rect_array_destroy(RTOTXTRectArray *array)
 {
     free((*array)->data);
     free(*array);
+    *array = NULL;
 }
 
 //------
@@ -150,7 +152,12 @@ bool txt_row_rect_array_add(struct RTOTXTRowRectArray_ *array,RTOTXTRectArray it
 
 void txt_row_rect_array_destroy(RTOTXTRowRectArray *array)
 {
-    txt_rect_array_destroy((*array)->data);
+    if ((*array)->count > 0) {
+        for (size_t i = 0; i< (*array)->count; i++) {
+            RTOTXTRectArray oneElem = (*array)->data[i];
+            txt_rect_array_destroy(&oneElem);
+        }
+    }
     free((*array)->data);
     
     free(*array);
@@ -210,6 +217,7 @@ void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
             object->codepoints = codepoints;
             
             hb_font_t *font = hb_ft_font_create_referenced(face);
+            object->font = font;
             hb_shape(font, buf, NULL, 0);
             
             object->width = width;
@@ -231,9 +239,9 @@ void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
 
 void txt_worker_destroy(TLTXTWorker *worker)
 {
-    //未写完
     TLTXTWorker object = *worker;
     hb_buffer_destroy(object->buf);
+    hb_font_destroy(object->font);
     FT_Done_Face    (object->face);
     FT_Done_FreeType(object->library);
     free(object->codepoints);
