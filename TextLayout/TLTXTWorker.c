@@ -25,7 +25,7 @@ struct TLTXTWorker_ {
     int width;
     int height;
     
-    FT_Library    *library;
+    FT_Library    library;
     FT_Face       face;
     hb_buffer_t   *buf;
     hb_codepoint_t *codepoints;
@@ -195,7 +195,7 @@ void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
         if (!error) {
             
             TLTXTWorker object = calloc(1, sizeof(struct TLTXTWorker_));
-            object->library = &library;
+            object->library = library;
             object->face = face;
             
             object->buf = buf;
@@ -227,6 +227,21 @@ void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
     } else {
         FT_Done_FreeType(library);
     }
+}
+
+void txt_worker_destroy(TLTXTWorker *worker)
+{
+    //未写完
+    TLTXTWorker object = *worker;
+    hb_buffer_destroy(object->buf);
+    FT_Done_Face    (object->face);
+    FT_Done_FreeType(object->library);
+    free(object->codepoints);
+    if (object->array != NULL) {
+        txt_row_rect_array_destroy(&object->array);
+    }
+    free(object);
+    *worker = NULL;
 }
 
 uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)

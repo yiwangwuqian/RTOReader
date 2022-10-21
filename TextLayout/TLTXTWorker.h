@@ -21,6 +21,10 @@ typedef struct TLTXTWorker_* TLTXTWorker;
 
 void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height);
 
+/// 销毁TLTXTWorker
+/// - Parameter worker: worker对象
+void txt_worker_destroy(TLTXTWorker *worker);
+
 uint8_t *txt_worker_bitmap_next_page(TLTXTWorker *worker);
 
 uint8_t *txt_worker_bitmap_previous_page(TLTXTWorker *worker);

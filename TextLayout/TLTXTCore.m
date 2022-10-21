@@ -37,6 +37,14 @@
 
 @implementation TLTXTCore
 
+- (void)dealloc
+{
+#ifdef DEBUG
+    NSLog(@"%@ dealloc", self);
+#endif
+    txt_worker_destroy(&_worker);
+}
+
 - (instancetype)init
 {
     self = [super init];

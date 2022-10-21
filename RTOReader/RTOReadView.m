@@ -15,7 +15,7 @@
 #import "RTOReadSelectionView.h"
 #import "GMenuController.h"
 
-@interface RTOReadView()<TLTXTCoreDrawDelegate>
+@interface RTOReadView()<TLTXTCoreDrawDelegate,UIScrollViewDelegate>
 
 @property(nonatomic)TLTXTCore       *txtCore;
 @property(nonatomic)UIImageView*    imageView;
@@ -23,6 +23,8 @@
 @property(nonatomic)NSNumber*               selectionSNumber;
 @property(nonatomic)NSNumber*               selectionENumber;
 
+@property(nonatomic)UIScrollView*   scrollView;
+@property(nonatomic)NSMutableArray* imageViewArray;
 @end
 
 @implementation RTOReadView
@@ -38,16 +40,25 @@
 
 - (void)setupSubviews
 {
-    if (!_imageView) {
-        _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
-        [self addSubview:_imageView];
+    if (!_scrollView) {
+        _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+//        _scrollView.pagingEnabled = YES;
+        _scrollView.decelerationRate = 0.1;
+        _scrollView.delegate = self;
+        _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        [self addSubview:_scrollView];
     }
     
-    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedView:)];
-    [self addGestureRecognizer:tapRecognizer];
-    
-    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(pannedView:)];
-    [self addGestureRecognizer:panRecognizer];
+    if (!_imageViewArray) {
+        _imageViewArray = [[NSMutableArray alloc] init];
+        
+        NSInteger totalCount = 100;
+        for (NSInteger i=0; i<totalCount; i++) {
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:_scrollView.bounds];
+            [_scrollView addSubview:imageView];
+            [_imageViewArray addObject:imageView];
+        }
+    }
 }
 
 - (UIView *)selectionView
@@ -63,10 +74,34 @@
 {
     [super layoutSubviews];
     
-    if (!CGRectEqualToRect(_imageView.frame, self.bounds)) {
-        _imageView.frame = self.bounds;
+    if (!CGRectEqualToRect(_scrollView.frame, self.bounds)) {
+        _scrollView.frame = self.bounds;
+        CGSize contentSize = self.bounds.size;
+        //横滑配置
+//        contentSize.width = contentSize.width * self.imageViewArray.count;
         
-        [self toNextPage];
+        //竖滑配置
+        contentSize.height = contentSize.height * self.imageViewArray.count;
+        _scrollView.contentSize = contentSize;
+        
+        for (NSInteger i=0; i<self.imageViewArray.count; i++) {
+            UIImageView *imageView = self.imageViewArray[i];
+            CGRect imageFrame = _scrollView.bounds;
+            //横滑配置
+//            imageFrame.origin.x = i*CGRectGetWidth(_scrollView.frame);
+            
+            //竖滑配置
+            imageFrame.origin.y = i*CGRectGetHeight(_scrollView.frame);
+            imageView.frame = imageFrame;
+        }
+        
+        if (_txtCore == nil) {
+            self.txtCore = [[TLTXTCore alloc] init];
+            self.txtCore.drawDelegate = self;
+            CGFloat drawWidth = CGRectGetWidth(self.bounds) * [UIScreen mainScreen].scale;
+            CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
+            [self.txtCore resetFilePath:self.filePath pageSize:CGSizeMake(drawWidth, drawHeight)];
+        }
     }
 }
 
@@ -174,14 +209,6 @@
     NSDate *date = [NSDate date];
 #endif
     
-    if (_txtCore == nil) {
-        self.txtCore = [[TLTXTCore alloc] init];
-        self.txtCore.drawDelegate = self;
-        CGFloat drawWidth = CGRectGetWidth(self.bounds) * [UIScreen mainScreen].scale;
-        CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
-        [self.txtCore resetFilePath:self.filePath pageSize:CGSizeMake(drawWidth, drawHeight)];
-    }
-    
     UIImage *image = _imageView.image == nil ? [self.txtCore currentPageImage] : [self.txtCore toNextPageOnce];
 #if DEBUG
     NSDate *imageAssignDate = [NSDate date];
@@ -223,8 +250,54 @@
 - (void)firstPageEnd
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self toNextPage];
+        UIImageView *imageView = self.imageViewArray.firstObject;
+        imageView.image = self.txtCore.currentPageImage;
     });
 }
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    static CGPoint lastContentOffset;
+    CGPoint contentOffset = scrollView.contentOffset;
+    
+    //横滑配置
+    /*
+    if (contentOffset.x > 0) {
+        
+        if (lastContentOffset.x < contentOffset.x) {
+            //向右
+            NSInteger index = (contentOffset.x + scrollView.frame.size.width)/scrollView.frame.size.width;
+            
+            UIImageView *imageView = self.imageViewArray[index];
+            if (imageView.image == nil) {
+                imageView.image = [self.txtCore toNextPageOnce];
+            }
+        }
+        lastContentOffset = contentOffset;
+    }
+     */
+    
+    //竖滑配置
+    if (contentOffset.y > 0) {
+        
+        if (lastContentOffset.y < contentOffset.y) {
+            //向下
+            NSInteger index = (contentOffset.y + scrollView.frame.size.height)/scrollView.frame.size.height;
+            
+            UIImageView *imageView = self.imageViewArray[index];
+            if (imageView.image == nil) {
+                imageView.image = [self.txtCore toNextPageOnce];
+            }
+        }
+        lastContentOffset = contentOffset;
+    }
+}
+
+//- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+//{
+//    if (decelerate) {
+//        [scrollView setContentOffset:scrollView.contentOffset animated:NO];
+//    }
+//}
 
 @end

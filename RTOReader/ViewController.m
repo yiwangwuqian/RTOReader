@@ -7,11 +7,12 @@
 //
 
 #import "ViewController.h"
-#import "RTOReadView.h"
-#import <TextLayout/TLFontManager.h>
+#import "RTOReadContentViewController.h"
 
 @interface ViewController ()
-@property(nonatomic)RTOReadView*    readView;
+
+@property(nonatomic)UIButton    *button;
+
 @end
 
 @implementation ViewController
@@ -22,50 +23,19 @@
     
     self.view.backgroundColor = [UIColor lightGrayColor];
     
-    NSString *fontPath = [TLFontManager systemFontPath];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:fontPath]) {
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            [TLFontManager configSystemFont];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self setupReadView];
-            });
-        });
-    } else {
-        [self setupReadView];
-    }
+    CGFloat buttonWidth = 100;
+    _button = [[UIButton alloc] initWithFrame:CGRectMake((CGRectGetWidth(self.view.bounds) - buttonWidth)/2, 100, buttonWidth, 40)];
+    [_button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    _button.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:_button];
+    [_button setTitle:@"打开" forState:UIControlStateNormal];
+    [_button addTarget:self action:@selector(pressedOpenButton) forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (void)viewDidLayoutSubviews
+- (void)pressedOpenButton
 {
-    [super viewDidLayoutSubviews];
-    
-    if (_readView && CGRectEqualToRect(_readView.frame, CGRectZero)) {
-        _readView.frame = [self readViewFrame];
-    }
-}
-
-- (void)setupReadView
-{
-    if (!_readView) {
-        _readView = [[RTOReadView alloc] init];
-        _readView.filePath = [[NSBundle mainBundle] pathForResource:@"yitian1" ofType:@"txt"];
-        [self.view addSubview:_readView];
-        _readView.frame = [self readViewFrame];
-    }
-}
-
-- (CGRect)readViewFrame
-{
-    CGFloat imageWidth = CGRectGetWidth(self.view.frame);
-    CGFloat imageHeight = CGRectGetHeight(self.view.frame);
-
-    CGRect frame = self.view.bounds;
-    if (@available(iOS 11.0, *)) {
-        UIEdgeInsets insets = self.view.window.safeAreaInsets;
-        imageHeight = CGRectGetHeight(self.view.frame) - insets.top - insets.bottom;
-        frame = CGRectMake(0, insets.top, imageWidth, imageHeight);
-    }
-    return frame;
+    RTOReadContentViewController *controller = [[RTOReadContentViewController alloc] init];
+    [self presentViewController:controller animated:YES completion:NULL];
 }
 
 @end
