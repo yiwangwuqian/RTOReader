@@ -84,6 +84,13 @@
 - (void)firstTimeDraw
 {
     dispatch_async(self.bitmapQueue, ^{
+#if DEBUG
+        NSDate *pagingDate = [NSDate date];
+#endif
+        txt_worker_data_paging(&self->_worker);
+#if DEBUG
+        NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(pagingDate) ));
+#endif
         //调用三次对应绘制3页
         for (NSInteger i=0; i<3; i++) {
             uint8_t *bitmap = txt_worker_bitmap_next_page(&self->_worker);
@@ -122,9 +129,35 @@
 
 - (UIImage *)toNextPageOnce
 {
-    [self toNextPage];
-    return self.array.lastObject;
+    if (txt_worker_next_able(&_worker)) {
+        [self toNextPage];
+        return self.array.lastObject;
+    } else {
+        return nil;
+    }
 }
+
+- (UIImage *)imageWithPageNum:(NSInteger)pageNum
+{
+    NSInteger page = txt_worker_current_page(&_worker);
+    if (pageNum < 2 && page < 3) {
+        
+        if (pageNum == 0) {
+            return self.array.firstObject;
+        } else if (pageNum == 1) {
+            return self.array[1];
+        }
+        
+    }
+    return self.array.firstObject;
+}
+
+- (NSInteger)totalPage
+{
+    return txt_worker_total_page(&_worker);
+}
+
+#pragma mark- Private methods
 
 - (void)toNextPage
 {

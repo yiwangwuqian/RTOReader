@@ -42,8 +42,8 @@
 {
     if (!_scrollView) {
         _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
-//        _scrollView.pagingEnabled = YES;
-        _scrollView.decelerationRate = 0.1;
+        _scrollView.pagingEnabled = YES;
+//        _scrollView.decelerationRate = 0.1;
         _scrollView.delegate = self;
         _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         [self addSubview:_scrollView];
@@ -78,20 +78,22 @@
         _scrollView.frame = self.bounds;
         CGSize contentSize = self.bounds.size;
         //横滑配置
-//        contentSize.width = contentSize.width * self.imageViewArray.count;
+        contentSize.width = contentSize.width * self.imageViewArray.count;
         
         //竖滑配置
-        contentSize.height = contentSize.height * self.imageViewArray.count;
+//        contentSize.height = contentSize.height * self.imageViewArray.count;
+        
         _scrollView.contentSize = contentSize;
         
         for (NSInteger i=0; i<self.imageViewArray.count; i++) {
             UIImageView *imageView = self.imageViewArray[i];
             CGRect imageFrame = _scrollView.bounds;
             //横滑配置
-//            imageFrame.origin.x = i*CGRectGetWidth(_scrollView.frame);
+            imageFrame.origin.x = i*CGRectGetWidth(_scrollView.frame);
             
             //竖滑配置
-            imageFrame.origin.y = i*CGRectGetHeight(_scrollView.frame);
+//            imageFrame.origin.y = i*CGRectGetHeight(_scrollView.frame);
+            
             imageView.frame = imageFrame;
         }
         
@@ -261,23 +263,27 @@
     CGPoint contentOffset = scrollView.contentOffset;
     
     //横滑配置
-    /*
     if (contentOffset.x > 0) {
         
         if (lastContentOffset.x < contentOffset.x) {
             //向右
-            NSInteger index = (contentOffset.x + scrollView.frame.size.width)/scrollView.frame.size.width;
+            CGFloat rightOriginX = contentOffset.x + scrollView.frame.size.width;
+            NSInteger index = rightOriginX/scrollView.frame.size.width;
+            
+            //TEST
+            NSLog(@"page no:%@ rightOriginX:%@", @(index+1) , @(rightOriginX));
+            //TEST END
             
             UIImageView *imageView = self.imageViewArray[index];
             if (imageView.image == nil) {
-                imageView.image = [self.txtCore toNextPageOnce];
+                imageView.image = index < 2 ? [self.txtCore imageWithPageNum:index] : [self.txtCore toNextPageOnce];
             }
         }
         lastContentOffset = contentOffset;
     }
-     */
     
     //竖滑配置
+    /*
     if (contentOffset.y > 0) {
         
         if (lastContentOffset.y < contentOffset.y) {
@@ -291,6 +297,7 @@
         }
         lastContentOffset = contentOffset;
     }
+    */
 }
 
 //- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate

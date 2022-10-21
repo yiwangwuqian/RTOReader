@@ -34,6 +34,8 @@ struct TLTXTWorker_ {
     
     size_t current_page;
     size_t page_cursors[100];//这里还需要修改 页数过多时会有问题
+    
+    size_t total_page;//总页数
 };
 
 //------RTOTXTRectArray_ 数组只有创建、新增元素、销毁操作
@@ -250,6 +252,125 @@ void txt_worker_destroy(TLTXTWorker *worker)
     }
     free(object);
     *worker = NULL;
+}
+
+void txt_worker_data_paging(TLTXTWorker *worker)
+{
+    /**
+     *实现目标：
+     *1.计算出来共有多少页
+     *2.同时每页有多少字，即当页内容的范围
+     */
+    
+    size_t page = 0;
+    
+    FT_Face       face = (*worker)->face;
+    FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
+    hb_buffer_t *buf = (*worker)->buf;
+    
+    unsigned int glyph_count;
+    hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
+    
+    unsigned int totalWidth=0;
+    unsigned int totalHeight=0;
+    totalWidth = (*worker)->width;
+    totalHeight = (*worker)->height;
+    
+    size_t textureBufLength = sizeof(uint8_t) * totalWidth * totalHeight * 1;
+    
+    size_t before_cursor = 0;
+    size_t now_cursor = 0;
+    
+    while ((*worker)->utf8_length != now_cursor) {
+        
+        FT_GlyphSlot  slot;
+        FT_Error      error;
+        
+        unsigned int typeSettingX=0;
+        unsigned int typeSettingY=0;
+        unsigned int aLineHeightMax=0;
+        unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
+        
+        before_cursor = now_cursor;
+        
+        for (size_t i = before_cursor; i<glyph_count; i++) {
+            
+            hb_codepoint_t glyphid = glyph_info[i].codepoint;
+            FT_Int32 flags =  FT_LOAD_DEFAULT;
+            
+            error = FT_Load_Glyph(face,
+                                  glyphid,
+                                  flags
+                                  );
+            if ( error ) {
+                printf("FT_Load_Glyph error code: %d",error);
+            }
+            
+            slot = face->glyph;
+            
+            //一个字符占宽高
+            FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;//作为宽度使用
+            FT_Pos aCharVertAdvance = face->glyph->metrics.vertAdvance/64;//作为高使用
+            
+            /*
+             1.大于最大宽度,换行
+             2.遇到换行符,换行并继续循环
+             */
+            if (typeSettingX + aCharAdvance > totalWidth){
+                typeSettingX = 0;
+                typeSettingY += aLineHeightMax;
+                aLineHeightMax = 0;
+            } else if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
+                typeSettingX = 0;
+                typeSettingY += wholeFontHeight;
+                continue;
+            }
+            
+            //大于最大高度,停止
+            if (typeSettingY + aCharVertAdvance > totalHeight){
+                now_cursor = i;
+                break;
+            }
+
+            for (unsigned int row=0; row<wholeFontHeight; row++) {
+                for (unsigned int column=0; column<aCharAdvance; column++) {
+                    unsigned int absX = typeSettingX+column;
+                    unsigned int absY = row+typeSettingY;
+                    /**
+                     * 1.垂直方向需要绘制的区域范围
+                     * 2.水平方向需要绘制的区域范围
+                     */
+                    unsigned int pixelPosition = absX+totalWidth*absY;
+                    if (pixelPosition>textureBufLength){
+                        //此时操作的像素已经不在纹理面积里,观察一下再说
+                        now_cursor = i;
+                        break;
+                    }
+                }
+            }
+            typeSettingX += aCharAdvance;
+            
+            aLineHeightMax = wholeFontHeight;
+        }
+        if (before_cursor == now_cursor) {
+            now_cursor += glyph_count - before_cursor;
+        }
+        
+        //此处是循环的结尾
+        page++;
+    }
+    
+    (*worker)->total_page = page;
+}
+
+size_t txt_worker_total_page(TLTXTWorker *worker)
+{
+    return (*worker)->total_page;
+}
+
+size_t txt_worker_current_page(TLTXTWorker *worker)
+{
+    return (*worker)->current_page;
 }
 
 uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)

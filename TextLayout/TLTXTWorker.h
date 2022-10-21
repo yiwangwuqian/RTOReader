@@ -21,9 +21,25 @@ typedef struct TLTXTWorker_* TLTXTWorker;
 
 void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height);
 
+/// TLTXTWorker是否可以向后翻页
+/// - Parameter worker: worker对象
+bool txt_worker_next_able(TLTXTWorker *worker);
+
 /// 销毁TLTXTWorker
 /// - Parameter worker: worker对象
 void txt_worker_destroy(TLTXTWorker *worker);
+
+/// TLTXTWorker数据分页操作
+/// - Parameter worker: worker对象
+void txt_worker_data_paging(TLTXTWorker *worker);
+
+/// TLTXTWorker总页数
+/// - Parameter worker: worker对象
+size_t txt_worker_total_page(TLTXTWorker *worker);
+
+/// TLTXTWorker当前页索引
+/// - Parameter worker: worker对象
+size_t txt_worker_current_page(TLTXTWorker *worker);
 
 uint8_t *txt_worker_bitmap_next_page(TLTXTWorker *worker);
 

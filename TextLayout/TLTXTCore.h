@@ -46,6 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (UIImage *)toNextPageOnce;
 
+/**
+ *根据页码来决定是否使用已有内容，只适用于pageNum<2时
+ */
+- (UIImage *)imageWithPageNum:(NSInteger)pageNum;
+
+- (NSInteger)totalPage;
 @end
 
 NS_ASSUME_NONNULL_END
