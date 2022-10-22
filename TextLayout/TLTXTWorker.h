@@ -37,7 +37,7 @@ void txt_worker_data_paging(TLTXTWorker *worker);
 /// - Parameter worker: worker对象
 size_t txt_worker_total_page(TLTXTWorker *worker);
 
-/// TLTXTWorker当前页索引
+/// TLTXTWorker当前页索引，需要注意这个`当前页`指的是最后一次执行绘制的页码
 /// - Parameter worker: worker对象
 size_t txt_worker_current_page(TLTXTWorker *worker);
 

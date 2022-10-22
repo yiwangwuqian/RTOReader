@@ -51,13 +51,6 @@
     
     if (!_imageViewArray) {
         _imageViewArray = [[NSMutableArray alloc] init];
-        
-        NSInteger totalCount = 100;
-        for (NSInteger i=0; i<totalCount; i++) {
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:_scrollView.bounds];
-            [_scrollView addSubview:imageView];
-            [_imageViewArray addObject:imageView];
-        }
     }
 }
 
@@ -76,26 +69,6 @@
     
     if (!CGRectEqualToRect(_scrollView.frame, self.bounds)) {
         _scrollView.frame = self.bounds;
-        CGSize contentSize = self.bounds.size;
-        //横滑配置
-        contentSize.width = contentSize.width * self.imageViewArray.count;
-        
-        //竖滑配置
-//        contentSize.height = contentSize.height * self.imageViewArray.count;
-        
-        _scrollView.contentSize = contentSize;
-        
-        for (NSInteger i=0; i<self.imageViewArray.count; i++) {
-            UIImageView *imageView = self.imageViewArray[i];
-            CGRect imageFrame = _scrollView.bounds;
-            //横滑配置
-            imageFrame.origin.x = i*CGRectGetWidth(_scrollView.frame);
-            
-            //竖滑配置
-//            imageFrame.origin.y = i*CGRectGetHeight(_scrollView.frame);
-            
-            imageView.frame = imageFrame;
-        }
         
         if (_txtCore == nil) {
             self.txtCore = [[TLTXTCore alloc] init];
@@ -252,9 +225,37 @@
 - (void)firstPageEnd
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIImageView *imageView = self.imageViewArray.firstObject;
-        imageView.image = self.txtCore.currentPageImage;
+        [self firstPageEndWork];
     });
+}
+
+- (void)firstPageEndWork
+{
+    NSInteger totalCount = self.txtCore.totalPage;
+    CGSize contentSize = self.bounds.size;
+    //横滑配置
+    contentSize.width = contentSize.width * totalCount;
+    
+    //竖滑配置
+//        contentSize.height = contentSize.height * totalCount;
+    
+    _scrollView.contentSize = contentSize;
+    
+    for (NSInteger i=0; i<totalCount; i++) {
+        CGRect imageFrame = _scrollView.bounds;
+        //横滑配置
+        imageFrame.origin.x = i*CGRectGetWidth(_scrollView.frame);
+        
+        //竖滑配置
+//            imageFrame.origin.y = i*CGRectGetHeight(_scrollView.frame);
+        
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:imageFrame];
+        [_scrollView addSubview:imageView];
+        [_imageViewArray addObject:imageView];
+    }
+    
+    UIImageView *imageView = self.imageViewArray.firstObject;
+    imageView.image = self.txtCore.currentPageImage;
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -267,16 +268,20 @@
         
         if (lastContentOffset.x < contentOffset.x) {
             //向右
-            CGFloat rightOriginX = contentOffset.x + scrollView.frame.size.width;
-            NSInteger index = rightOriginX/scrollView.frame.size.width;
-            
-            //TEST
-            NSLog(@"page no:%@ rightOriginX:%@", @(index+1) , @(rightOriginX));
-            //TEST END
-            
-            UIImageView *imageView = self.imageViewArray[index];
-            if (imageView.image == nil) {
-                imageView.image = index < 2 ? [self.txtCore imageWithPageNum:index] : [self.txtCore toNextPageOnce];
+            NSInteger scrollWidth = scrollView.frame.size.width;
+            NSInteger originX = contentOffset.x;
+            NSInteger baseIndex = originX/scrollWidth;
+            NSInteger index = baseIndex + (originX%scrollWidth > 0 ? 1 : 0);
+                        
+            if (index < self.imageViewArray.count) {
+                //TEST
+                NSLog(@"Now need prepare image for index:%@", @(index));
+                //TEST END
+                
+                UIImageView *imageView = self.imageViewArray[index];
+                if (imageView.image == nil) {
+                    imageView.image = index < 2 ? [self.txtCore imageWithPageNum:index] : [self.txtCore toNextPageOnce];
+                }
             }
         }
         lastContentOffset = contentOffset;

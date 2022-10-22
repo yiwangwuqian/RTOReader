@@ -310,7 +310,6 @@ void txt_worker_data_paging(TLTXTWorker *worker)
             
             //一个字符占宽高
             FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;//作为宽度使用
-            FT_Pos aCharVertAdvance = face->glyph->metrics.vertAdvance/64;//作为高使用
             
             /*
              1.大于最大宽度,换行
@@ -327,7 +326,7 @@ void txt_worker_data_paging(TLTXTWorker *worker)
             }
             
             //大于最大高度,停止
-            if (typeSettingY + aCharVertAdvance > totalHeight){
+            if (typeSettingY + face->glyph->metrics.height/64 > totalHeight){
                 now_cursor = i;
                 break;
             }
@@ -445,6 +444,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
         }
         
         FT_Bitmap bitmap = face->glyph->bitmap;
+//        printf("bitmap.rows:%d face->glyph->metrics.height/64:%ld\n", bitmap.rows, face->glyph->metrics.height/64);
         //一个字符占位宽
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
         FT_Pos aCharHoriBearingX = face->glyph->metrics.horiBearingX/64;
