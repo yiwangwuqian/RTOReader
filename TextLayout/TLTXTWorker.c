@@ -14,6 +14,10 @@
 
 #include "hb-ft.h"
 
+//------Private methods
+void txt_worker_set_page_cursors(TLTXTWorker *worker, size_t page, size_t cursor);
+//------
+
 typedef struct RTOTXTRowRectArray_* RTOTXTRowRectArray;
 
 struct TLTXTWorker_ {
@@ -281,7 +285,7 @@ void txt_worker_data_paging(TLTXTWorker *worker)
     size_t before_cursor = 0;
     size_t now_cursor = 0;
     
-    while ((*worker)->utf8_length != now_cursor) {
+    while (glyph_count != now_cursor) {
         
         FT_GlyphSlot  slot;
         FT_Error      error;
@@ -350,16 +354,26 @@ void txt_worker_data_paging(TLTXTWorker *worker)
             typeSettingX += aCharAdvance;
             
             aLineHeightMax = wholeFontHeight;
+            if (now_cursor != before_cursor) {
+                break;
+            }
         }
         if (before_cursor == now_cursor) {
             now_cursor += glyph_count - before_cursor;
         }
+        
+        txt_worker_set_page_cursors(worker, page, now_cursor);
         
         //此处是循环的结尾
         page++;
     }
     
     (*worker)->total_page = page;
+}
+
+void txt_worker_set_page_cursors(TLTXTWorker *worker, size_t page, size_t cursor)
+{
+    
 }
 
 size_t txt_worker_total_page(TLTXTWorker *worker)
@@ -523,6 +537,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
         typeSettingX += aCharAdvance;
         
         aLineHeightMax = wholeFontHeight;
+        if (now_cursor != before_cursor) {
+            break;
+        }
     }
     if (before_cursor == now_cursor) {
         now_cursor += glyph_count - before_cursor;
