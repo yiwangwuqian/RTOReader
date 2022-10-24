@@ -93,29 +93,37 @@
 
 - (void)tappedView:(UITapGestureRecognizer *)sender
 {
-    CGPoint point = [sender locationInView:sender.view];
-    CGFloat width = CGRectGetWidth(self.frame);
-
-    if (point.x < width*0.33) {
-        [self toPreviousPage];
-    } else if (point.x > width*0.67) {
-        [self toNextPage];
-    } else {
-//        TLTXTRect contains = NULL;
-//        uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
-//        if (contains) {
-//            [[self class] convertCodePoint:code_point];
+//    CGPoint point = [sender locationInView:sender.view];
+//    CGFloat width = CGRectGetWidth(self.frame);
 //
-//            int x,y,xx,yy;
-//            txt_rect_values(&contains, &x, &y, &xx, &yy);
-//            free(contains);
-//            if (!self.selectionView.superview) {
-//                [self addSubview:self.selectionView];
-//            }
-//            CGFloat scale = [UIScreen mainScreen].scale;
-//            self.selectionView.rectArray = @[[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
+//    if (point.x < width*0.33) {
+//        [self toPreviousPage];
+//    } else if (point.x > width*0.67) {
+//        [self toNextPage];
+//    } else {
+////        TLTXTRect contains = NULL;
+////        uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
+////        if (contains) {
+////            [[self class] convertCodePoint:code_point];
+////
+////            int x,y,xx,yy;
+////            txt_rect_values(&contains, &x, &y, &xx, &yy);
+////            free(contains);
+////            if (!self.selectionView.superview) {
+////                [self addSubview:self.selectionView];
+////            }
+////            CGFloat scale = [UIScreen mainScreen].scale;
+////            self.selectionView.rectArray = @[[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
+////        }
+//    }
+    
+//    NSArray *array = self.txtCore.currentRowRectArray;
+//    if (array.count) {
+//        if (!self.selectionView.superview) {
+//            [self addSubview:self.selectionView];
 //        }
-    }
+//        self.selectionView.rectArray = self.txtCore.currentRowRectArray;
+//    }
 }
 
 - (void)pannedView:(UIPanGestureRecognizer *)sender

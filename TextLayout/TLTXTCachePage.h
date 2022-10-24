@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic)NSInteger           pageNum;
 @property(nonatomic)UIImage             *image;
 @property(nonatomic)TLTXTRowRectArray   rowRectArray;
+@property(nonatomic)NSInteger           beforeCursor;//上一页游标(-1时为第一页)
+@property(nonatomic)NSInteger           cursor;//游标
 
 @end
 

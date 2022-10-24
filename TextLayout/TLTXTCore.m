@@ -107,6 +107,8 @@
                     cachePage.image = image;
                     cachePage.pageNum = i;
                     cachePage.rowRectArray = row_rect_array;
+                    cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, i);
+                    cachePage.beforeCursor = i>0 ? txt_worker_page_cursor_array_get(self.worker, i-1) : -1;
                     NSInteger arrayCount = self.cachedArray.count;
                     [self.cachedArray addObject:cachePage];
                     
@@ -220,6 +222,8 @@
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
             cachePage.rowRectArray = row_rect_array;
+            cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
+            cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
             NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
             [array removeObjectAtIndex:0];
             [array addObject:cachePage];
@@ -277,6 +281,8 @@
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
             cachePage.rowRectArray = row_rect_array;
+            cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
+            cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
             NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
             [array removeObjectAtIndex:2];
             [array insertObject:cachePage atIndex:0];

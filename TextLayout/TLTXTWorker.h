@@ -48,14 +48,7 @@ uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_
 
 uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,TLTXTRect* contains);
 
-/// 用开始点和结束点 获取TLTXTRectArray对象
-/// @param worker  worker对象
-/// @param rect_array 结果
-/// @param sx 开始x
-/// @param sy 开始y
-/// @param ex 结束x
-/// @param ey 结束y
-void txt_worker_rect_array_from(TLTXTWorker *worker, TLTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index);
+size_t txt_worker_page_cursor_array_get(TLTXTWorker worker,size_t page);
 
 #ifdef __cplusplus
 }
