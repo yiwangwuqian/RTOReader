@@ -14,11 +14,18 @@
 
 #include "hb-ft.h"
 
-//------Private methods
-void txt_worker_set_page_cursors(TLTXTWorker *worker, size_t page, size_t cursor);
-//------
-
 typedef struct RTOTXTRowRectArray_* RTOTXTRowRectArray;
+
+typedef struct RTOTXTPageCursorArray_* RTOTXTPageCursorArray;
+
+//------Private methods
+void txt_page_cursor_array_create(RTOTXTPageCursorArray *array);
+
+bool txt_page_cursor_array_add(struct RTOTXTPageCursorArray_ *array,size_t cursor);
+
+void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array);
+
+//------
 
 struct TLTXTWorker_ {
     char *content;
@@ -37,9 +44,9 @@ struct TLTXTWorker_ {
     RTOTXTRowRectArray array;
     
     size_t current_page;
-    size_t page_cursors[100];//这里还需要修改 页数过多时会有问题
     
     size_t total_page;//总页数
+    RTOTXTPageCursorArray cursor_array;
 };
 
 //------RTOTXTRectArray_ 数组只有创建、新增元素、销毁操作
@@ -172,6 +179,49 @@ void txt_row_rect_array_destroy(RTOTXTRowRectArray *array)
 
 //------
 
+//------RTOTXTPageCursorArray_ 数组只有创建、新增元素、销毁操作
+struct RTOTXTPageCursorArray_ {
+    size_t *data;
+    size_t length;//真实长度
+    size_t count;//元素个数
+};
+
+void txt_page_cursor_array_create(RTOTXTPageCursorArray *array)
+{
+    RTOTXTPageCursorArray object = calloc(1, sizeof(struct RTOTXTPageCursorArray_));
+    
+    size_t length = 100;
+    object->length = length;
+    object->data = calloc(length, sizeof(size_t));
+    
+    *array = object;
+}
+
+bool txt_page_cursor_array_add(struct RTOTXTPageCursorArray_ *array,size_t cursor)
+{
+    if( !((*array).count < (*array).length) ) {
+        size_t length = (*array).length + 100;
+        size_t *data = realloc((*array).data, length*sizeof(size_t));
+        if (data == NULL) {
+            return false;
+        }
+        (*array).data = data;
+        (*array).length = length;
+    }
+    (*array).data[(*array).count] = cursor;
+    (*array).count+=1;
+    return true;
+}
+
+void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array)
+{
+    free((*array)->data);
+    free(*array);
+    *array = NULL;
+}
+
+//------
+
 bool txt_worker_previous_able(TLTXTWorker *worker)
 {
     return false;
@@ -231,6 +281,7 @@ void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
             
             object->current_page = -1;
             
+            txt_page_cursor_array_create(&object->cursor_array);
             *worker = object;
         } else {
             hb_buffer_destroy(buf);
@@ -362,18 +413,12 @@ void txt_worker_data_paging(TLTXTWorker *worker)
             now_cursor += glyph_count - before_cursor;
         }
         
-        txt_worker_set_page_cursors(worker, page, now_cursor);
-        
+        txt_page_cursor_array_add((*worker)->cursor_array, now_cursor);
         //此处是循环的结尾
         page++;
     }
     
     (*worker)->total_page = page;
-}
-
-void txt_worker_set_page_cursors(TLTXTWorker *worker, size_t page, size_t cursor)
-{
-    
 }
 
 size_t txt_worker_total_page(TLTXTWorker *worker)
@@ -429,7 +474,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
     unsigned int aLineHeightMax=0;
     unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
     unsigned int aLineMinCount = totalWidth/(face->size->metrics.max_advance/64);
-    size_t before_cursor = page > 0 ? (*worker)->page_cursors[page-1] : 0;
+    size_t before_cursor = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0;
     size_t now_cursor = before_cursor;
     RTOTXTRowRectArray row_rect_array;
     txt_row_rect_array_create(&row_rect_array);
@@ -544,7 +589,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
     if (before_cursor == now_cursor) {
         now_cursor += glyph_count - before_cursor;
     }
-    (*worker)->page_cursors[page] = now_cursor;
     return textureBuffer;
 }
 
@@ -552,7 +596,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
 uint8_t *txt_worker_bitmap_next_page(TLTXTWorker *worker)
 {
     size_t page = (*worker)->current_page;
-    if ((*worker)->page_cursors[page] == (*worker)->utf8_length) {
+    if ((*(*worker)->cursor_array).data[page] == (*worker)->utf8_length) {
         return NULL;
     }
     
@@ -604,7 +648,7 @@ uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,RTOTXTRect* con
     RTOTXTRowRectArray array = (*worker)->array;
     uint32_t result = 0;
     size_t page = (*worker)->current_page;
-    size_t index = page > 0 ? (*worker)->page_cursors[page-1] : 0 ;
+    size_t index = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0 ;
     for (size_t i=0; i<array->count; i++) {
         RTOTXTRectArray *data = array->data;
         RTOTXTRectArray row_array = data[i];
@@ -646,7 +690,7 @@ void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array
     bool end_finded = false;
     
     size_t page = (*worker)->current_page;
-    size_t index = page > 0 ? (*worker)->page_cursors[page-1] : 0 ;
+    size_t index = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0 ;
     
     for (size_t i=0; i<array->count; i++) {
         RTOTXTRectArray *data = array->data;
