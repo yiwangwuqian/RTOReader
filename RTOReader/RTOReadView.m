@@ -184,7 +184,7 @@
     NSDate *date = [NSDate date];
 #endif
     
-    UIImage *image = _imageView.image == nil ? [self.txtCore currentPageImage] : [self.txtCore toNextPageOnce];
+    UIImage *image = _imageView.image == nil ? [self.txtCore imageWithPageNum:0] : [self.txtCore toNextPageOnce];
 #if DEBUG
     NSDate *imageAssignDate = [NSDate date];
 #endif
@@ -255,7 +255,7 @@
     }
     
     UIImageView *imageView = self.imageViewArray.firstObject;
-    imageView.image = self.txtCore.currentPageImage;
+    imageView.image = [self.txtCore imageWithPageNum:0];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -265,12 +265,11 @@
     
     //横滑配置
     if (contentOffset.x > 0) {
-        
+        NSInteger scrollWidth = scrollView.frame.size.width;
+        NSInteger originX = contentOffset.x;
+        NSInteger baseIndex = originX/scrollWidth;
         if (lastContentOffset.x < contentOffset.x) {
             //向右
-            NSInteger scrollWidth = scrollView.frame.size.width;
-            NSInteger originX = contentOffset.x;
-            NSInteger baseIndex = originX/scrollWidth;
             NSInteger index = baseIndex + (originX%scrollWidth > 0 ? 1 : 0);
                         
             if (index < self.imageViewArray.count) {
@@ -279,10 +278,20 @@
                 //TEST END
                 
                 UIImageView *imageView = self.imageViewArray[index];
-                if (imageView.image == nil) {
-                    imageView.image = index < 2 ? [self.txtCore imageWithPageNum:index] : [self.txtCore toNextPageOnce];
-                }
+                imageView.image = [self.txtCore imageWithPageNum:index];
             }
+        } else {
+//            //向左
+//            NSInteger index = baseIndex;
+//
+//            if (index >= 0) {
+//                //TEST
+//                NSLog(@"Now need prepare image for index:%@", @(index));
+//                //TEST END
+//
+//                UIImageView *imageView = self.imageViewArray[index];
+//                imageView.image = [self.txtCore imageWithPageNum:index];
+//            }
         }
         lastContentOffset = contentOffset;
     }

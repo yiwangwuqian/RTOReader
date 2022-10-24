@@ -6,6 +6,8 @@
 //  Copyright © 2022 ghy. All rights reserved.
 //
 
+#define kTLTXTPerformanceLog 1
+
 #define GetTimeDeltaValue(a) [[NSDate date] timeIntervalSince1970] - [(a) timeIntervalSince1970]
 
 #import "TLTXTCore.h"
@@ -16,6 +18,8 @@
 #import "FileWrapper.h"
 #import "TLTXTUtil.h"
 
+#import "TLTXTCachePage.h"
+
 @interface TLTXTCore()
 
 @property(nonatomic)NSString            *filePath;
@@ -25,8 +29,8 @@
 @property(nonatomic)dispatch_queue_t    bitmapQueue;//bitmap绘制专用
 @property(nonatomic)dispatch_queue_t    imageQueue;//UIImage创建专用
 
-@property(nonatomic)NSMutableArray      *array;//存放生成的UIImage对象
-@property(nonatomic)NSInteger           pageNum;//页码翻页时的判断使用
+@property(nonatomic)NSInteger           pageNum;//页码翻页时的判断使用 最后一次被请求的页码
+@property(nonatomic)NSMutableArray      *cachedArray;//被缓存数组(每个元素包含有这些字段：页码、图片、图片中每个字位置信息)
 
 /**
  *以下两个属性 内容的绘制和生成UIImage都是异步的，翻页时确保上一个操作完成了
@@ -39,7 +43,7 @@
 
 - (void)dealloc
 {
-#ifdef DEBUG
+#ifdef kTLTXTPerformanceLog
     NSLog(@"%@ dealloc", self);
 #endif
     txt_worker_destroy(&_worker);
@@ -51,7 +55,7 @@
     if (self) {
         _bitmapQueue = dispatch_queue_create("TextLayout.bitmap", DISPATCH_QUEUE_SERIAL);
         _imageQueue = dispatch_queue_create("TextLayout.image", DISPATCH_QUEUE_SERIAL);
-        _array = [[NSMutableArray alloc] init];
+        _cachedArray = [NSMutableArray array];
         _pageNum = -1;
     }
     return self;
@@ -84,22 +88,25 @@
 - (void)firstTimeDraw
 {
     dispatch_async(self.bitmapQueue, ^{
-#if DEBUG
+#if kTLTXTPerformanceLog
         NSDate *pagingDate = [NSDate date];
 #endif
         txt_worker_data_paging(&self->_worker);
-#if DEBUG
+#if kTLTXTPerformanceLog
         NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(pagingDate) ));
 #endif
         //调用三次对应绘制3页
         for (NSInteger i=0; i<3; i++) {
-            uint8_t *bitmap = txt_worker_bitmap_next_page(&self->_worker);
+            uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker, i);
             if (bitmap != NULL) {
                 
                 dispatch_async(self.imageQueue, ^{
                     UIImage *image = [[self class] imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
-                    NSInteger arrayCount = self.array.count;
-                    [self.array addObject:image];
+                    TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
+                    cachePage.image = image;
+                    cachePage.pageNum = i;
+                    NSInteger arrayCount = self.cachedArray.count;
+                    [self.cachedArray addObject:cachePage];
                     
                     if (arrayCount == 0 && self.drawDelegate) {
                         self.pageNum = 0;
@@ -112,44 +119,59 @@
     });
 }
 
-- (UIImage *)currentPageImage
-{
-    NSInteger arrayCount = self.array.count;
-    if (arrayCount == 3) {
-        return self.array[1];
-    }
-    return self.array.firstObject;
-}
-
 - (UIImage *)toPreviousPageOnce
 {
     [self toPreviousPage];
-    return self.array.firstObject;
+    TLTXTCachePage *cachePage = self.cachedArray.firstObject;
+    return cachePage.image;
 }
 
 - (UIImage *)toNextPageOnce
 {
-    if (txt_worker_next_able(&_worker)) {
-        [self toNextPage];
-        return self.array.lastObject;
-    } else {
-        return nil;
-    }
+    [self toNextPage];
+    TLTXTCachePage *cachePage = self.cachedArray.lastObject;
+    return cachePage.image;
 }
 
 - (UIImage *)imageWithPageNum:(NSInteger)pageNum
 {
-    NSInteger page = txt_worker_current_page(&_worker);
-    if (pageNum < 2 && page < 3) {
-        
-        if (pageNum == 0) {
-            return self.array.firstObject;
-        } else if (pageNum == 1) {
-            return self.array[1];
+    if (pageNum >=0 && pageNum < [self totalPage]) {
+        NSInteger index = -1;
+        for (NSInteger i=0; i<self.cachedArray.count; i++) {
+            TLTXTCachePage *oncePage = self.cachedArray[i];
+            if (oncePage.pageNum == pageNum) {
+                index = i;
+            }
         }
-        
+        bool pageNumIsEqual = true;
+        if (self.pageNum != pageNum){
+            self.pageNum = pageNum;
+            pageNumIsEqual = false;
+        }
+        if (index == 0) {
+            if (pageNum == 0) {
+                TLTXTCachePage *cachePage = self.cachedArray.firstObject;
+                return cachePage.image;
+            } else {
+                if (!pageNumIsEqual){
+                    return [self toPreviousPageOnce];
+                }
+            }
+        } else if (index == self.cachedArray.count -1) {
+            if (index == [self totalPage]-1) {
+                TLTXTCachePage *cachePage = self.cachedArray.lastObject;
+                return cachePage.image;
+            } else {
+                if (!pageNumIsEqual){
+                    return [self toNextPageOnce];
+                }
+            }
+        } else {
+            TLTXTCachePage *cachePage = self.cachedArray[1];
+            return cachePage.image;
+        }
     }
-    return self.array.firstObject;
+    return nil;
 }
 
 - (NSInteger)totalPage
@@ -165,37 +187,45 @@
     if (self.nextPageSemaphore) {
         dispatch_semaphore_wait(self.nextPageSemaphore, DISPATCH_TIME_FOREVER);
     }
+    if (!(self.pageNum < [self totalPage])) {
+        return;
+    }
+    NSInteger afterPageNum = self.pageNum+1;
     self.nextPageSemaphore = dispatch_semaphore_create(0);
     
     dispatch_async(self.bitmapQueue, ^{
     
-#if DEBUG
+#if kTLTXTPerformanceLog
     NSDate *date = [NSDate date];
 #endif
 
-#if DEBUG
+#if kTLTXTPerformanceLog
     NSDate *bitmapStartDate = [NSDate date];
 #endif
-    uint8_t *bitmap = txt_worker_bitmap_next_page(&self->_worker);
-#if DEBUG
+    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum);
+#if kTLTXTPerformanceLog
     NSLog(@"%s bitmap using time:%@", __func__, @(GetTimeDeltaValue(bitmapStartDate) ));
 #endif
     if (bitmap != NULL) {
         
         dispatch_async(self.imageQueue, ^{
-#if DEBUG
+#if kTLTXTPerformanceLog
             NSDate *imageStartDate = [NSDate date];
 #endif
             UIImage *image = [[self class] imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
-            NSMutableArray *array = [NSMutableArray arrayWithArray:self.array];
+            TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
+            cachePage.pageNum = afterPageNum;
+            cachePage.image = image;
+            NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
             [array removeObjectAtIndex:0];
-            [array addObject:image];
-            self.array = array;
-#if DEBUG
+            [array addObject:cachePage];
+            
+            self.cachedArray = array;
+#if kTLTXTPerformanceLog
             NSLog(@"%s image create using time:%@", __func__, @(GetTimeDeltaValue(imageStartDate) ));
 #endif
             
-#if DEBUG
+#if kTLTXTPerformanceLog
     NSLog(@"%s using time:%@", __func__, @(GetTimeDeltaValue(date) ));
 #endif
             dispatch_semaphore_signal(self.nextPageSemaphore);
@@ -213,36 +243,43 @@
     if (self.previousPageSemaphore) {
         dispatch_semaphore_wait(self.previousPageSemaphore, DISPATCH_TIME_FOREVER);
     }
+    if (!(self.pageNum > 0)) {
+        return;
+    }
+    NSInteger afterPageNum = self.pageNum-1;
     self.previousPageSemaphore = dispatch_semaphore_create(0);
     dispatch_async(self.bitmapQueue, ^{
     
-#if DEBUG
+#if kTLTXTPerformanceLog
     NSDate *date = [NSDate date];
 #endif
 
-#if DEBUG
+#if kTLTXTPerformanceLog
     NSDate *bitmapStartDate = [NSDate date];
 #endif
-    uint8_t *bitmap = txt_worker_bitmap_previous_page(&self->_worker);
-#if DEBUG
+    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum);
+#if kTLTXTPerformanceLog
     NSLog(@"%s bitmap using time:%@", __func__, @(GetTimeDeltaValue(bitmapStartDate) ));
 #endif
     if (bitmap != NULL) {
         
         dispatch_async(self.imageQueue, ^{
-#if DEBUG
+#if kTLTXTPerformanceLog
             NSDate *imageStartDate = [NSDate date];
 #endif
             UIImage *image = [[self class] imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
-            NSMutableArray *array = [NSMutableArray arrayWithArray:self.array];
+            TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
+            cachePage.pageNum = afterPageNum;
+            cachePage.image = image;
+            NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
             [array removeObjectAtIndex:2];
-            [array insertObject:image atIndex:0];
-            self.array = array;
-#if DEBUG
+            [array insertObject:cachePage atIndex:0];
+            self.cachedArray = array;
+#if kTLTXTPerformanceLog
             NSLog(@"%s image create using time:%@", __func__, @(GetTimeDeltaValue(imageStartDate) ));
 #endif
             
-#if DEBUG
+#if kTLTXTPerformanceLog
     NSLog(@"%s using time:%@", __func__, @(GetTimeDeltaValue(date) ));
 #endif
             dispatch_semaphore_signal(self.previousPageSemaphore);

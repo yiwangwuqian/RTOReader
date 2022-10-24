@@ -31,10 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)resetFilePath:(NSString *)path pageSize:(CGSize)size;
 
-/**
- *获取当前页内容
- */
-- (UIImage *)currentPageImage;
 
 /**
  *获取上一页的内容，并继续向上一页进一步
@@ -47,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImage *)toNextPageOnce;
 
 /**
- *根据页码来决定是否使用已有内容，只适用于pageNum<2时
+ *根据页码来决定是否使用已有内容
  */
 - (UIImage *)imageWithPageNum:(NSInteger)pageNum;
 

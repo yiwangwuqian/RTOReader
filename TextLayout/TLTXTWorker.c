@@ -279,8 +279,6 @@ void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
             object->width = width;
             object->height = height;
             
-            object->current_page = -1;
-            
             txt_page_cursor_array_create(&object->cursor_array);
             *worker = object;
         } else {
@@ -304,6 +302,9 @@ void txt_worker_destroy(TLTXTWorker *worker)
     free(object->codepoints);
     if (object->array != NULL) {
         txt_row_rect_array_destroy(&object->array);
+    }
+    if (object->cursor_array != NULL) {
+        txt_page_cursor_array_destroy(&object->cursor_array);
     }
     free(object);
     *worker = NULL;
@@ -424,11 +425,6 @@ void txt_worker_data_paging(TLTXTWorker *worker)
 size_t txt_worker_total_page(TLTXTWorker *worker)
 {
     return (*worker)->total_page;
-}
-
-size_t txt_worker_current_page(TLTXTWorker *worker)
-{
-    return (*worker)->current_page;
 }
 
 uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
@@ -592,27 +588,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
     return textureBuffer;
 }
 
-
-uint8_t *txt_worker_bitmap_next_page(TLTXTWorker *worker)
-{
-    size_t page = (*worker)->current_page;
-    if ((*(*worker)->cursor_array).data[page] == (*worker)->utf8_length) {
-        return NULL;
-    }
-    
-    (*worker)->current_page++;
-    return txt_worker_bitmap_one_page(worker, (*worker)->current_page);
-}
-
-uint8_t *txt_worker_bitmap_previous_page(TLTXTWorker *worker)
-{
-    size_t page = (*worker)->current_page;
-    if (page == 0) {
-        return NULL;
-    }
-    (*worker)->current_page--;
-    return txt_worker_bitmap_one_page(worker, (*worker)->current_page);
-}
 
 void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy)
 {
@@ -823,4 +798,3 @@ RTOTXTRect txt_worker_rect_array_object_at(RTOTXTRectArray *rect_array, int inde
 {
     return &(*rect_array)->data[index];
 }
-
