@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include "TLTXTRowRect.h"
 
 #ifdef __cplusplus
 
@@ -41,39 +42,20 @@ size_t txt_worker_total_page(TLTXTWorker *worker);
 /// - Parameters:
 ///   - worker: worker对象
 ///   - page: 页码
-uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page);
-
-typedef struct RTOTXTRect_* RTOTXTRect;
-
-void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy);
+uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRectArray *page_row_rect_array);
 
 uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_t end, size_t *count);
 
-uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,RTOTXTRect* contains);
+uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,TLTXTRect* contains);
 
-typedef struct RTOTXTRectArray_* RTOTXTRectArray;
-
-/// 用开始点和结束点 获取RTOTXTRectArray对象
+/// 用开始点和结束点 获取TLTXTRectArray对象
 /// @param worker  worker对象
 /// @param rect_array 结果
 /// @param sx 开始x
 /// @param sy 开始y
 /// @param ex 结束x
 /// @param ey 结束y
-void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index);
-
-/// 获取元素数量
-/// @param rect_array 数组对象
-size_t txt_worker_rect_array_get_count(RTOTXTRectArray *rect_array);
-
-/// 获取指定元素
-/// @param rect_array 数组对象
-/// @param index 索引
-RTOTXTRect txt_worker_rect_array_object_at(RTOTXTRectArray *rect_array, int index);
-
-/// 销毁对象
-/// @param array 待销毁对象
-void txt_rect_array_destroy(RTOTXTRectArray *array);
+void txt_worker_rect_array_from(TLTXTWorker *worker, TLTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index);
 
 #ifdef __cplusplus
 }

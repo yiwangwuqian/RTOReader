@@ -12,6 +12,8 @@
 		2B2E4A0D29016F3300A41EEA /* RTOReadContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B2E4A0C29016F3300A41EEA /* RTOReadContentViewController.m */; };
 		2B5605D5290644970093EF38 /* TLTXTCachePage.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B5605D3290644970093EF38 /* TLTXTCachePage.h */; };
 		2B5605D6290644970093EF38 /* TLTXTCachePage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B5605D4290644970093EF38 /* TLTXTCachePage.m */; };
+		2B5605DA290682410093EF38 /* TLTXTRowRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B5605D8290682410093EF38 /* TLTXTRowRect.h */; };
+		2B5605DB290682410093EF38 /* TLTXTRowRect.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B5605D9290682410093EF38 /* TLTXTRowRect.c */; };
 		2B6B445A29001ACD002929A9 /* TextLayout.docc in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B445929001ACD002929A9 /* TextLayout.docc */; };
 		2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B445829001ACD002929A9 /* TextLayout.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6B445E29001ACD002929A9 /* TextLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6B445629001ACD002929A9 /* TextLayout.framework */; };
@@ -76,7 +78,7 @@
 		2B6B44A329001E7D002929A9 /* TLTXTWorker.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B449D29001E7C002929A9 /* TLTXTWorker.c */; };
 		2B6B44A429001E7D002929A9 /* FileWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B449E29001E7C002929A9 /* FileWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6B44A529001E7D002929A9 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B449F29001E7C002929A9 /* FileWrapper.m */; };
-		2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A029001E7C002929A9 /* TLTXTWorker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A029001E7C002929A9 /* TLTXTWorker.h */; };
 		2B6B44A729001E7D002929A9 /* TLTXTUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44A129001E7C002929A9 /* TLTXTUtil.c */; };
 		2B6B44A829001E7D002929A9 /* TLTXTUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A229001E7D002929A9 /* TLTXTUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6B44AB29001F4F002929A9 /* TLFontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A929001F4F002929A9 /* TLFontManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -131,6 +133,8 @@
 		2B2E4A0C29016F3300A41EEA /* RTOReadContentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTOReadContentViewController.m; sourceTree = "<group>"; };
 		2B5605D3290644970093EF38 /* TLTXTCachePage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLTXTCachePage.h; sourceTree = "<group>"; };
 		2B5605D4290644970093EF38 /* TLTXTCachePage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLTXTCachePage.m; sourceTree = "<group>"; };
+		2B5605D8290682410093EF38 /* TLTXTRowRect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLTXTRowRect.h; sourceTree = "<group>"; };
+		2B5605D9290682410093EF38 /* TLTXTRowRect.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TLTXTRowRect.c; sourceTree = "<group>"; };
 		2B6B445629001ACD002929A9 /* TextLayout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TextLayout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B6B445829001ACD002929A9 /* TextLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextLayout.h; sourceTree = "<group>"; };
 		2B6B445929001ACD002929A9 /* TextLayout.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = TextLayout.docc; sourceTree = "<group>"; };
@@ -270,6 +274,8 @@
 				2B6B449F29001E7C002929A9 /* FileWrapper.m */,
 				2B6B44A029001E7C002929A9 /* TLTXTWorker.h */,
 				2B6B449D29001E7C002929A9 /* TLTXTWorker.c */,
+				2B5605D8290682410093EF38 /* TLTXTRowRect.h */,
+				2B5605D9290682410093EF38 /* TLTXTRowRect.c */,
 				2B6B44A229001E7D002929A9 /* TLTXTUtil.h */,
 				2B6B44A129001E7C002929A9 /* TLTXTUtil.c */,
 				2B2E4A002900F09700A41EEA /* TLTXTCore.h */,
@@ -463,9 +469,10 @@
 			files = (
 				2B6B44A429001E7D002929A9 /* FileWrapper.h in Headers */,
 				2B6B44A829001E7D002929A9 /* TLTXTUtil.h in Headers */,
+				2B5605DA290682410093EF38 /* TLTXTRowRect.h in Headers */,
 				2B6B44AB29001F4F002929A9 /* TLFontManager.h in Headers */,
-				2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */,
 				2B2E4A022900F09700A41EEA /* TLTXTCore.h in Headers */,
+				2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */,
 				2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */,
 				2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */,
 				2B5605D5290644970093EF38 /* TLTXTCachePage.h in Headers */,
@@ -645,6 +652,7 @@
 				2B6B449129001BA0002929A9 /* hb-set.cc in Sources */,
 				2B6B447929001B5C002929A9 /* hb-ot-font.cc in Sources */,
 				2B6B447F29001B69002929A9 /* hb-ot-name.cc in Sources */,
+				2B5605DB290682410093EF38 /* TLTXTRowRect.c in Sources */,
 				2B6B448D29001B97002929A9 /* hb-ot-shape-normalize.cc in Sources */,
 				2B6B447A29001B5E002929A9 /* hb-ot-layout.cc in Sources */,
 				2B6B449C29001BC0002929A9 /* hb-unicode.cc in Sources */,

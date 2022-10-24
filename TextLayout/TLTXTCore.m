@@ -43,7 +43,7 @@
 
 - (void)dealloc
 {
-#ifdef kTLTXTPerformanceLog
+#ifdef DEBUG
     NSLog(@"%@ dealloc", self);
 #endif
     txt_worker_destroy(&_worker);
@@ -97,7 +97,8 @@
 #endif
         //调用三次对应绘制3页
         for (NSInteger i=0; i<3; i++) {
-            uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker, i);
+            TLTXTRowRectArray row_rect_array = NULL;
+            uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker, i, &row_rect_array);
             if (bitmap != NULL) {
                 
                 dispatch_async(self.imageQueue, ^{
@@ -105,6 +106,7 @@
                     TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
                     cachePage.image = image;
                     cachePage.pageNum = i;
+                    cachePage.rowRectArray = row_rect_array;
                     NSInteger arrayCount = self.cachedArray.count;
                     [self.cachedArray addObject:cachePage];
                     
@@ -202,7 +204,8 @@
 #if kTLTXTPerformanceLog
     NSDate *bitmapStartDate = [NSDate date];
 #endif
-    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum);
+    TLTXTRowRectArray row_rect_array = NULL;
+    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum, &row_rect_array);
 #if kTLTXTPerformanceLog
     NSLog(@"%s bitmap using time:%@", __func__, @(GetTimeDeltaValue(bitmapStartDate) ));
 #endif
@@ -216,6 +219,7 @@
             TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
+            cachePage.rowRectArray = row_rect_array;
             NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
             [array removeObjectAtIndex:0];
             [array addObject:cachePage];
@@ -257,7 +261,8 @@
 #if kTLTXTPerformanceLog
     NSDate *bitmapStartDate = [NSDate date];
 #endif
-    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum);
+    TLTXTRowRectArray row_rect_array = NULL;
+    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum, &row_rect_array);
 #if kTLTXTPerformanceLog
     NSLog(@"%s bitmap using time:%@", __func__, @(GetTimeDeltaValue(bitmapStartDate) ));
 #endif
@@ -271,6 +276,7 @@
             TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
+            cachePage.rowRectArray = row_rect_array;
             NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
             [array removeObjectAtIndex:2];
             [array insertObject:cachePage atIndex:0];

@@ -10,4 +10,14 @@
 
 @implementation TLTXTCachePage
 
+- (void)dealloc
+{
+#ifdef DEBUG
+    NSLog(@"%@ dealloc", self);
+#endif
+    if (_rowRectArray) {
+        txt_row_rect_array_destroy(&_rowRectArray);
+    }
+}
+
 @end

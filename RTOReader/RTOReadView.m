@@ -101,7 +101,7 @@
     } else if (point.x > width*0.67) {
         [self toNextPage];
     } else {
-//        RTOTXTRect contains = NULL;
+//        TLTXTRect contains = NULL;
 //        uint32_t code_point = txt_worker_codepoint_at(&_worker, point.x * [UIScreen mainScreen].scale, point.y * [UIScreen mainScreen].scale, &contains);
 //        if (contains) {
 //            [[self class] convertCodePoint:code_point];
@@ -129,7 +129,7 @@
 //        case UIGestureRecognizerStateChanged:
 //        case UIGestureRecognizerStateRecognized:
 //        {
-//            RTOTXTRectArray rect_array=NULL;
+//            TLTXTRectArray rect_array=NULL;
 //            CGPoint point = [lastPoint CGPointValue];
 //            CGFloat scale = [UIScreen mainScreen].scale;
 //            size_t s_index;
@@ -142,7 +142,7 @@
 //                NSMutableArray *array = [NSMutableArray array];
 //                for (int i=0; i<txt_worker_rect_array_get_count(&rect_array); i++) {
 //                    int x,y,xx,yy;
-//                    RTOTXTRect one_rect = txt_worker_rect_array_object_at(&rect_array, i);
+//                    TLTXTRect one_rect = txt_worker_rect_array_object_at(&rect_array, i);
 //                    txt_rect_values(&one_rect, &x, &y, &xx, &yy);
 //                    [array addObject:[NSValue valueWithCGRect:CGRectMake(x/scale, y/scale, (xx-x)/scale, (yy-y)/scale)]];
 //                }

@@ -14,8 +14,6 @@
 
 #include "hb-ft.h"
 
-typedef struct RTOTXTRowRectArray_* RTOTXTRowRectArray;
-
 typedef struct RTOTXTPageCursorArray_* RTOTXTPageCursorArray;
 
 //------Private methods
@@ -41,143 +39,13 @@ struct TLTXTWorker_ {
     hb_buffer_t   *buf;
     hb_font_t     *font;
     hb_codepoint_t *codepoints;
-    RTOTXTRowRectArray array;
+    TLTXTRowRectArray array;
     
     size_t current_page;
     
     size_t total_page;//总页数
     RTOTXTPageCursorArray cursor_array;
 };
-
-//------RTOTXTRectArray_ 数组只有创建、新增元素、销毁操作
-
-struct RTOTXTRectArray_ {
-    struct RTOTXTRect_ *data;
-    size_t length;//真实长度
-    size_t count;//元素个数
-};
-
-struct RTOTXTRect_ {
-    int32_t x;
-    int32_t y;
-    int32_t xx;//x最大值
-    int32_t yy;//y最大值
-};
-
-void txt_rect_array_create(RTOTXTRectArray *array)
-{
-    RTOTXTRectArray object = calloc(1, sizeof(struct RTOTXTRectArray_));
-    
-    size_t length = 100;
-    object->length = length;
-    object->data = calloc(length, sizeof(struct RTOTXTRect_));
-    
-    *array = object;
-}
-
-bool txt_rect_array_add(struct RTOTXTRectArray_ *array,struct RTOTXTRect_ rect)
-{
-    if( !((*array).count < (*array).length) ) {
-        size_t length = (*array).length + 100;
-        struct RTOTXTRect_ *data = realloc((*array).data, length*sizeof(struct RTOTXTRect_));
-        if (data == NULL) {
-            return false;
-        }
-        (*array).data = data;
-        (*array).length = length;
-    }
-    (*array).data[(*array).count] = rect;
-    (*array).count+=1;
-    return true;
-}
-
-void txt_rect_array_destroy(RTOTXTRectArray *array)
-{
-    free((*array)->data);
-    free(*array);
-    *array = NULL;
-}
-
-//------
-
-//------RTOTXTRowRectArray_ 数组只有创建、新增元素、销毁操作
-
-struct RTOTXTRowRectArray_ {
-    RTOTXTRectArray *data;
-    size_t length;//真实长度
-    size_t count;//元素个数
-};
-
-void txt_row_rect_array_create(RTOTXTRowRectArray *array)
-{
-    RTOTXTRowRectArray object = calloc(1, sizeof(struct RTOTXTRowRectArray_));
-    
-    size_t length = 20;
-    object->length = length;
-    object->data = calloc(length, sizeof(RTOTXTRectArray));
-    
-    *array = object;
-}
-
-RTOTXTRectArray txt_row_rect_array_current(RTOTXTRowRectArray array)
-{
-    if (array->count) {
-        return array->data[array->count-1];
-    }
-    return NULL;
-}
-
-size_t txt_row_rect_array_index_from(RTOTXTRowRectArray array, size_t r_index, size_t c_index)
-{
-    size_t result=0;
-    for (size_t i=0; i<array->count; i++) {
-        RTOTXTRectArray *data = array->data;
-        RTOTXTRectArray row_array = data[i];
-        if (r_index == i) {
-            for (size_t j=0; j<row_array->count; j++) {
-                if (c_index == j) {
-                    result += j;
-                    break;
-                }
-            }
-            break;
-        }
-        result += row_array->count;
-    }
-    return result;
-}
-
-bool txt_row_rect_array_add(struct RTOTXTRowRectArray_ *array,RTOTXTRectArray item)
-{
-    if( !((*array).count < (*array).length) ) {
-        size_t length = (*array).length + 20;
-        RTOTXTRectArray *data = realloc((*array).data, length*sizeof(struct RTOTXTRectArray_));
-        if (data == NULL) {
-            return false;
-        }
-        (*array).data = data;
-        (*array).length = length;
-    }
-    (*array).data[(*array).count] = item;
-    (*array).count+=1;
-    return true;
-}
-
-void txt_row_rect_array_destroy(RTOTXTRowRectArray *array)
-{
-    if ((*array)->count > 0) {
-        for (size_t i = 0; i< (*array)->count; i++) {
-            RTOTXTRectArray oneElem = (*array)->data[i];
-            txt_rect_array_destroy(&oneElem);
-        }
-    }
-    free((*array)->data);
-    
-    free(*array);
-    *array = NULL;
-}
-
-//------
 
 //------RTOTXTPageCursorArray_ 数组只有创建、新增元素、销毁操作
 struct RTOTXTPageCursorArray_ {
@@ -300,9 +168,6 @@ void txt_worker_destroy(TLTXTWorker *worker)
     FT_Done_Face    (object->face);
     FT_Done_FreeType(object->library);
     free(object->codepoints);
-    if (object->array != NULL) {
-        txt_row_rect_array_destroy(&object->array);
-    }
     if (object->cursor_array != NULL) {
         txt_page_cursor_array_destroy(&object->cursor_array);
     }
@@ -427,7 +292,7 @@ size_t txt_worker_total_page(TLTXTWorker *worker)
     return (*worker)->total_page;
 }
 
-uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
+uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRectArray *page_row_rect_array)
 {
     if (!txt_worker_next_able(worker)) {
         return NULL;
@@ -472,12 +337,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
     unsigned int aLineMinCount = totalWidth/(face->size->metrics.max_advance/64);
     size_t before_cursor = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0;
     size_t now_cursor = before_cursor;
-    RTOTXTRowRectArray row_rect_array;
+    TLTXTRowRectArray row_rect_array;
     txt_row_rect_array_create(&row_rect_array);
-    if ((*worker)->array != NULL) {
-        txt_row_rect_array_destroy(&(*worker)->array);
-    }
-    (*worker)->array = row_rect_array;
+    *page_row_rect_array = row_rect_array;
     for (size_t i = before_cursor; i<glyph_count; i++) {
         
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
@@ -517,7 +379,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
             continue;
         }
         if (typeSettingX == 0){
-            RTOTXTRectArray rect_array;
+            TLTXTRectArray rect_array;
             txt_rect_array_create(&rect_array);
             txt_row_rect_array_add(row_rect_array, rect_array);
         }
@@ -528,8 +390,8 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
             break;
         }
         
-        RTOTXTRectArray rect_array = txt_row_rect_array_current(row_rect_array);
-        struct RTOTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+(int)aCharAdvance,typeSettingY+wholeFontHeight};
+        TLTXTRectArray rect_array = txt_row_rect_array_current(row_rect_array);
+        struct TLTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+(int)aCharAdvance,typeSettingY+wholeFontHeight};
         txt_rect_array_add(rect_array, one_rect);
         //Y方向偏移量 根据字符各不相同
         unsigned int heightDelta = (unsigned int)(face->size->metrics.ascender)/64 - face->glyph->bitmap_top;
@@ -588,17 +450,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page)
     return textureBuffer;
 }
 
-
-void txt_rect_values(RTOTXTRect* rect, int *x, int *y, int *xx, int *yy)
-{
-    if (rect != NULL) {
-        *x = (*rect)->x;
-        *y = (*rect)->y;
-        *xx = (*rect)->xx;
-        *yy = (*rect)->yy;
-    }
-}
-
 uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_t end, size_t *count)
 {
     size_t length = end - start + 1;
@@ -618,20 +469,20 @@ uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_
 /// @param x x坐标
 /// @param y y坐标
 /// @param contains 坐标包含在文字区域内
-uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,RTOTXTRect* contains)
+uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,TLTXTRect* contains)
 {
-    RTOTXTRowRectArray array = (*worker)->array;
+    TLTXTRowRectArray array = (*worker)->array;
     uint32_t result = 0;
     size_t page = (*worker)->current_page;
     size_t index = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0 ;
     for (size_t i=0; i<array->count; i++) {
-        RTOTXTRectArray *data = array->data;
-        RTOTXTRectArray row_array = data[i];
+        TLTXTRectArray *data = array->data;
+        TLTXTRectArray row_array = data[i];
         for (size_t j=0; j<row_array->count; j++) {
-            struct RTOTXTRect_ one_rect = row_array->data[j];
+            struct TLTXTRect_ one_rect = row_array->data[j];
             if (y >= one_rect.y && y <= one_rect.yy) {
                 if (x >= one_rect.x && x <= one_rect.xx) {
-                    *contains = calloc(1, sizeof(struct RTOTXTRect_));
+                    *contains = calloc(1, sizeof(struct TLTXTRect_));
                     (*contains)->x = one_rect.x;
                     (*contains)->y = one_rect.y;
                     (*contains)->xx = one_rect.xx;
@@ -657,9 +508,9 @@ uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,RTOTXTRect* con
     return result;
 }
 
-void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index)
+void txt_worker_rect_array_from(TLTXTWorker *worker, TLTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index)
 {
-    RTOTXTRowRectArray array = (*worker)->array;
+    TLTXTRowRectArray array = (*worker)->array;
     
     bool start_finded = false;
     bool end_finded = false;
@@ -668,10 +519,10 @@ void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array
     size_t index = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0 ;
     
     for (size_t i=0; i<array->count; i++) {
-        RTOTXTRectArray *data = array->data;
-        RTOTXTRectArray row_array = data[i];
+        TLTXTRectArray *data = array->data;
+        TLTXTRectArray row_array = data[i];
         for (size_t j=0; j<row_array->count; j++) {
-            struct RTOTXTRect_ one_rect = row_array->data[j];
+            struct TLTXTRect_ one_rect = row_array->data[j];
             if (!start_finded) {
                 if (sy >= one_rect.y && sy <= one_rect.yy) {
                     //开始和结束在同一行
@@ -702,11 +553,11 @@ void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array
                             }
                             
                             for (size_t k=j; k<row_array->count; k++) {
-                                struct RTOTXTRect_ k_one_rect = row_array->data[k];
+                                struct TLTXTRect_ k_one_rect = row_array->data[k];
                                 if (ex >= k_one_rect.x && ex <= k_one_rect.xx) {
                                     end_finded = true;
                                     
-                                    struct RTOTXTRect_ result = {one_rect.x, one_rect.y, k_one_rect.xx, k_one_rect.yy};
+                                    struct TLTXTRect_ result = {one_rect.x, one_rect.y, k_one_rect.xx, k_one_rect.yy};
                                     txt_rect_array_add(*rect_array, result);
                                     
                                     *e_index = txt_row_rect_array_index_from(array, i, k);
@@ -722,11 +573,11 @@ void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array
                         if (sx >= one_rect.x && sx <= one_rect.xx) {
                             start_finded = true;
                             
-                            struct RTOTXTRect_ last_rect = row_array->data[row_array->count-1];
+                            struct TLTXTRect_ last_rect = row_array->data[row_array->count-1];
                             if (*rect_array == NULL) {
                                 txt_rect_array_create(rect_array);
                             }
-                            struct RTOTXTRect_ result = {one_rect.x, one_rect.y, last_rect.xx, last_rect.yy};
+                            struct TLTXTRect_ result = {one_rect.x, one_rect.y, last_rect.xx, last_rect.yy};
                             txt_rect_array_add(*rect_array, result);
                             
                             *s_index = txt_row_rect_array_index_from(array, i, j);
@@ -745,8 +596,8 @@ void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array
                     if (ex >= one_rect.x && ex <= one_rect.xx) {
                         end_finded = true;
                         
-                        struct RTOTXTRect_ first_rect = row_array->data[0];
-                        struct RTOTXTRect_ result = {first_rect.x, first_rect.y, one_rect.xx, one_rect.yy};
+                        struct TLTXTRect_ first_rect = row_array->data[0];
+                        struct TLTXTRect_ result = {first_rect.x, first_rect.y, one_rect.xx, one_rect.yy};
                         txt_rect_array_add(*rect_array, result);
                         
                         *e_index = txt_row_rect_array_index_from(array, i, j);
@@ -764,9 +615,9 @@ void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array
                 
                 if (record_row) {
                     //记录这一行
-                    struct RTOTXTRect_ first_rect = row_array->data[0];
-                    struct RTOTXTRect_ last_rect = row_array->data[row_array->count-1];
-                    struct RTOTXTRect_ result = {first_rect.x, first_rect.y, last_rect.xx, last_rect.yy};
+                    struct TLTXTRect_ first_rect = row_array->data[0];
+                    struct TLTXTRect_ last_rect = row_array->data[row_array->count-1];
+                    struct TLTXTRect_ result = {first_rect.x, first_rect.y, last_rect.xx, last_rect.yy};
                     txt_rect_array_add(*rect_array, result);
                     
                     if (end_finded) {
@@ -787,14 +638,4 @@ void txt_worker_rect_array_from(TLTXTWorker *worker, RTOTXTRectArray *rect_array
     
     *s_index += index;
     *e_index += index;
-}
-
-size_t txt_worker_rect_array_get_count(RTOTXTRectArray *rect_array)
-{
-    return (*rect_array)->count;
-}
-
-RTOTXTRect txt_worker_rect_array_object_at(RTOTXTRectArray *rect_array, int index)
-{
-    return &(*rect_array)->data[index];
 }
