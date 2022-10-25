@@ -96,7 +96,9 @@
         NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(pagingDate) ));
 #endif
         //调用三次对应绘制3页
-        for (NSInteger i=0; i<3; i++) {
+        size_t total_page = txt_worker_total_page(&self->_worker);
+        NSInteger loopCount = total_page > 3 ? 3 : total_page;
+        for (NSInteger i=0; i<loopCount; i++) {
             TLTXTRowRectArray row_rect_array = NULL;
             uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker, i, &row_rect_array);
             if (bitmap != NULL) {

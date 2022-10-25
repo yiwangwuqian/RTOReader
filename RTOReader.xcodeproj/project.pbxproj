@@ -85,6 +85,7 @@
 		2B6B44AC29001F4F002929A9 /* TLFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AA29001F4F002929A9 /* TLFontManager.m */; };
 		2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */; };
 		2B6B44B029001FC0002929A9 /* CGFontToFontData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */; };
+		2BBFD54D2906C00300FAC492 /* TLTXTTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BBFD54C2906BE4C00FAC492 /* TLTXTTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2D92229F054BF74D702D88FC /* libPods-TextLayout.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E375EDC9A91E25839E0C285D /* libPods-TextLayout.a */; };
 		4488E39591505E5257DB2838 /* libPods-RTOReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB240430C4306B4C593811D /* libPods-RTOReader.a */; };
 		867563FC24699AB200A6D4EB /* 站酷庆科黄油体.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */; };
@@ -148,6 +149,7 @@
 		2B6B44AA29001F4F002929A9 /* TLFontManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLFontManager.m; sourceTree = "<group>"; };
 		2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGFontToFontData.h; sourceTree = "<group>"; };
 		2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGFontToFontData.m; sourceTree = "<group>"; };
+		2BBFD54C2906BE4C00FAC492 /* TLTXTTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLTXTTypes.h; sourceTree = "<group>"; };
 		2C1F116CF6E15399E6BA649C /* Pods-RTOReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RTOReader.debug.xcconfig"; path = "Target Support Files/Pods-RTOReader/Pods-RTOReader.debug.xcconfig"; sourceTree = "<group>"; };
 		867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "站酷庆科黄油体.ttf"; sourceTree = "<group>"; };
 		867BC4FB26AB199100AC154D /* GMenuViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMenuViewContainer.h; sourceTree = "<group>"; };
@@ -278,6 +280,7 @@
 				2B5605D9290682410093EF38 /* TLTXTRowRect.c */,
 				2B6B44A229001E7D002929A9 /* TLTXTUtil.h */,
 				2B6B44A129001E7C002929A9 /* TLTXTUtil.c */,
+				2BBFD54C2906BE4C00FAC492 /* TLTXTTypes.h */,
 				2B2E4A002900F09700A41EEA /* TLTXTCore.h */,
 				2B2E4A012900F09700A41EEA /* TLTXTCore.m */,
 				2B5605D3290644970093EF38 /* TLTXTCachePage.h */,
@@ -471,6 +474,7 @@
 				2B6B44A829001E7D002929A9 /* TLTXTUtil.h in Headers */,
 				2B5605DA290682410093EF38 /* TLTXTRowRect.h in Headers */,
 				2B6B44AB29001F4F002929A9 /* TLFontManager.h in Headers */,
+				2BBFD54D2906C00300FAC492 /* TLTXTTypes.h in Headers */,
 				2B2E4A022900F09700A41EEA /* TLTXTCore.h in Headers */,
 				2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */,
 				2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */,
