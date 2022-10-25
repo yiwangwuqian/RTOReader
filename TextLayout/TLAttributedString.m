@@ -46,4 +46,39 @@
     }
 }
 
+- (NSArray<NSDictionary *> *_Nullable)attributesCheckRange:(NSRange)range haveSubRanges:(NSArray *_Nullable*_Nullable)subRanges
+{
+    if (self.rangeArray.count > 0 && self.attributesArray.count > 0 && subRanges != nil) {
+        NSMutableArray *rangeArray = [[NSMutableArray alloc] init];
+        NSMutableArray<NSDictionary *> *attributesArray = [[NSMutableArray alloc] init];
+        
+        for (NSInteger i=0; i<self.rangeArray.count; i++) {
+            NSValue *oneRangeValue = self.rangeArray[i];
+            NSRange oneRange = [oneRangeValue rangeValue];
+            if (NSLocationInRange(range.location, oneRange)) {
+                
+                if (range.location + range.length < oneRange.location + oneRange.length) {
+                    //被包含了
+                    [rangeArray addObject:[NSValue valueWithRange:range]];
+                    [attributesArray addObject:[self.attributesArray objectAtIndex:i]];
+                } else {
+                    //两者有重合区域
+                    NSInteger length = oneRange.location + oneRange.length - range.location;
+                    [rangeArray addObject:[NSValue valueWithRange:NSMakeRange(range.location, length)]];
+                    [attributesArray addObject:[self.attributesArray objectAtIndex:i]];
+                }
+            } else if (NSLocationInRange(range.location+range.length, oneRange)) {
+                //两者有重合区域
+                NSInteger length = range.location+range.length - oneRange.location;
+                [rangeArray addObject:[NSValue valueWithRange:NSMakeRange(oneRange.location, length)]];
+                [attributesArray addObject:[self.attributesArray objectAtIndex:i]];
+            }
+        }
+        
+        *subRanges = rangeArray;
+        return attributesArray;
+    }
+    return nil;
+}
+
 @end

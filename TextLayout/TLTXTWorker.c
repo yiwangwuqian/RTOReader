@@ -14,6 +14,8 @@
 
 #include "hb-ft.h"
 
+#include "TLTXTTypes.h"
+
 typedef struct RTOTXTPageCursorArray_* RTOTXTPageCursorArray;
 
 //------Private methods

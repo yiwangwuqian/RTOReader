@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2B233A64290782DE00C60F1A /* TLAttributedString.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B233A62290782DE00C60F1A /* TLAttributedString.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B233A65290782DE00C60F1A /* TLAttributedString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B233A63290782DE00C60F1A /* TLAttributedString.m */; };
+		2B233A692907B42900C60F1A /* TLTXTAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B233A672907B42900C60F1A /* TLTXTAttributes.h */; };
+		2B233A6A2907B42900C60F1A /* TLTXTAttributes.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B233A682907B42900C60F1A /* TLTXTAttributes.c */; };
 		2B2E4A022900F09700A41EEA /* TLTXTCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B2E4A002900F09700A41EEA /* TLTXTCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B2E4A032900F09700A41EEA /* TLTXTCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B2E4A012900F09700A41EEA /* TLTXTCore.m */; };
 		2B2E4A0D29016F3300A41EEA /* RTOReadContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B2E4A0C29016F3300A41EEA /* RTOReadContentViewController.m */; };
@@ -132,6 +134,8 @@
 /* Begin PBXFileReference section */
 		2B233A62290782DE00C60F1A /* TLAttributedString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLAttributedString.h; sourceTree = "<group>"; };
 		2B233A63290782DE00C60F1A /* TLAttributedString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLAttributedString.m; sourceTree = "<group>"; };
+		2B233A672907B42900C60F1A /* TLTXTAttributes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLTXTAttributes.h; sourceTree = "<group>"; };
+		2B233A682907B42900C60F1A /* TLTXTAttributes.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TLTXTAttributes.c; sourceTree = "<group>"; };
 		2B2E4A002900F09700A41EEA /* TLTXTCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLTXTCore.h; sourceTree = "<group>"; };
 		2B2E4A012900F09700A41EEA /* TLTXTCore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLTXTCore.m; sourceTree = "<group>"; };
 		2B2E4A0B29016F3300A41EEA /* RTOReadContentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTOReadContentViewController.h; sourceTree = "<group>"; };
@@ -282,6 +286,8 @@
 				2B6B449D29001E7C002929A9 /* TLTXTWorker.c */,
 				2B5605D8290682410093EF38 /* TLTXTRowRect.h */,
 				2B5605D9290682410093EF38 /* TLTXTRowRect.c */,
+				2B233A672907B42900C60F1A /* TLTXTAttributes.h */,
+				2B233A682907B42900C60F1A /* TLTXTAttributes.c */,
 				2B6B44A229001E7D002929A9 /* TLTXTUtil.h */,
 				2B6B44A129001E7C002929A9 /* TLTXTUtil.c */,
 				2BBFD54C2906BE4C00FAC492 /* TLTXTTypes.h */,
@@ -486,6 +492,7 @@
 				2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */,
 				2B6B445B29001ACD002929A9 /* TextLayout.h in Headers */,
 				2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */,
+				2B233A692907B42900C60F1A /* TLTXTAttributes.h in Headers */,
 				2B5605D5290644970093EF38 /* TLTXTCachePage.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -701,6 +708,7 @@
 				2B6B446B29001AFB002929A9 /* hb-draw.cc in Sources */,
 				2B6B447129001B0C002929A9 /* hb-gobject-structs.cc in Sources */,
 				2B6B449929001BB7002929A9 /* hb-subset-input.cc in Sources */,
+				2B233A6A2907B42900C60F1A /* TLTXTAttributes.c in Sources */,
 				2B6B448E29001B9A002929A9 /* hb-ot-shape.cc in Sources */,
 				2B6B448929001B8B002929A9 /* hb-ot-shape-complex-use-table.cc in Sources */,
 				2B6B447C29001B63002929A9 /* hb-ot-math.cc in Sources */,

@@ -12,6 +12,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+
+extern "C" {
+#endif
 typedef struct TLTXTRect_* TLTXTRect;
 typedef struct TLTXTRectArray_* TLTXTRectArray;
 typedef struct TLTXTRowRectArray_* TLTXTRowRectArray;
@@ -72,5 +76,9 @@ void txt_rect_values(TLTXTRect* rect, int *x, int *y, int *xx, int *yy);
 /// @param ex 结束x
 /// @param ey 结束y
 void txt_worker_rect_array_from(TLTXTRowRectArray array, TLTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index, size_t start_cursor);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* RTOTXTRowRect_h */

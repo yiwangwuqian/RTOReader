@@ -19,6 +19,6 @@ typedef enum TLTXTAttributesNameType{
     TLTXTAttributesNameTypeColor,       //文字颜色
     TLTXTAttributesNameTypeParagraph,   //段落
     TLTXTAttributesNameTypePlaceholder, //占位
-};
+} TLTXTAttributesNameType;
 
 #endif /* TLTXTTypes_h */
