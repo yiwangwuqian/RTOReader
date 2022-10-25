@@ -75,7 +75,9 @@
             self.txtCore.drawDelegate = self;
             CGFloat drawWidth = CGRectGetWidth(self.bounds) * [UIScreen mainScreen].scale;
             CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
-            [self.txtCore resetFilePath:self.filePath pageSize:CGSizeMake(drawWidth, drawHeight)];
+            NSString *fileContent = [[NSString alloc] initWithContentsOfFile:self.filePath encoding:NSUTF8StringEncoding error:nil];
+            TLAttributedString *aString = [[TLAttributedString alloc] initWithString:fileContent attributes:@{}];
+            [self.txtCore resetAttributedString:aString pageSize:CGSizeMake(drawWidth, drawHeight)];
         }
     }
 }

@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TLAttributedString.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,10 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,weak)id<TLTXTCoreDrawDelegate>  drawDelegate;
 
 /**
- *重置文件路径和页面大小
+ *重置内容和页面大小
  */
-- (void)resetFilePath:(NSString *)path pageSize:(CGSize)size;
-
+- (void)resetAttributedString:(TLAttributedString *)aString pageSize:(CGSize)size;
 
 /**
  *获取上一页的内容，并继续向上一页进一步

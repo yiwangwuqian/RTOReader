@@ -22,7 +22,7 @@
 
 @interface TLTXTCore()
 
-@property(nonatomic)NSString            *filePath;
+@property(nonatomic)TLAttributedString  *attributedString;
 @property(nonatomic)CGSize              pageSize;
 @property(nonatomic)TLTXTWorker         worker;
 
@@ -61,25 +61,24 @@
     return self;
 }
 
-- (void)resetFilePath:(NSString *)path pageSize:(CGSize)size
+- (void)resetAttributedString:(TLAttributedString *)aString pageSize:(CGSize)size
 {
-    if (!path) {
+    if (!aString) {
         return;
     } else if (CGSizeEqualToSize(size, CGSizeZero)) {
         return;
     }
     
-    self.filePath = path;
+    self.attributedString = aString;
     self.pageSize = size;
     
     if (_worker) {
-        //TODO: 销毁_worker
+        txt_worker_destroy(&_worker);
         _worker = NULL;
     }
     
-    char *content;
-    txt_file_content([self.filePath cStringUsingEncoding:NSUTF8StringEncoding], &content, NULL);
-    txt_worker_create(&_worker, content, size.width, size.height);
+    //TODO: 第二个参数不是const的需要改一下
+    txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
     
     self.pageNum = -1;
     [self firstTimeDraw];
