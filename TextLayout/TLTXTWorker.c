@@ -25,6 +25,8 @@ bool txt_page_cursor_array_add(struct RTOTXTPageCursorArray_ *array,size_t curso
 
 void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array);
 
+void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b);
+
 //------
 
 struct TLTXTWorker_ {
@@ -355,8 +357,8 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     totalWidth = (*worker)->width;
     totalHeight = (*worker)->height;
     
-    size_t textureBufLength = sizeof(uint8_t) * totalWidth * totalHeight * 1;
-    uint8_t *textureBuffer = (uint8_t *)calloc(textureBufLength, sizeof(uint8_t));
+    size_t texturePixelCount = sizeof(uint8_t) * totalWidth * totalHeight * 1;
+    uint8_t *textureBuffer = (uint8_t *)calloc(texturePixelCount*4, sizeof(uint8_t));
     unsigned int typeSettingX=0;
     unsigned int typeSettingY=0;
     unsigned int aLineHeightMax=0;
@@ -364,20 +366,44 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     unsigned int aLineMinCount = totalWidth/(face->size->metrics.max_advance/64);
     size_t before_cursor = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0;
     
-    TLRangeArray rArray;
-    TLTXTAttributesArray aArray;
+    TLRangeArray rArray = NULL;
+    TLTXTAttributesArray aArray = NULL;
     if ((*worker)->range_attributes_func) {
         size_t next_cursor = page < (*worker)->total_page ? (*(*worker)->cursor_array).data[page] : glyph_count-1;
         struct TLRange_ page_range = {before_cursor, next_cursor-before_cursor};
         (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
     }
     
+    size_t range_total_count = tl_range_array_get_count(rArray);
+    int64_t last_range_index = range_total_count > 0 ? 0 : -1;
+    size_t last_red = 0;
+    size_t last_green = 0;
+    size_t last_blue = 0;
+    
     size_t now_cursor = before_cursor;
     TLTXTRowRectArray row_rect_array;
     txt_row_rect_array_create(&row_rect_array);
     *page_row_rect_array = row_rect_array;
     for (size_t i = before_cursor; i<glyph_count; i++) {
-        
+        while (last_range_index >=0 && last_range_index < range_total_count) {
+            TLRange onceRange = tl_range_array_object_at(rArray, last_range_index);
+            if (onceRange->location >= i && i < onceRange->location+onceRange->length) {
+                TLTXTAttributes onceAttributes = tl_txt_attributes_array_object_at(aArray, last_range_index);
+                if (onceAttributes->color) {
+                    txt_color_split_from(onceAttributes->color, &last_red, &last_green, &last_blue);
+                } else {
+                    last_red = 0;
+                    last_green = 0;
+                    last_blue = 0;
+                }
+                break;
+            } else {
+                last_red = 0;
+                last_green = 0;
+                last_blue = 0;
+                last_range_index++;
+            }
+        }
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
         FT_Int32 flags =  FT_LOAD_DEFAULT;
         
@@ -440,16 +466,24 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                  * 2.水平方向需要绘制的区域范围
                  */
                 unsigned int pixelPosition = absX+totalWidth*absY;
-                if (pixelPosition>textureBufLength){
+                if (pixelPosition>texturePixelCount){
                     //此时操作的像素已经不在纹理面积里,观察一下再说
                     now_cursor = i;
                     break;
                 }else if (row>heightDelta-1 && row<heightDelta+bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width){
-                    textureBuffer[pixelPosition] = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*(row-heightDelta)];
+                    unsigned char pixelValue = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*(row-heightDelta)];
+                    textureBuffer[pixelPosition*4] = pixelValue > 0 ? last_red : 255;
+                    textureBuffer[pixelPosition*4+1] = pixelValue > 0 ? last_green : 255;
+                    textureBuffer[pixelPosition*4+2] = pixelValue > 0 ? last_blue : 255;
+                    textureBuffer[pixelPosition*4+3] = pixelValue > 0 ? pixelValue : 255;
                 }else{
                     
                     if (heightDelta == 0 && row>0 && row<bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width) {
-                        textureBuffer[pixelPosition] = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*row];
+                        unsigned char pixelValue = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*row];
+                        textureBuffer[pixelPosition*4] = pixelValue > 0 ? last_red : 255;
+                        textureBuffer[pixelPosition*4+1] = pixelValue > 0 ? last_green : 255;
+                        textureBuffer[pixelPosition*4+2] = pixelValue > 0 ? last_blue : 255;
+                        textureBuffer[pixelPosition*4+3] = pixelValue > 0 ? pixelValue : 255;
                     } else {
                         
                         //显示竖线
@@ -468,7 +502,10 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                         //                            textureBuffer[absX+totalWidth*absY] = 0;
                         //                        }
                         
-                        textureBuffer[absX+totalWidth*absY] = 0;
+                        textureBuffer[pixelPosition*4] = 255;
+                        textureBuffer[pixelPosition*4+1] = 255;
+                        textureBuffer[pixelPosition*4+2] = 255;
+                        textureBuffer[pixelPosition*4+3] = 255;
                     }
                 }
             }
@@ -482,6 +519,12 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     }
     if (before_cursor == now_cursor) {
         now_cursor += glyph_count - before_cursor;
+    }
+    if (rArray) {
+        tl_range_array_destroy(&rArray);
+    }
+    if (aArray) {
+        tl_txt_attributes_array_destroy(&aArray);
     }
     return textureBuffer;
 }
@@ -548,4 +591,12 @@ size_t txt_worker_page_cursor_array_get(TLTXTWorker worker,size_t page)
 {
     RTOTXTPageCursorArray array = worker->cursor_array;
     return array->data[page];
+}
+
+void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b)
+{
+    int32_t c = (int32_t)color;
+    *r = (c >> 16) & 0xFF;
+    *g = (c >> 8) & 0xFF;
+    *b = (c) & 0xFF;
 }

@@ -362,29 +362,13 @@ static void rangeAttributesFunc(TLTXTWorker worker,
 
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale
 {
-    NSInteger componentsCount = 4;
-    uint8_t *desBytes = calloc(bWidth*bHeight*4, sizeof(uint8_t));
-    for (NSInteger x=0; x<bWidth; x++) {
-        for (NSInteger y=0; y<bHeight; y++) {
-            NSInteger index = y*bWidth+x;
-            uint8_t value = bytes[index];
-            if (value) {
-                desBytes[index*componentsCount+3] = value;
-            } else {
-                desBytes[index*componentsCount] = 255;
-                desBytes[index*componentsCount+1] = 255;
-                desBytes[index*componentsCount+2] = 255;
-                desBytes[index*componentsCount+3] = 255;
-            }
-        }
-    }
-    
+    NSInteger componentsCount = 4;    
     CGFloat width = bWidth;
     CGFloat height = bHeight;
     
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     
-    CGContextRef contextRef = CGBitmapContextCreate(desBytes,                 // Pointer to backing data
+    CGContextRef contextRef = CGBitmapContextCreate(bytes,                 // Pointer to backing data
                                                     width,                       // Width of bitmap
                                                     height,                       // Height of bitmap
                                                     8,                          // Bits per component
@@ -393,7 +377,6 @@ static void rangeAttributesFunc(TLTXTWorker worker,
                                                     kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big); // Bitmap info flags
     CGImageRef mainViewContentBitmapContext = CGBitmapContextCreateImage(contextRef);
     CGContextRelease(contextRef);
-    free(desBytes);
     free(bytes);
     UIImage *result = [UIImage imageWithCGImage:mainViewContentBitmapContext scale:scale orientation:UIImageOrientationUp];
     CGImageRelease(mainViewContentBitmapContext);
