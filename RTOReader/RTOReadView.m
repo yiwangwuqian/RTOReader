@@ -77,6 +77,7 @@
             CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
             NSString *fileContent = [[NSString alloc] initWithContentsOfFile:self.filePath encoding:NSUTF8StringEncoding error:nil];
             TLAttributedString *aString = [[TLAttributedString alloc] initWithString:fileContent attributes:@{}];
+            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFFFFFF)} range:NSMakeRange(30, 40)];
             [self.txtCore resetAttributedString:aString pageSize:CGSizeMake(drawWidth, drawHeight)];
         }
     }

@@ -30,11 +30,11 @@ struct TLRange_ {
 };
 
 typedef struct TLTXTAttributes_ {
-    TLTXTAttributesNameType fontSize;
-    TLTXTAttributesNameType fontStyle;
-    TLTXTAttributesNameType color;
-    TLTXTAttributesNameType paragraph;
-    TLTXTAttributesNameType placeholder;
+    size_t fontSize;
+    size_t fontStyle;
+    size_t color;
+    size_t paragraph;
+    size_t placeholder;
 } *TLTXTAttributes;
 
 //------TLRangeArray即range数组

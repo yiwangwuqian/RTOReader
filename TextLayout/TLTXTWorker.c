@@ -47,6 +47,9 @@ struct TLTXTWorker_ {
     
     size_t total_page;//总页数
     RTOTXTPageCursorArray cursor_array;
+    
+    TLTXTWorker_RangeAttributesFunc range_attributes_func;
+    void *context;
 };
 
 //------RTOTXTPageCursorArray_ 数组只有创建、新增元素、销毁操作
@@ -160,6 +163,28 @@ void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
     } else {
         FT_Done_FreeType(library);
     }
+}
+
+void txt_worker_set_range_attributes_callback(TLTXTWorker worker, TLTXTWorker_RangeAttributesFunc func)
+{
+    if (worker != NULL) {
+        worker->range_attributes_func = func;
+    }
+}
+
+void txt_worker_set_context(TLTXTWorker worker, void *context)
+{
+    if (worker != NULL) {
+        worker->context = context;
+    }
+}
+
+void *txt_worker_get_context(TLTXTWorker worker)
+{
+    if (worker != NULL) {
+        return worker->context;
+    }
+    return NULL;
 }
 
 void txt_worker_destroy(TLTXTWorker *worker)
@@ -338,6 +363,15 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
     unsigned int aLineMinCount = totalWidth/(face->size->metrics.max_advance/64);
     size_t before_cursor = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0;
+    
+    TLRangeArray rArray;
+    TLTXTAttributesArray aArray;
+    if ((*worker)->range_attributes_func) {
+        size_t next_cursor = page < (*worker)->total_page ? (*(*worker)->cursor_array).data[page] : glyph_count-1;
+        struct TLRange_ page_range = {before_cursor, next_cursor-before_cursor};
+        (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
+    }
+    
     size_t now_cursor = before_cursor;
     TLTXTRowRectArray row_rect_array;
     txt_row_rect_array_create(&row_rect_array);

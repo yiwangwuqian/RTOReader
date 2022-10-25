@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "TLTXTRowRect.h"
+#include "TLTXTAttributes.h"
 
 #ifdef __cplusplus
 
@@ -20,7 +21,18 @@ extern "C" {
 
 typedef struct TLTXTWorker_* TLTXTWorker;
 
+typedef void (*TLTXTWorker_RangeAttributesFunc)(TLTXTWorker worker,
+                                                TLRange range,
+                                                TLRangeArray *rArray,
+                                                TLTXTAttributesArray *aArray);
+
 void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height);
+
+void txt_worker_set_range_attributes_callback(TLTXTWorker worker, TLTXTWorker_RangeAttributesFunc func);
+
+void txt_worker_set_context(TLTXTWorker worker, void *context);
+
+void *txt_worker_get_context(TLTXTWorker worker);
 
 /// TLTXTWorker是否可以向后翻页
 /// - Parameter worker: worker对象

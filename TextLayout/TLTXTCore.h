@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#include "TLTXTTypes.h"
 #import "TLAttributedString.h"
 
 

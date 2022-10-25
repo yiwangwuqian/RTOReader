@@ -55,6 +55,11 @@
         for (NSInteger i=0; i<self.rangeArray.count; i++) {
             NSValue *oneRangeValue = self.rangeArray[i];
             NSRange oneRange = [oneRangeValue rangeValue];
+            
+            /**
+             *第一个if和第一个else if，假设range被oneRange包含或者两者有部分区域是重合的
+             *第二个else if，假设range可以包含oneRange
+             */
             if (NSLocationInRange(range.location, oneRange)) {
                 
                 if (range.location + range.length < oneRange.location + oneRange.length) {
@@ -71,6 +76,9 @@
                 //两者有重合区域
                 NSInteger length = range.location+range.length - oneRange.location;
                 [rangeArray addObject:[NSValue valueWithRange:NSMakeRange(oneRange.location, length)]];
+                [attributesArray addObject:[self.attributesArray objectAtIndex:i]];
+            } else if (NSLocationInRange(oneRange.location, range)) {
+                [rangeArray addObject:[NSValue valueWithRange:NSMakeRange(oneRange.location, oneRange.length)]];
                 [attributesArray addObject:[self.attributesArray objectAtIndex:i]];
             }
         }

@@ -39,6 +39,60 @@
 @property(nonatomic)dispatch_semaphore_t    previousPageSemaphore;
 @end
 
+static void rangeAttributesFunc(TLTXTWorker worker,
+                                TLRange range,
+                                TLRangeArray *rArray,
+                                TLTXTAttributesArray *aArray)
+{
+    TLTXTCore *txtCore = (__bridge TLTXTCore *)(txt_worker_get_context(worker));
+    NSArray *subRanges = nil;
+    NSArray<NSDictionary *> *attributes =
+    [txtCore.attributedString attributesCheckRange:NSMakeRange(range->location, range->length) haveSubRanges:&subRanges];
+    //TEST
+    NSLog(@"subRanges:%@ attributes:%@", subRanges, attributes);
+    //TEST END
+    if (subRanges != nil && attributes != nil) {
+        tl_range_array_create(rArray);
+        tl_txt_attributes_array_create(aArray);
+        
+        for (NSInteger i=0; i<subRanges.count; i++) {
+            NSValue *rValue = subRanges[i];
+            NSRange oneRange = [rValue rangeValue];
+            struct TLRange_ tlRange = {oneRange.location,oneRange.length};
+            tl_range_array_add(*rArray, tlRange);
+            
+            NSDictionary *oneAttributeDict = attributes[i];
+            struct TLTXTAttributes_ tlAttributes = {0,0,0,0,0};
+            for (NSNumber *typeNumber in oneAttributeDict.allKeys) {
+                NSInteger result = [oneAttributeDict[typeNumber] integerValue];
+                TLTXTAttributesNameType oneType = (TLTXTAttributesNameType)[typeNumber integerValue];
+                switch (oneType) {
+                    case TLTXTAttributesNameTypeFontSize:
+                        tlAttributes.fontSize = result;
+                        break;
+                    case TLTXTAttributesNameTypeFontStyle:
+                        tlAttributes.fontStyle = result;
+                        break;
+                    case TLTXTAttributesNameTypeColor:
+                        tlAttributes.color = result;
+                        break;
+                        /*
+                    case TLTXTAttributesNameTypeParagraph:
+                        tlAttributes.paragraph = result;
+                        break;
+                    case TLTXTAttributesNameTypePlaceholder:
+                        tlAttributes.placeholder = result;
+                        break;
+                         */
+                    default:
+                        break;
+                }
+            }
+            tl_txt_attributes_array_add(*aArray, tlAttributes);
+        }
+    }
+}
+
 @implementation TLTXTCore
 
 - (void)dealloc
@@ -79,6 +133,8 @@
     
     //TODO: 第二个参数不是const的需要改一下
     txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
+    txt_worker_set_context(_worker, (__bridge void *)(self));
+    txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
     
     self.pageNum = -1;
     [self firstTimeDraw];
