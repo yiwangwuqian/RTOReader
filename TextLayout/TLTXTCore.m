@@ -362,7 +362,7 @@ static void rangeAttributesFunc(TLTXTWorker worker,
 
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale
 {
-    NSInteger componentsCount = 4;    
+    NSInteger componentsCount = 4;
     CGFloat width = bWidth;
     CGFloat height = bHeight;
     

@@ -350,7 +350,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     
     unsigned int glyph_count;
     hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
-    hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(buf, &glyph_count);
     
     unsigned int totalWidth=0;
     unsigned int totalHeight=0;
@@ -363,7 +362,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     unsigned int typeSettingY=0;
     unsigned int aLineHeightMax=0;
     unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
-    unsigned int aLineMinCount = totalWidth/(face->size->metrics.max_advance/64);
     size_t before_cursor = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0;
     
     TLRangeArray rArray = NULL;
@@ -385,9 +383,11 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     txt_row_rect_array_create(&row_rect_array);
     *page_row_rect_array = row_rect_array;
     for (size_t i = before_cursor; i<glyph_count; i++) {
+        
         while (last_range_index >=0 && last_range_index < range_total_count) {
             TLRange onceRange = tl_range_array_object_at(rArray, last_range_index);
-            if (onceRange->location >= i && i < onceRange->location+onceRange->length) {
+            size_t locationSumLength = onceRange->location+onceRange->length;
+            if (onceRange->location <= i && i < locationSumLength) {
                 TLTXTAttributes onceAttributes = tl_txt_attributes_array_object_at(aArray, last_range_index);
                 if (onceAttributes->color) {
                     txt_color_split_from(onceAttributes->color, &last_red, &last_green, &last_blue);
@@ -401,9 +401,15 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                 last_red = 0;
                 last_green = 0;
                 last_blue = 0;
-                last_range_index++;
+                //只有在刚出了onceRange的范围时才递增
+                if (i == locationSumLength) {
+                    last_range_index++;
+                } else {
+                    break;
+                }
             }
         }
+        
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
         FT_Int32 flags =  FT_LOAD_DEFAULT;
         
