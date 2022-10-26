@@ -482,9 +482,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
             for (unsigned int column=0; column<aCharAdvance; column++) {
                 unsigned int absX = typeSettingX+column;
                 unsigned int absY = row+typeSettingY;
-                if (i >= 0 && i < 30) {
-                    printf("absX:%u absY:%u\n", absX, absY);
-                }
                 /**
                  * 1.垂直方向需要绘制的区域范围
                  * 2.水平方向需要绘制的区域范围
