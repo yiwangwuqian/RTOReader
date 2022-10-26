@@ -29,6 +29,17 @@ void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b);
 
 TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, int64_t *output_last_range_index);
 
+unsigned int txt_worker_check_oneline_max_height(FT_Face face,
+                                                 hb_glyph_info_t *glyph_info,
+                                                 unsigned int glyph_count,
+                                                 size_t start_cursor,
+                                                 TLRangeArray rArray,
+                                                 TLTXTAttributesArray aArray,
+                                                 int64_t last_range_index,
+                                                 unsigned int totalWidth,
+                                                 hb_codepoint_t *codepoints,
+                                                 unsigned int *max_ascender,
+                                                 unsigned int *oneline_count);
 //------
 
 struct TLTXTWorker_ {
@@ -349,11 +360,14 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     unsigned int typeSettingX=0;
     unsigned int typeSettingY=0;
     unsigned int aLineHeightMax=0;
+    unsigned int aLineAscenderMax=0;
+    unsigned int wholeFontAscenderMax = (unsigned int)(face->size->metrics.ascender)/64;
     unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
     size_t before_cursor = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0;
     
     TLRangeArray rArray = NULL;
     TLTXTAttributesArray aArray = NULL;
+    struct TLRange_ checkedLineRange = {0,0};
     if ((*worker)->range_attributes_func) {
         size_t next_cursor = page < (*worker)->total_page ? (*(*worker)->cursor_array).data[page] : glyph_count-1;
         struct TLRange_ page_range = {before_cursor, next_cursor-before_cursor};
@@ -371,14 +385,45 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     txt_row_rect_array_create(&row_rect_array);
     *page_row_rect_array = row_rect_array;
     for (size_t i = before_cursor; i<glyph_count; i++) {
+        unsigned int beforeALineHeightMax = aLineHeightMax;
         
-        TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &last_range_index);
-        if (onceAttributes && onceAttributes->color) {
-            txt_color_split_from(onceAttributes->color, &last_red, &last_green, &last_blue);
-        } else {
-            last_red = 0;
-            last_green = 0;
-            last_blue = 0;
+        size_t checkedLineRangeMax = checkedLineRange.location + checkedLineRange.length;
+        if (typeSettingX == 0 || (checkedLineRange.length != 0 && checkedLineRangeMax == i)){
+            if (last_range_index >= 0 && last_range_index < range_total_count) {
+                unsigned int oneline_count = 0;
+                aLineHeightMax = txt_worker_check_oneline_max_height(face,
+                                                                     glyph_info,
+                                                                     glyph_count,
+                                                                     i,
+                                                                     rArray,
+                                                                     aArray,
+                                                                     last_range_index,
+                                                                     totalWidth,
+                                                                     (*worker)->codepoints,
+                                                                     &aLineAscenderMax,
+                                                                     &oneline_count);
+                checkedLineRange.location = i;
+                checkedLineRange.length = oneline_count;
+            } else {
+                aLineHeightMax = wholeFontHeight;
+                aLineAscenderMax = wholeFontAscenderMax;
+            }
+        }
+        
+        if (last_range_index >= 0 && last_range_index < range_total_count) {
+            TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &last_range_index);
+            if (onceAttributes && onceAttributes->color) {
+                txt_color_split_from(onceAttributes->color, &last_red, &last_green, &last_blue);
+            } else {
+                last_red = 0;
+                last_green = 0;
+                last_blue = 0;
+            }
+            if (onceAttributes && onceAttributes->fontSize) {
+                FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
+            } else {
+                FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
+            }
         }
         
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
@@ -400,7 +445,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         }
         
         FT_Bitmap bitmap = face->glyph->bitmap;
-//        printf("bitmap.rows:%d face->glyph->metrics.height/64:%ld\n", bitmap.rows, face->glyph->metrics.height/64);
+        //        printf("bitmap.rows:%d face->glyph->metrics.height/64:%ld\n", bitmap.rows, face->glyph->metrics.height/64);
         //一个字符占位宽
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
         FT_Pos aCharHoriBearingX = face->glyph->metrics.horiBearingX/64;
@@ -410,11 +455,10 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
          */
         if (typeSettingX + aCharAdvance > totalWidth){
             typeSettingX = 0;
-            typeSettingY += aLineHeightMax;
-            aLineHeightMax = 0;
+            typeSettingY += beforeALineHeightMax;
         } else if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
             typeSettingX = 0;
-            typeSettingY += wholeFontHeight;
+            typeSettingY += beforeALineHeightMax;
             continue;
         }
         if (typeSettingX == 0){
@@ -430,14 +474,17 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         }
         
         TLTXTRectArray rect_array = txt_row_rect_array_current(row_rect_array);
-        struct TLTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+(int)aCharAdvance,typeSettingY+wholeFontHeight};
+        struct TLTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+(int)aCharAdvance,typeSettingY+aLineHeightMax};
         txt_rect_array_add(rect_array, one_rect);
         //Y方向偏移量 根据字符各不相同
-        unsigned int heightDelta = (unsigned int)(face->size->metrics.ascender)/64 - face->glyph->bitmap_top;
-        for (unsigned int row=0; row<wholeFontHeight; row++) {
+        unsigned int heightDelta = aLineAscenderMax - face->glyph->bitmap_top;
+        for (unsigned int row=0; row<aLineHeightMax; row++) {
             for (unsigned int column=0; column<aCharAdvance; column++) {
                 unsigned int absX = typeSettingX+column;
                 unsigned int absY = row+typeSettingY;
+                if (i >= 0 && i < 30) {
+                    printf("absX:%u absY:%u\n", absX, absY);
+                }
                 /**
                  * 1.垂直方向需要绘制的区域范围
                  * 2.水平方向需要绘制的区域范围
@@ -472,12 +519,17 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
 //                        }
                         
                         //显示横线
-                        //                        //不需要调试时加注释
-                        //                        if (row == heightDelta - 1 || row == heightDelta+bitmap.rows) {
-                        //                            textureBuffer[absX+totalWidth*absY] = 255;
-                        //                        } else {
-                        //                            textureBuffer[absX+totalWidth*absY] = 0;
-                        //                        }
+                        //不需要调试时加注释
+                        /*
+                        if (row == heightDelta - 1 || row == heightDelta+bitmap.rows) {
+                            textureBuffer[pixelPosition*4+3] = 255;
+                        } else {
+                            textureBuffer[pixelPosition*4] = 255;
+                            textureBuffer[pixelPosition*4+1] = 255;
+                            textureBuffer[pixelPosition*4+2] = 255;
+                            textureBuffer[pixelPosition*4+3] = 255;
+                        }
+                         */
                         
                         textureBuffer[pixelPosition*4] = 255;
                         textureBuffer[pixelPosition*4+1] = 255;
@@ -489,7 +541,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         }
         typeSettingX += aCharAdvance;
         
-        aLineHeightMax = wholeFontHeight;
         if (now_cursor != before_cursor) {
             break;
         }
@@ -602,4 +653,72 @@ TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesA
     }
     *output_last_range_index = last_range_index;
     return result;
+}
+
+unsigned int txt_worker_check_oneline_max_height(FT_Face face,
+                                                 hb_glyph_info_t *glyph_info,
+                                                 unsigned int glyph_count,
+                                                 size_t start_cursor,
+                                                 TLRangeArray rArray,
+                                                 TLTXTAttributesArray aArray,
+                                                 int64_t last_range_index,
+                                                 unsigned int totalWidth,
+                                                 hb_codepoint_t *codepoints,
+                                                 unsigned int *max_ascender,
+                                                 unsigned int *oneline_count)
+{
+    unsigned int typeSettingX=0;
+    unsigned int onelineMaxHeight=0;
+    unsigned int onelineMaxAscender=0;
+    unsigned int oneLineCharCount = 0;
+    //默认size
+    FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
+    for (size_t i = start_cursor; i<glyph_count; i++) {
+
+        if (last_range_index >= 0) {
+            TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &last_range_index);
+            if (onceAttributes && onceAttributes->fontSize) {
+                FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
+            } else {
+                FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
+            }
+        }
+
+        hb_codepoint_t glyphid = glyph_info[i].codepoint;
+        FT_Int32 flags =  FT_LOAD_DEFAULT;
+        
+        /* load glyph image into the slot without rendering */
+        FT_Error error = FT_Load_Glyph(face,
+                                       glyphid,
+                                       flags
+                                       );
+        
+        if ( error ) {
+            printf("FT_Load_Glyph error code: %d",error);
+        }
+
+        FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
+        if (typeSettingX + aCharAdvance > totalWidth){
+            oneLineCharCount = (unsigned int)(i - start_cursor);
+            break;
+        } else if (codepoints[i] == '\n' ? 1 : 0) {
+            oneLineCharCount = (unsigned int)(i - start_cursor);
+            break;
+        }
+
+        unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height)/64;
+        unsigned int wholeFontAscender = (unsigned int)(face->size->metrics.ascender)/64;
+        
+        if (wholeFontHeight > onelineMaxHeight) {
+            onelineMaxHeight = wholeFontHeight;
+        }
+        if (wholeFontAscender > onelineMaxAscender) {
+            onelineMaxAscender = wholeFontAscender;
+        }
+
+        typeSettingX += aCharAdvance;
+    }
+    *max_ascender = onelineMaxAscender;
+    *oneline_count = oneLineCharCount;
+    return onelineMaxHeight;
 }

@@ -30,7 +30,7 @@ struct TLRange_ {
 };
 
 typedef struct TLTXTAttributes_ {
-    size_t fontSize;
+    unsigned int fontSize;
     size_t fontStyle;
     size_t color;
     size_t paragraph;
