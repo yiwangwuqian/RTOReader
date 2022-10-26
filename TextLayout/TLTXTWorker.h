@@ -34,10 +34,6 @@ void txt_worker_set_context(TLTXTWorker worker, void *context);
 
 void *txt_worker_get_context(TLTXTWorker worker);
 
-/// TLTXTWorker是否可以向后翻页
-/// - Parameter worker: worker对象
-bool txt_worker_next_able(TLTXTWorker *worker);
-
 /// 销毁TLTXTWorker
 /// - Parameter worker: worker对象
 void txt_worker_destroy(TLTXTWorker *worker);

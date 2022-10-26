@@ -27,6 +27,8 @@ void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array);
 
 void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b);
 
+TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, int64_t *output_last_range_index);
+
 //------
 
 struct TLTXTWorker_ {
@@ -96,20 +98,6 @@ void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array)
 }
 
 //------
-
-bool txt_worker_previous_able(TLTXTWorker *worker)
-{
-    return false;
-}
-
-bool txt_worker_next_able(TLTXTWorker *worker)
-{
-    if ((*worker)->utf8_length == (*worker)->cursor) {
-        return false;
-    }
-    
-    return true;
-}
 
 void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
 {
@@ -323,7 +311,7 @@ size_t txt_worker_total_page(TLTXTWorker *worker)
 
 uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRectArray *page_row_rect_array)
 {
-    if (!txt_worker_next_able(worker)) {
+    if ( page >= (*worker)->total_page ) {
         return NULL;
     }
     
@@ -384,30 +372,13 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     *page_row_rect_array = row_rect_array;
     for (size_t i = before_cursor; i<glyph_count; i++) {
         
-        while (last_range_index >=0 && last_range_index < range_total_count) {
-            TLRange onceRange = tl_range_array_object_at(rArray, last_range_index);
-            size_t locationSumLength = onceRange->location+onceRange->length;
-            if (onceRange->location <= i && i < locationSumLength) {
-                TLTXTAttributes onceAttributes = tl_txt_attributes_array_object_at(aArray, last_range_index);
-                if (onceAttributes->color) {
-                    txt_color_split_from(onceAttributes->color, &last_red, &last_green, &last_blue);
-                } else {
-                    last_red = 0;
-                    last_green = 0;
-                    last_blue = 0;
-                }
-                break;
-            } else {
-                last_red = 0;
-                last_green = 0;
-                last_blue = 0;
-                //只有在刚出了onceRange的范围时才递增
-                if (i == locationSumLength) {
-                    last_range_index++;
-                } else {
-                    break;
-                }
-            }
+        TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &last_range_index);
+        if (onceAttributes && onceAttributes->color) {
+            txt_color_split_from(onceAttributes->color, &last_red, &last_green, &last_blue);
+        } else {
+            last_red = 0;
+            last_green = 0;
+            last_blue = 0;
         }
         
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
@@ -605,4 +576,30 @@ void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b)
     *r = (c >> 16) & 0xFF;
     *g = (c >> 8) & 0xFF;
     *b = (c) & 0xFF;
+}
+
+TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, int64_t *output_last_range_index)
+{
+    TLTXTAttributes result = NULL;
+    size_t range_total_count = tl_range_array_get_count(rArray);
+    int64_t last_range_index = *output_last_range_index;
+    
+    while (last_range_index >=0 && last_range_index < range_total_count) {
+        TLRange onceRange = tl_range_array_object_at(rArray, last_range_index);
+        size_t locationSumLength = onceRange->location+onceRange->length;
+        if (onceRange->location <= index && index < locationSumLength) {
+            TLTXTAttributes onceAttributes = tl_txt_attributes_array_object_at(aArray, last_range_index);
+            result = onceAttributes;
+            break;
+        } else {
+            //只有在刚出了onceRange的范围时才递增
+            if (index == locationSumLength) {
+                last_range_index++;
+            } else {
+                break;
+            }
+        }
+    }
+    *output_last_range_index = last_range_index;
+    return result;
 }
