@@ -226,12 +226,13 @@ void txt_worker_data_paging(TLTXTWorker *worker)
     totalWidth = (*worker)->width;
     totalHeight = (*worker)->height;
     
+    unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
+    
     size_t before_cursor = 0;
     size_t now_cursor = 0;
     
     TLRangeArray rArray = NULL;
     TLTXTAttributesArray aArray = NULL;
-    struct TLRange_ checkedLineRange = {0,0};
     if ((*worker)->range_attributes_func) {
         struct TLRange_ page_range = {0, glyph_count};
         (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
@@ -242,16 +243,9 @@ void txt_worker_data_paging(TLTXTWorker *worker)
     
     while (glyph_count != now_cursor) {
         
-        FT_GlyphSlot  slot;
-        FT_Error      error;
-        
-        size_t texturePixelCount = sizeof(uint8_t) * totalWidth * totalHeight * 1;
-        unsigned int typeSettingX=0;
         unsigned int typeSettingY=0;
         unsigned int aLineHeightMax=0;
         unsigned int aLineAscenderMax=0;
-        unsigned int wholeFontAscenderMax = (unsigned int)(face->size->metrics.ascender)/64;
-        unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
         
         before_cursor = now_cursor;
         
@@ -273,21 +267,25 @@ void txt_worker_data_paging(TLTXTWorker *worker)
                                                                  &aLineAscenderMax,
                                                                  &oneline_count);
             
-            if (oneline_count) {
-                //获得一行有多少字Y坐标下移
-                
-                if (typeSettingY + aLineHeightMax > totalHeight){
-                    //大于最大高度,停止 恢复last_range_index
-                    now_cursor = i;
-                    last_range_index = backup_last_range_index;
-                    break;
-                } else {
-                    typeSettingY += aLineHeightMax;
-                    i += oneline_count;
-                }
-            } else {
-                //目前没发现这种情况
+            if (!oneline_count) {
+                //目前只有首个字是换行符这种情况
                 i++;
+            }
+            
+            //oneline_count==0时会出现
+            if (aLineHeightMax == 0) {
+                aLineHeightMax = wholeFontHeight;
+            }
+            
+            //无论这一行是多少字 Y坐标都要下移
+            if (typeSettingY + aLineHeightMax > totalHeight){
+                //大于最大高度,停止 恢复last_range_index
+                now_cursor = i;
+                last_range_index = backup_last_range_index;
+                break;
+            } else {
+                typeSettingY += aLineHeightMax;
+                i += oneline_count;
             }
             
             if (now_cursor != before_cursor) {
@@ -449,16 +447,31 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
         FT_Pos aCharHoriBearingX = face->glyph->metrics.horiBearingX/64;
         /*
+         以下这个if else if判断的作用在于检查是否修改Y坐标，或进行下一个字的绘制
          1.大于最大宽度,换行
          2.遇到换行符,换行并继续循环
+         
+         循环刚开始的时候在文本有属性的情况下，调用了txt_worker_check_oneline_max_height
+         这个方法的执行个人认为最好在文本没有属性的情况下不调用，能避免一些耗时
          */
         if (typeSettingX + aCharAdvance > totalWidth){
             typeSettingX = 0;
             typeSettingY += beforeALineHeightMax;
         } else if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
-            typeSettingX = 0;
-            typeSettingY += beforeALineHeightMax;
-            continue;
+            if (typeSettingX == 0) {
+                /**
+                 *如果当前第一个字是换行符，它上一个字是换行即'\n'，它要单独占一行
+                 *无论上一个字是什么都需要continue
+                 */
+                if (i > 0 && (*worker)->codepoints[i-1] == '\n') {
+                    typeSettingY += beforeALineHeightMax;
+                }
+                continue;
+            } else {
+                typeSettingX = 0;
+                typeSettingY += beforeALineHeightMax;
+                continue;
+            }
         }
         if (typeSettingX == 0){
             TLTXTRectArray rect_array;
@@ -700,12 +713,16 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             break;
         } else if (codepoints[i] == '\n' ? 1 : 0) {
             oneLineCharCount = (unsigned int)(i - start_cursor);
+            /**
+             *如果第一个字是换行 那么oneLineCharCount此时等于0
+             *如果它上一个字不是换行即'\n'，那么它不占位置需要continue，否则它要单独占一行。
+             */
             if (oneLineCharCount == 0) {
-                //即第一个符号为换行符号 则继续循环
-                continue;
-            } else {
-                break;
+                if (i > 0 && codepoints[i-1] != '\n') {
+                    continue;
+                }
             }
+            break;
         }
 
         unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height)/64;
