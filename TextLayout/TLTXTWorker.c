@@ -35,7 +35,8 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  size_t start_cursor,
                                                  TLRangeArray rArray,
                                                  TLTXTAttributesArray aArray,
-                                                 int64_t last_range_index,
+                                                 int64_t *last_range_index,
+                                                 bool change_last_range_index,
                                                  unsigned int totalWidth,
                                                  hb_codepoint_t *codepoints,
                                                  unsigned int *max_ascender,
@@ -225,80 +226,70 @@ void txt_worker_data_paging(TLTXTWorker *worker)
     totalWidth = (*worker)->width;
     totalHeight = (*worker)->height;
     
-    size_t textureBufLength = sizeof(uint8_t) * totalWidth * totalHeight * 1;
-    
     size_t before_cursor = 0;
     size_t now_cursor = 0;
+    
+    TLRangeArray rArray = NULL;
+    TLTXTAttributesArray aArray = NULL;
+    struct TLRange_ checkedLineRange = {0,0};
+    if ((*worker)->range_attributes_func) {
+        struct TLRange_ page_range = {0, glyph_count};
+        (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
+    }
+    size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
+    int64_t last_range_index = range_total_count > 0 ? 0 : -1;
+    int64_t backup_last_range_index = last_range_index;
     
     while (glyph_count != now_cursor) {
         
         FT_GlyphSlot  slot;
         FT_Error      error;
         
+        size_t texturePixelCount = sizeof(uint8_t) * totalWidth * totalHeight * 1;
         unsigned int typeSettingX=0;
         unsigned int typeSettingY=0;
         unsigned int aLineHeightMax=0;
+        unsigned int aLineAscenderMax=0;
+        unsigned int wholeFontAscenderMax = (unsigned int)(face->size->metrics.ascender)/64;
         unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
         
         before_cursor = now_cursor;
         
-        for (size_t i = before_cursor; i<glyph_count; i++) {
+        size_t i = before_cursor;
+        while (i<glyph_count) {
+            backup_last_range_index = last_range_index;
             
-            hb_codepoint_t glyphid = glyph_info[i].codepoint;
-            FT_Int32 flags =  FT_LOAD_DEFAULT;
+            unsigned int oneline_count = 0;
+            aLineHeightMax = txt_worker_check_oneline_max_height(face,
+                                                                 glyph_info,
+                                                                 glyph_count,
+                                                                 i,
+                                                                 rArray,
+                                                                 aArray,
+                                                                 &last_range_index,
+                                                                 true,
+                                                                 totalWidth,
+                                                                 (*worker)->codepoints,
+                                                                 &aLineAscenderMax,
+                                                                 &oneline_count);
             
-            error = FT_Load_Glyph(face,
-                                  glyphid,
-                                  flags
-                                  );
-            if ( error ) {
-                printf("FT_Load_Glyph error code: %d",error);
-            }
-            
-            slot = face->glyph;
-            
-            //一个字符占宽高
-            FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;//作为宽度使用
-            
-            /*
-             1.大于最大宽度,换行
-             2.遇到换行符,换行并继续循环
-             */
-            if (typeSettingX + aCharAdvance > totalWidth){
-                typeSettingX = 0;
-                typeSettingY += aLineHeightMax;
-                aLineHeightMax = 0;
-            } else if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
-                typeSettingX = 0;
-                typeSettingY += wholeFontHeight;
-                continue;
-            }
-            
-            //大于最大高度,停止
-            if (typeSettingY + face->glyph->metrics.height/64 > totalHeight){
-                now_cursor = i;
-                break;
-            }
-
-            for (unsigned int row=0; row<wholeFontHeight; row++) {
-                for (unsigned int column=0; column<aCharAdvance; column++) {
-                    unsigned int absX = typeSettingX+column;
-                    unsigned int absY = row+typeSettingY;
-                    /**
-                     * 1.垂直方向需要绘制的区域范围
-                     * 2.水平方向需要绘制的区域范围
-                     */
-                    unsigned int pixelPosition = absX+totalWidth*absY;
-                    if (pixelPosition>textureBufLength){
-                        //此时操作的像素已经不在纹理面积里,观察一下再说
-                        now_cursor = i;
-                        break;
-                    }
+            if (oneline_count) {
+                //获得一行有多少字Y坐标下移
+                
+                if (typeSettingY + aLineHeightMax > totalHeight){
+                    //大于最大高度,停止 恢复last_range_index
+                    now_cursor = i;
+                    last_range_index = backup_last_range_index;
+                    break;
+                } else {
+                    typeSettingY += aLineHeightMax;
+                    i += oneline_count;
                 }
+            } else {
+                //目前没发现这种情况
+                i++;
             }
-            typeSettingX += aCharAdvance;
             
-            aLineHeightMax = wholeFontHeight;
             if (now_cursor != before_cursor) {
                 break;
             }
@@ -310,6 +301,13 @@ void txt_worker_data_paging(TLTXTWorker *worker)
         txt_page_cursor_array_add((*worker)->cursor_array, now_cursor);
         //此处是循环的结尾
         page++;
+    }
+    
+    if (rArray) {
+        tl_range_array_destroy(&rArray);
+    }
+    if (aArray) {
+        tl_txt_attributes_array_destroy(&aArray);
     }
     
     (*worker)->total_page = page;
@@ -374,7 +372,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
     }
     
-    size_t range_total_count = tl_range_array_get_count(rArray);
+    size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
     size_t last_red = 0;
     size_t last_green = 0;
@@ -384,7 +382,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     TLTXTRowRectArray row_rect_array;
     txt_row_rect_array_create(&row_rect_array);
     *page_row_rect_array = row_rect_array;
-    for (size_t i = before_cursor; i<glyph_count; i++) {
+    for (size_t i = before_cursor; i<(*(*worker)->cursor_array).data[page]; i++) {
         unsigned int beforeALineHeightMax = aLineHeightMax;
         
         size_t checkedLineRangeMax = checkedLineRange.location + checkedLineRange.length;
@@ -397,7 +395,8 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                                                                      i,
                                                                      rArray,
                                                                      aArray,
-                                                                     last_range_index,
+                                                                     &last_range_index,
+                                                                     false,
                                                                      totalWidth,
                                                                      (*worker)->codepoints,
                                                                      &aLineAscenderMax,
@@ -468,7 +467,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         }
         
         //大于最大高度,停止
-        if (typeSettingY + bitmap.rows > totalHeight){
+        if (typeSettingY + aLineHeightMax > totalHeight){
             now_cursor = i;
             break;
         }
@@ -658,7 +657,8 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  size_t start_cursor,
                                                  TLRangeArray rArray,
                                                  TLTXTAttributesArray aArray,
-                                                 int64_t last_range_index,
+                                                 int64_t *last_range_index,
+                                                 bool change_last_range_index,
                                                  unsigned int totalWidth,
                                                  hb_codepoint_t *codepoints,
                                                  unsigned int *max_ascender,
@@ -668,12 +668,12 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
     unsigned int onelineMaxHeight=0;
     unsigned int onelineMaxAscender=0;
     unsigned int oneLineCharCount = 0;
+    int64_t inner_last_range_index = *last_range_index;
     //默认size
     FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
     for (size_t i = start_cursor; i<glyph_count; i++) {
-
-        if (last_range_index >= 0) {
-            TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &last_range_index);
+        if (inner_last_range_index >= 0) {
+            TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &inner_last_range_index);
             if (onceAttributes && onceAttributes->fontSize) {
                 FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
             } else {
@@ -700,7 +700,12 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             break;
         } else if (codepoints[i] == '\n' ? 1 : 0) {
             oneLineCharCount = (unsigned int)(i - start_cursor);
-            break;
+            if (oneLineCharCount == 0) {
+                //即第一个符号为换行符号 则继续循环
+                continue;
+            } else {
+                break;
+            }
         }
 
         unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height)/64;
@@ -717,5 +722,8 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
     }
     *max_ascender = onelineMaxAscender;
     *oneline_count = oneLineCharCount;
+    if (change_last_range_index) {
+        *last_range_index = inner_last_range_index;
+    }
     return onelineMaxHeight;
 }

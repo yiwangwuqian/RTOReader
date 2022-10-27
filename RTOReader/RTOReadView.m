@@ -79,7 +79,7 @@
             TLAttributedString *aString = [[TLAttributedString alloc] initWithString:fileContent attributes:@{}];
             [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF0000)} range:NSMakeRange(30, 10)];
             [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0x00FF00)} range:NSMakeRange(100, 3)];
-            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0x00FF00), @(TLTXTAttributesNameTypeFontSize): @(70)} range:NSMakeRange(300, 12)];
+            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0x00FF00), @(TLTXTAttributesNameTypeFontSize): @(70)} range:NSMakeRange(650, 12)];
             [self.txtCore resetAttributedString:aString pageSize:CGSizeMake(drawWidth, drawHeight)];
         }
     }
