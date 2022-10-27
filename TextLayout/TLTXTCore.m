@@ -219,7 +219,7 @@ static void rangeAttributesFunc(TLTXTWorker worker,
                 }
             }
         } else if (index == self.cachedArray.count -1) {
-            if (index == [self totalPage]-1) {
+            if (pageNum == [self totalPage]-1) {
                 TLTXTCachePage *cachePage = self.cachedArray.lastObject;
                 return cachePage.image;
             } else {
