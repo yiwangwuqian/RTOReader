@@ -65,6 +65,7 @@ struct TLTXTWorker_ {
     RTOTXTPageCursorArray cursor_array;
     
     TLTXTWorker_RangeAttributesFunc range_attributes_func;
+    TLTXTWorker_DefaultAttributesFunc default_attributes_func;
     void *context;
 };
 
@@ -174,6 +175,13 @@ void txt_worker_set_range_attributes_callback(TLTXTWorker worker, TLTXTWorker_Ra
     }
 }
 
+void txt_worker_set_default_attributes_callback(TLTXTWorker worker, TLTXTWorker_DefaultAttributesFunc func)
+{
+    if (worker != NULL) {
+        worker->default_attributes_func = func;
+    }
+}
+
 void txt_worker_set_context(TLTXTWorker worker, void *context)
 {
     if (worker != NULL) {
@@ -237,6 +245,10 @@ void txt_worker_data_paging(TLTXTWorker *worker)
         struct TLRange_ page_range = {0, glyph_count};
         (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
     }
+    TLTXTAttributes defaultAttributes = NULL;
+    if ((*worker)->default_attributes_func) {
+        defaultAttributes = (*worker)->default_attributes_func(*worker);
+    }
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
     int64_t backup_last_range_index = last_range_index;
@@ -277,14 +289,19 @@ void txt_worker_data_paging(TLTXTWorker *worker)
                 aLineHeightMax = wholeFontHeight;
             }
             
+            size_t line_spacing = 0;
+            if (defaultAttributes && defaultAttributes->lineSpacing > 0) {
+                line_spacing = defaultAttributes->lineSpacing;
+            }
+            
             //无论这一行是多少字 Y坐标都要下移
-            if (typeSettingY + aLineHeightMax > totalHeight){
+            if (typeSettingY + aLineHeightMax + line_spacing > totalHeight){
                 //大于最大高度,停止 恢复last_range_index
                 now_cursor = i;
                 last_range_index = backup_last_range_index;
                 break;
             } else {
-                typeSettingY += aLineHeightMax;
+                typeSettingY += aLineHeightMax + line_spacing;
                 i += oneline_count;
             }
             
@@ -306,6 +323,9 @@ void txt_worker_data_paging(TLTXTWorker *worker)
     }
     if (aArray) {
         tl_txt_attributes_array_destroy(&aArray);
+    }
+    if (defaultAttributes) {
+        free(defaultAttributes);
     }
     
     (*worker)->total_page = page;
@@ -368,6 +388,10 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         size_t next_cursor = page < (*worker)->total_page ? (*(*worker)->cursor_array).data[page] : glyph_count-1;
         struct TLRange_ page_range = {before_cursor, next_cursor-before_cursor};
         (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
+    }
+    TLTXTAttributes defaultAttributes = NULL;
+    if ((*worker)->default_attributes_func) {
+        defaultAttributes = (*worker)->default_attributes_func(*worker);
     }
     
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
@@ -446,6 +470,12 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         //一个字符占位宽
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
         FT_Pos aCharHoriBearingX = face->glyph->metrics.horiBearingX/64;
+        
+        size_t line_spacing = 0;
+        if (defaultAttributes && defaultAttributes->lineSpacing > 0) {
+            line_spacing = defaultAttributes->lineSpacing;
+        }
+        
         /*
          以下这个if else if判断的作用在于检查是否修改Y坐标，或进行下一个字的绘制
          1.大于最大宽度,换行
@@ -456,7 +486,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
          */
         if (typeSettingX + aCharAdvance > totalWidth){
             typeSettingX = 0;
-            typeSettingY += beforeALineHeightMax;
+            typeSettingY += beforeALineHeightMax + line_spacing;
         } else if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
             if (typeSettingX == 0) {
                 /**
@@ -464,12 +494,12 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                  *无论上一个字是什么都需要continue
                  */
                 if ((i > 0 && (*worker)->codepoints[i-1] == '\n') || i==0) {
-                    typeSettingY += beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight;
+                    typeSettingY += (beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight) + line_spacing;
                 }
                 continue;
             } else {
                 typeSettingX = 0;
-                typeSettingY += beforeALineHeightMax;
+                typeSettingY += beforeALineHeightMax + line_spacing;
                 continue;
             }
         }
@@ -562,6 +592,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     }
     if (aArray) {
         tl_txt_attributes_array_destroy(&aArray);
+    }
+    if (defaultAttributes) {
+        free(defaultAttributes);
     }
     return textureBuffer;
 }

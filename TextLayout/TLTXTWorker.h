@@ -21,14 +21,20 @@ extern "C" {
 
 typedef struct TLTXTWorker_* TLTXTWorker;
 
+//根据页范围获取属性
 typedef void (*TLTXTWorker_RangeAttributesFunc)(TLTXTWorker worker,
                                                 TLRange range,
                                                 TLRangeArray *rArray,
                                                 TLTXTAttributesArray *aArray);
 
+//获取默认属性 调用者需要负责返回结果的销毁
+typedef TLTXTAttributes (*TLTXTWorker_DefaultAttributesFunc)(TLTXTWorker worker);
+
 void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height);
 
 void txt_worker_set_range_attributes_callback(TLTXTWorker worker, TLTXTWorker_RangeAttributesFunc func);
+
+void txt_worker_set_default_attributes_callback(TLTXTWorker worker, TLTXTWorker_DefaultAttributesFunc func);
 
 void txt_worker_set_context(TLTXTWorker worker, void *context);
 

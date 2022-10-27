@@ -33,6 +33,7 @@ typedef struct TLTXTAttributes_ {
     unsigned int fontSize;
     size_t fontStyle;
     size_t color;
+    size_t lineSpacing;
     size_t paragraph;
     size_t placeholder;
 } *TLTXTAttributes;

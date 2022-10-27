@@ -7,6 +7,7 @@
 //
 
 #import "TLAttributedString.h"
+#import "TLTXTTypes.h"
 
 @interface TLAttributedString()
 
@@ -31,7 +32,14 @@
     self = [super init];
     if (self) {
         self.string = str;
-        self.defaultAttributes = attrs;
+        NSMutableDictionary *defaultAttributes =
+        [[NSMutableDictionary alloc] initWithDictionary:@{@(TLTXTAttributesNameTypeLineSpacing):@(10)}];
+        if (attrs.count){
+            for (id key in attrs.allKeys) {
+                defaultAttributes[key] = attrs[key];
+            }
+        }
+        self.defaultAttributes = defaultAttributes;
         self.rangeArray = [[NSMutableArray alloc] init];
         self.attributesArray = [[NSMutableArray alloc] init];
     }

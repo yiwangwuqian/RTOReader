@@ -15,10 +15,11 @@
 typedef enum TLTXTAttributesNameType{
     TLTXTAttributesNameTypeNone = 0,
     TLTXTAttributesNameTypeFontSize,    //字号
-    TLTXTAttributesNameTypeFontStyle,   //字体样式
+    TLTXTAttributesNameTypeFontStyle,   //字体样式  暂无实现
     TLTXTAttributesNameTypeColor,       //文字颜色
+    TLTXTAttributesNameTypeLineSpacing, //行间距
     TLTXTAttributesNameTypeParagraph,   //段落
-    TLTXTAttributesNameTypePlaceholder, //占位
+    TLTXTAttributesNameTypePlaceholder, //占位    暂无实现
 } TLTXTAttributesNameType;
 
 #endif /* TLTXTTypes_h */

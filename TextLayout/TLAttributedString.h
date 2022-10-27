@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TLAttributedString : NSObject
 
 @property(readonly) NSString *string;
+@property(nonatomic,readonly)NSDictionary *defaultAttributes;
 
 /// 创建对象
 /// - Parameters:

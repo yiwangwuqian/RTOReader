@@ -62,7 +62,7 @@ static void rangeAttributesFunc(TLTXTWorker worker,
             tl_range_array_add(*rArray, tlRange);
             
             NSDictionary *oneAttributeDict = attributes[i];
-            struct TLTXTAttributes_ tlAttributes = {0,0,0,0,0};
+            struct TLTXTAttributes_ tlAttributes = {0,0,0,0,0,0};
             for (NSNumber *typeNumber in oneAttributeDict.allKeys) {
                 NSInteger result = [oneAttributeDict[typeNumber] integerValue];
                 TLTXTAttributesNameType oneType = (TLTXTAttributesNameType)[typeNumber integerValue];
@@ -91,6 +91,35 @@ static void rangeAttributesFunc(TLTXTWorker worker,
             tl_txt_attributes_array_add(*aArray, tlAttributes);
         }
     }
+}
+
+static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
+{
+    TLTXTCore *txtCore = (__bridge TLTXTCore *)(txt_worker_get_context(worker));
+    NSDictionary *attributes =
+    [txtCore.attributedString defaultAttributes];
+    if (attributes.count) {
+        TLTXTAttributes oneAttributes = calloc(1, sizeof(struct TLTXTAttributes_));
+        for (NSNumber *typeNumber in attributes.allKeys) {
+            NSInteger result = [attributes[typeNumber] integerValue];
+            TLTXTAttributesNameType oneType = (TLTXTAttributesNameType)[typeNumber integerValue];
+            switch (oneType) {
+                case TLTXTAttributesNameTypeFontSize:
+                    oneAttributes->fontSize = result;
+                    break;
+                case TLTXTAttributesNameTypeColor:
+                    oneAttributes->color = result;
+                    break;
+                case TLTXTAttributesNameTypeLineSpacing:
+                    oneAttributes->lineSpacing = result;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return oneAttributes;
+    }
+    return NULL;
 }
 
 @implementation TLTXTCore
@@ -135,6 +164,7 @@ static void rangeAttributesFunc(TLTXTWorker worker,
     txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
     txt_worker_set_context(_worker, (__bridge void *)(self));
     txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
+    txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
     
     self.pageNum = -1;
     [self firstTimeDraw];
