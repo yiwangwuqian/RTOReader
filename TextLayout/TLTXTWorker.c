@@ -463,8 +463,8 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                  *如果当前第一个字是换行符，它上一个字是换行即'\n'，它要单独占一行
                  *无论上一个字是什么都需要continue
                  */
-                if (i > 0 && (*worker)->codepoints[i-1] == '\n') {
-                    typeSettingY += beforeALineHeightMax;
+                if ((i > 0 && (*worker)->codepoints[i-1] == '\n') || i==0) {
+                    typeSettingY += beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight;
                 }
                 continue;
             } else {
@@ -712,16 +712,18 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             oneLineCharCount = (unsigned int)(i - start_cursor);
             break;
         } else if (codepoints[i] == '\n' ? 1 : 0) {
-            oneLineCharCount = (unsigned int)(i - start_cursor);
+            unsigned int countFromStart = (unsigned int)(i - start_cursor);
             /**
              *如果第一个字是换行 那么oneLineCharCount此时等于0
              *如果它上一个字不是换行即'\n'，那么它不占位置需要continue，否则它要单独占一行。
              */
-            if (oneLineCharCount == 0) {
+            if (countFromStart == 0) {
                 if (i > 0 && codepoints[i-1] != '\n') {
                     continue;
                 }
             }
+            //注意:必须加1下一次从这个换行符之后开始
+            oneLineCharCount = countFromStart + 1;
             break;
         }
 
