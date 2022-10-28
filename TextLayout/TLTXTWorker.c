@@ -112,7 +112,7 @@ void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array)
 
 //------
 
-void txt_worker_create(TLTXTWorker *worker, char *text, int width, int height)
+void txt_worker_create(TLTXTWorker *worker, const char *text, int width, int height)
 {
     FT_Library    library;
     FT_Face       face;

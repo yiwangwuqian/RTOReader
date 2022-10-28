@@ -19,6 +19,7 @@
 #import "TLTXTUtil.h"
 
 #import "TLTXTCachePage.h"
+#import "TLTXTPageHelper.h"
 
 @interface TLTXTCore()
 
@@ -45,81 +46,13 @@ static void rangeAttributesFunc(TLTXTWorker worker,
                                 TLTXTAttributesArray *aArray)
 {
     TLTXTCore *txtCore = (__bridge TLTXTCore *)(txt_worker_get_context(worker));
-    NSArray *subRanges = nil;
-    NSArray<NSDictionary *> *attributes =
-    [txtCore.attributedString attributesCheckRange:NSMakeRange(range->location, range->length) haveSubRanges:&subRanges];
-    //TEST
-    NSLog(@"subRanges:%@ attributes:%@", subRanges, attributes);
-    //TEST END
-    if (subRanges != nil && attributes != nil) {
-        tl_range_array_create(rArray);
-        tl_txt_attributes_array_create(aArray);
-        
-        for (NSInteger i=0; i<subRanges.count; i++) {
-            NSValue *rValue = subRanges[i];
-            NSRange oneRange = [rValue rangeValue];
-            struct TLRange_ tlRange = {oneRange.location,oneRange.length};
-            tl_range_array_add(*rArray, tlRange);
-            
-            NSDictionary *oneAttributeDict = attributes[i];
-            struct TLTXTAttributes_ tlAttributes = {0,0,0,0,0,0};
-            for (NSNumber *typeNumber in oneAttributeDict.allKeys) {
-                NSInteger result = [oneAttributeDict[typeNumber] integerValue];
-                TLTXTAttributesNameType oneType = (TLTXTAttributesNameType)[typeNumber integerValue];
-                switch (oneType) {
-                    case TLTXTAttributesNameTypeFontSize:
-                        tlAttributes.fontSize = result;
-                        break;
-                    case TLTXTAttributesNameTypeFontStyle:
-                        tlAttributes.fontStyle = result;
-                        break;
-                    case TLTXTAttributesNameTypeColor:
-                        tlAttributes.color = result;
-                        break;
-                        /*
-                    case TLTXTAttributesNameTypeParagraph:
-                        tlAttributes.paragraph = result;
-                        break;
-                    case TLTXTAttributesNameTypePlaceholder:
-                        tlAttributes.placeholder = result;
-                        break;
-                         */
-                    default:
-                        break;
-                }
-            }
-            tl_txt_attributes_array_add(*aArray, tlAttributes);
-        }
-    }
+    [TLTXTPageHelper checkRangeAttributes:txtCore.attributedString range:range rArray:rArray aArray:aArray];
 }
 
 static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 {
     TLTXTCore *txtCore = (__bridge TLTXTCore *)(txt_worker_get_context(worker));
-    NSDictionary *attributes =
-    [txtCore.attributedString defaultAttributes];
-    if (attributes.count) {
-        TLTXTAttributes oneAttributes = calloc(1, sizeof(struct TLTXTAttributes_));
-        for (NSNumber *typeNumber in attributes.allKeys) {
-            NSInteger result = [attributes[typeNumber] integerValue];
-            TLTXTAttributesNameType oneType = (TLTXTAttributesNameType)[typeNumber integerValue];
-            switch (oneType) {
-                case TLTXTAttributesNameTypeFontSize:
-                    oneAttributes->fontSize = result;
-                    break;
-                case TLTXTAttributesNameTypeColor:
-                    oneAttributes->color = result;
-                    break;
-                case TLTXTAttributesNameTypeLineSpacing:
-                    oneAttributes->lineSpacing = result;
-                    break;
-                default:
-                    break;
-            }
-        }
-        return oneAttributes;
-    }
-    return NULL;
+    return [TLTXTPageHelper checkDefaultAttributes:txtCore.attributedString];
 }
 
 @implementation TLTXTCore
@@ -271,6 +204,11 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 - (NSInteger)totalPage
 {
     return txt_worker_total_page(&_worker);
+}
+
++ (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize
+{
+    return [TLTXTPageHelper oncePaging:aString pageSize:pageSize];
 }
 
 #pragma mark- Private methods

@@ -178,6 +178,8 @@
 		2BBBEBCC290BB25B00DF738C /* ftbdf.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BBBEB73290BB25B00DF738C /* ftbdf.h */; };
 		2BBBEBCD290BB25B00DF738C /* ftrender.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BBBEB74290BB25B00DF738C /* ftrender.h */; };
 		2BBBEBCE290BB25B00DF738C /* ftcalc.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BBBEB75290BB25B00DF738C /* ftcalc.h */; };
+		2BBBEBD6290BFF5500DF738C /* TLTXTPageHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BBBEBD4290BFF5500DF738C /* TLTXTPageHelper.h */; };
+		2BBBEBD7290BFF5500DF738C /* TLTXTPageHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BBBEBD5290BFF5500DF738C /* TLTXTPageHelper.m */; };
 		2BBFD54D2906C00300FAC492 /* TLTXTTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BBFD54C2906BE4C00FAC492 /* TLTXTTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		867563FC24699AB200A6D4EB /* 站酷庆科黄油体.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */; };
 		867BC50726AB199100AC154D /* GAdjustButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 867BC4FD26AB199100AC154D /* GAdjustButton.m */; };
@@ -333,6 +335,8 @@
 		2BBBEB73290BB25B00DF738C /* ftbdf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftbdf.h; sourceTree = "<group>"; };
 		2BBBEB74290BB25B00DF738C /* ftrender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftrender.h; sourceTree = "<group>"; };
 		2BBBEB75290BB25B00DF738C /* ftcalc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftcalc.h; sourceTree = "<group>"; };
+		2BBBEBD4290BFF5500DF738C /* TLTXTPageHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLTXTPageHelper.h; sourceTree = "<group>"; };
+		2BBBEBD5290BFF5500DF738C /* TLTXTPageHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLTXTPageHelper.m; sourceTree = "<group>"; };
 		2BBFD54C2906BE4C00FAC492 /* TLTXTTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TLTXTTypes.h; sourceTree = "<group>"; };
 		867563FB24699AB200A6D4EB /* 站酷庆科黄油体.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "站酷庆科黄油体.ttf"; sourceTree = "<group>"; };
 		867BC4FB26AB199100AC154D /* GMenuViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMenuViewContainer.h; sourceTree = "<group>"; };
@@ -467,6 +471,8 @@
 				2B2E4A012900F09700A41EEA /* TLTXTCore.m */,
 				2B5605D3290644970093EF38 /* TLTXTCachePage.h */,
 				2B5605D4290644970093EF38 /* TLTXTCachePage.m */,
+				2BBBEBD4290BFF5500DF738C /* TLTXTPageHelper.h */,
+				2BBBEBD5290BFF5500DF738C /* TLTXTPageHelper.m */,
 				2B6B445929001ACD002929A9 /* TextLayout.docc */,
 			);
 			path = TextLayout;
@@ -822,6 +828,7 @@
 				2BBBEBB1290BB25B00DF738C /* ftmemory.h in Headers */,
 				2BBBEB95290BB25B00DF738C /* ftoutln.h in Headers */,
 				2BBBEB8F290BB25B00DF738C /* svgldict.h in Headers */,
+				2BBBEBD6290BFF5500DF738C /* TLTXTPageHelper.h in Headers */,
 				2BBBEB97290BB25B00DF738C /* ftadvanc.h in Headers */,
 				2BBBEBAB290BB25B00DF738C /* fterrdef.h in Headers */,
 				2BBBEBC0290BB25B00DF738C /* ftbitmap.h in Headers */,
@@ -981,6 +988,7 @@
 				2B6B449229001BA3002929A9 /* hb-shape-plan.cc in Sources */,
 				2B6B446A29001AF9002929A9 /* hb-directwrite.cc in Sources */,
 				2B6B44B029001FC0002929A9 /* CGFontToFontData.m in Sources */,
+				2BBBEBD7290BFF5500DF738C /* TLTXTPageHelper.m in Sources */,
 				2B6B448C29001B94002929A9 /* hb-ot-shape-fallback.cc in Sources */,
 				2B6B449729001BB2002929A9 /* hb-subset-cff1.cc in Sources */,
 				2B6B449829001BB4002929A9 /* hb-subset-cff2.cc in Sources */,

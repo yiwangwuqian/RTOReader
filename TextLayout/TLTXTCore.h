@@ -50,6 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImage *)imageWithPageNum:(NSInteger)pageNum;
 
 - (NSInteger)totalPage;
+
+/// 执行一次分页，返回结果为各页的游标，可在子线程执行。
+/// - Parameters:
+///   - aString: 属性字符串
+///   - pageSize: 页面大小
++ (NSArray<NSNumber*> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize;
 @end
 
 NS_ASSUME_NONNULL_END
