@@ -1,1 +1,0 @@
-../../../freetype/src/autofit/aflatin2.h

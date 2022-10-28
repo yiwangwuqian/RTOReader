@@ -1,1 +1,0 @@
-../../../freetype/include/ftstroke.h

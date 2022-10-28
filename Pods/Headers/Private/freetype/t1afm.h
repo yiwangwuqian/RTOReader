@@ -1,1 +1,0 @@
-../../../freetype/src/type1/t1afm.h
