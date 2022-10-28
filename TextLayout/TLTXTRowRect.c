@@ -64,7 +64,7 @@ void txt_row_rect_array_create(TLTXTRowRectArray *array)
     
     size_t length = 20;
     object->length = length;
-    object->data = calloc(length, sizeof(TLTXTRectArray));
+    object->data = calloc(length, sizeof(struct TLTXTRectArray_));
     
     *array = object;
 }

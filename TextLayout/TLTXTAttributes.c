@@ -26,7 +26,7 @@ void tl_range_array_create(TLRangeArray *array)
     
     size_t length = 100;
     object->length = length;
-    object->data = calloc(length, sizeof(struct TLRangeArray_));
+    object->data = calloc(length, sizeof(struct TLRange_));
     
     *array = object;
 }
@@ -78,7 +78,7 @@ void tl_txt_attributes_array_create(TLTXTAttributesArray *array)
     
     size_t length = 100;
     object->length = length;
-    object->data = calloc(length, sizeof(struct TLTXTAttributesArray_));
+    object->data = calloc(length, sizeof(struct TLTXTAttributes_));
     
     *array = object;
 }
