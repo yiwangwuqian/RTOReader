@@ -27,7 +27,7 @@ void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array);
 
 void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b);
 
-TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, int64_t *output_last_range_index);
+TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, size_t *output_last_range_index);
 
 unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  hb_glyph_info_t *glyph_info,
@@ -35,7 +35,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  size_t start_cursor,
                                                  TLRangeArray rArray,
                                                  TLTXTAttributesArray aArray,
-                                                 int64_t *last_range_index,
+                                                 size_t *last_range_index,
                                                  bool change_last_range_index,
                                                  unsigned int totalWidth,
                                                  hb_codepoint_t *codepoints,
@@ -250,8 +250,8 @@ void txt_worker_data_paging(TLTXTWorker *worker)
         defaultAttributes = (*worker)->default_attributes_func(*worker);
     }
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
-    int64_t last_range_index = range_total_count > 0 ? 0 : -1;
-    int64_t backup_last_range_index = last_range_index;
+    size_t last_range_index = range_total_count > 0 ? 0 : -1;
+    size_t backup_last_range_index = last_range_index;
     
     while (glyph_count != now_cursor) {
         
@@ -395,7 +395,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     }
     
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
-    int64_t last_range_index = range_total_count > 0 ? 0 : -1;
+    size_t last_range_index = range_total_count > 0 ? 0 : -1;
     size_t last_red = 0;
     size_t last_green = 0;
     size_t last_blue = 0;
@@ -671,11 +671,11 @@ void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b)
     *b = (c) & 0xFF;
 }
 
-TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, int64_t *output_last_range_index)
+TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, size_t *output_last_range_index)
 {
     TLTXTAttributes result = NULL;
     size_t range_total_count = tl_range_array_get_count(rArray);
-    int64_t last_range_index = *output_last_range_index;
+    size_t last_range_index = *output_last_range_index;
     
     while (last_range_index >=0 && last_range_index < range_total_count) {
         TLRange onceRange = tl_range_array_object_at(rArray, last_range_index);
@@ -703,7 +703,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  size_t start_cursor,
                                                  TLRangeArray rArray,
                                                  TLTXTAttributesArray aArray,
-                                                 int64_t *last_range_index,
+                                                 size_t *last_range_index,
                                                  bool change_last_range_index,
                                                  unsigned int totalWidth,
                                                  hb_codepoint_t *codepoints,
@@ -714,7 +714,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
     unsigned int onelineMaxHeight=0;
     unsigned int onelineMaxAscender=0;
     unsigned int oneLineCharCount = 0;
-    int64_t inner_last_range_index = *last_range_index;
+    size_t inner_last_range_index = *last_range_index;
     //默认size
     FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
     for (size_t i = start_cursor; i<glyph_count; i++) {
