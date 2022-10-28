@@ -535,18 +535,24 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                     break;
                 }else if (row>heightDelta-1 && row<heightDelta+bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width){
                     unsigned char pixelValue = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*(row-heightDelta)];
-                    textureBuffer[pixelPosition*4] = pixelValue > 0 ? last_red : 255;
-                    textureBuffer[pixelPosition*4+1] = pixelValue > 0 ? last_green : 255;
-                    textureBuffer[pixelPosition*4+2] = pixelValue > 0 ? last_blue : 255;
-                    textureBuffer[pixelPosition*4+3] = pixelValue > 0 ? pixelValue : 255;
+                    //这样设置即bitmap上没有内容的像素点rgb为0x000000
+                    if (pixelValue) {
+                        textureBuffer[pixelPosition*4] = last_red;
+                        textureBuffer[pixelPosition*4+1] = last_green;
+                        textureBuffer[pixelPosition*4+2] = last_blue;
+                        textureBuffer[pixelPosition*4+3] = pixelValue;
+                    }
                 }else{
                     
                     if (heightDelta == 0 && row>0 && row<bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width) {
                         unsigned char pixelValue = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*row];
-                        textureBuffer[pixelPosition*4] = pixelValue > 0 ? last_red : 255;
-                        textureBuffer[pixelPosition*4+1] = pixelValue > 0 ? last_green : 255;
-                        textureBuffer[pixelPosition*4+2] = pixelValue > 0 ? last_blue : 255;
-                        textureBuffer[pixelPosition*4+3] = pixelValue > 0 ? pixelValue : 255;
+                        //这样设置即bitmap上没有内容的像素点rgb为0x000000
+                        if (pixelValue) {
+                            textureBuffer[pixelPosition*4] = last_red;
+                            textureBuffer[pixelPosition*4+1] = last_green;
+                            textureBuffer[pixelPosition*4+2] = last_blue;
+                            textureBuffer[pixelPosition*4+3] = pixelValue;
+                        }
                     } else {
                         
                         //显示竖线
@@ -570,10 +576,13 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                         }
                          */
                         
+                        //这个赋值对应的是每行第一个字到最后一个字之间空白的部分
+                        /*
                         textureBuffer[pixelPosition*4] = 255;
                         textureBuffer[pixelPosition*4+1] = 255;
                         textureBuffer[pixelPosition*4+2] = 255;
                         textureBuffer[pixelPosition*4+3] = 255;
+                         */
                     }
                 }
             }

@@ -226,7 +226,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 
 - (UIImage *)imageWithPageNum:(NSInteger)pageNum
 {
-    if (pageNum >=0 && pageNum < [self totalPage]) {
+    if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
         NSInteger index = -1;
         for (NSInteger i=0; i<self.cachedArray.count; i++) {
             TLTXTCachePage *oncePage = self.cachedArray[i];
@@ -258,7 +258,10 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                 }
             }
         } else {
-            TLTXTCachePage *cachePage = self.cachedArray[1];
+            TLTXTCachePage *cachePage = nil;
+            if (self.cachedArray.count > 1) {
+                cachePage = self.cachedArray[1];
+            }
             return cachePage.image;
         }
     }
