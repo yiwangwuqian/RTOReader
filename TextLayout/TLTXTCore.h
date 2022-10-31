@@ -35,6 +35,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetAttributedString:(TLAttributedString *)aString pageSize:(CGSize)size;
 
 /**
+ *重置内容和页面大小，并使用已有的分页信息
+ */
+- (void)resetAttributedString:(TLAttributedString *)aString
+                     pageSize:(CGSize)size
+                  cursorArray:(NSArray<NSNumber *> *)cursorArray;
+
+/**
  *获取上一页的内容，并继续向上一页进一步
  */
 - (UIImage *)toPreviousPageOnce;

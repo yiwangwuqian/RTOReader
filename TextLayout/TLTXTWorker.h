@@ -52,6 +52,12 @@ size_t txt_worker_data_paging(TLTXTWorker *worker);
 /// - Parameter worker: worker对象
 size_t txt_worker_total_page(TLTXTWorker *worker);
 
+/// TLTXTWorker总页数从外部预填入(存在分页和绘制上下文不一致的情况，该函数后续不一定保留)
+/// - Parameters:
+///   - worker: worker对象
+///   - count: 数量
+void txt_worker_total_page_prefill(TLTXTWorker worker,size_t count);
+
 ///  TLTXTWorker绘制一页
 /// - Parameters:
 ///   - worker: worker对象
@@ -64,6 +70,11 @@ uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,TLTXTRect* cont
 
 size_t txt_worker_page_cursor_array_get(TLTXTWorker worker,size_t page);
 
+///  TLTXTWorker游标数组从外部预填入(存在分页和绘制上下文不一致的情况，该函数后续不一定保留)
+/// - Parameters:
+///   - worker: worker对象
+///   - cursor: 一个游标数据
+void txt_worker_page_cursor_array_prefill(TLTXTWorker worker,size_t cursor);
 #ifdef __cplusplus
 }
 #endif

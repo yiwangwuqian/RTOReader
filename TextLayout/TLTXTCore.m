@@ -100,19 +100,54 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
     
     self.pageNum = -1;
-    [self firstTimeDraw];
+    [self firstTimeDraw:YES];
 }
 
-- (void)firstTimeDraw
+- (void)resetAttributedString:(TLAttributedString *)aString
+                     pageSize:(CGSize)size
+                  cursorArray:(NSArray<NSNumber *> *)cursorArray
+{
+    if (!aString) {
+        return;
+    } else if (CGSizeEqualToSize(size, CGSizeZero)) {
+        return;
+    }
+    
+    self.attributedString = aString;
+    self.pageSize = size;
+    
+    if (_worker) {
+        txt_worker_destroy(&_worker);
+        _worker = NULL;
+    }
+    
+    txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
+    txt_worker_set_context(_worker, (__bridge void *)(self));
+    txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
+    txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
+    if (cursorArray.count) {
+        for (NSNumber *number in cursorArray) {
+            txt_worker_page_cursor_array_prefill(_worker, [number integerValue]);
+        }
+        txt_worker_total_page_prefill(_worker, cursorArray.count);
+    }
+    
+    self.pageNum = -1;
+    [self firstTimeDraw:NO];
+}
+
+- (void)firstTimeDraw:(BOOL)needsPaging
 {
     dispatch_async(self.bitmapQueue, ^{
+        if (needsPaging) {
 #if kTLTXTPerformanceLog
-        NSDate *pagingDate = [NSDate date];
+            NSDate *pagingDate = [NSDate date];
 #endif
-        txt_worker_data_paging(&self->_worker);
+            txt_worker_data_paging(&self->_worker);
 #if kTLTXTPerformanceLog
-        NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(pagingDate) ));
+            NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(pagingDate) ));
 #endif
+        }
         //调用三次对应绘制3页
         size_t total_page = txt_worker_total_page(&self->_worker);
         NSInteger loopCount = total_page > 3 ? 3 : total_page;

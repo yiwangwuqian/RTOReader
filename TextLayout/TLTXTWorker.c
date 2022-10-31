@@ -343,6 +343,11 @@ size_t txt_worker_total_page(TLTXTWorker *worker)
     return (*worker)->total_page;
 }
 
+void txt_worker_total_page_prefill(TLTXTWorker worker,size_t count)
+{
+    worker->total_page = count;
+}
+
 uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRectArray *page_row_rect_array)
 {
     if ( page >= (*worker)->total_page ) {
@@ -677,6 +682,14 @@ size_t txt_worker_page_cursor_array_get(TLTXTWorker worker,size_t page)
 {
     RTOTXTPageCursorArray array = worker->cursor_array;
     return array->data[page];
+}
+
+void txt_worker_page_cursor_array_prefill(TLTXTWorker worker,size_t cursor)
+{
+    if (worker->cursor_array == NULL) {
+        txt_page_cursor_array_create(&worker->cursor_array);
+    }
+    txt_page_cursor_array_add(worker->cursor_array, cursor);
 }
 
 void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b)
