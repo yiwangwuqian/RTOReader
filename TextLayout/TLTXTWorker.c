@@ -212,7 +212,7 @@ void txt_worker_destroy(TLTXTWorker *worker)
     *worker = NULL;
 }
 
-void txt_worker_data_paging(TLTXTWorker *worker)
+size_t txt_worker_data_paging(TLTXTWorker *worker)
 {
     /**
      *实现目标：
@@ -252,6 +252,8 @@ void txt_worker_data_paging(TLTXTWorker *worker)
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
     int64_t backup_last_range_index = last_range_index;
+    
+    size_t endPageHeight = 0;
     
     while (glyph_count != now_cursor) {
         
@@ -316,6 +318,10 @@ void txt_worker_data_paging(TLTXTWorker *worker)
         txt_page_cursor_array_add((*worker)->cursor_array, now_cursor);
         //此处是循环的结尾
         page++;
+        
+        if (glyph_count == now_cursor) {
+            endPageHeight = typeSettingY + aLineHeightMax;
+        }
     }
     
     if (rArray) {
@@ -329,6 +335,7 @@ void txt_worker_data_paging(TLTXTWorker *worker)
     }
     
     (*worker)->total_page = page;
+    return endPageHeight;
 }
 
 size_t txt_worker_total_page(TLTXTWorker *worker)

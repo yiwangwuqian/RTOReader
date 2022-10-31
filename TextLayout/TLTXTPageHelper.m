@@ -41,22 +41,22 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     txt_worker_destroy(&_worker);
 }
 
-+ (NSArray<NSNumber*> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize
++ (NSArray<NSNumber*> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height;
 {
     TLTXTPageHelper *helper = [[TLTXTPageHelper alloc] init];
     helper.attributedString = aString;
     helper.pageSize = pageSize;
-    NSArray *result = [helper paging];
+    NSArray *result = [helper paging:height];
     return result;
 }
 
-- (NSArray<NSNumber*> *)paging
+- (NSArray<NSNumber*> *)paging:(CGFloat*)endPageHeight
 {
     txt_worker_create(&_worker, [[self.attributedString string] UTF8String], self.pageSize.width, self.pageSize.height);
     txt_worker_set_context(_worker, (__bridge void *)(self));
     txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
     txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
-    txt_worker_data_paging(&self->_worker);
+    *endPageHeight = txt_worker_data_paging(&self->_worker);
     
     size_t total_page = txt_worker_total_page(&self->_worker);
     if (total_page) {

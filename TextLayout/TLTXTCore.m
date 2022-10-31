@@ -206,9 +206,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return txt_worker_total_page(&_worker);
 }
 
-+ (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize
++ (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height
 {
-    return [TLTXTPageHelper oncePaging:aString pageSize:pageSize];
+    return [TLTXTPageHelper oncePaging:aString pageSize:pageSize endPageHeight:height];
 }
 
 #pragma mark- Private methods

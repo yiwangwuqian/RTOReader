@@ -51,11 +51,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)totalPage;
 
-/// 执行一次分页，返回结果为各页的游标，可在子线程执行。
+/// 执行一次分页，返回结果为各页的游标，并返回最后一页的高度
 /// - Parameters:
 ///   - aString: 属性字符串
 ///   - pageSize: 页面大小
-+ (NSArray<NSNumber*> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize;
+///   - height: 最后一页的高度
++ (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height;
 @end
 
 NS_ASSUME_NONNULL_END

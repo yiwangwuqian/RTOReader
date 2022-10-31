@@ -46,7 +46,7 @@ void txt_worker_destroy(TLTXTWorker *worker);
 
 /// TLTXTWorker数据分页操作
 /// - Parameter worker: worker对象
-void txt_worker_data_paging(TLTXTWorker *worker);
+size_t txt_worker_data_paging(TLTXTWorker *worker);
 
 /// TLTXTWorker总页数
 /// - Parameter worker: worker对象
