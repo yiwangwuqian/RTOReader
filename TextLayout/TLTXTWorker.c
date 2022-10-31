@@ -782,6 +782,10 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         typeSettingX += aCharAdvance;
     }
     *max_ascender = onelineMaxAscender;
+    //这一行有内容但是没有换行，此时到了内容的末尾
+    if (typeSettingX > 0 && oneLineCharCount == 0) {
+        oneLineCharCount = (unsigned int)(glyph_count - start_cursor);
+    }
     *oneline_count = oneLineCharCount;
     if (change_last_range_index) {
         *last_range_index = inner_last_range_index;

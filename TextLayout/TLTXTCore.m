@@ -6,7 +6,7 @@
 //  Copyright © 2022 ghy. All rights reserved.
 //
 
-#define kTLTXTPerformanceLog 1
+#define kTLTXTPerformanceLog 0
 
 #define GetTimeDeltaValue(a) [[NSDate date] timeIntervalSince1970] - [(a) timeIntervalSince1970]
 
