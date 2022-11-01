@@ -40,7 +40,8 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  unsigned int totalWidth,
                                                  hb_codepoint_t *codepoints,
                                                  unsigned int *max_ascender,
-                                                 unsigned int *oneline_count);
+                                                 unsigned int *oneline_count,
+                                                 unsigned int *default_font_size);
 //------
 
 struct TLTXTWorker_ {
@@ -249,6 +250,7 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
     if ((*worker)->default_attributes_func) {
         defaultAttributes = (*worker)->default_attributes_func(*worker);
     }
+    unsigned int font_size = (defaultAttributes != NULL && defaultAttributes->fontSize) ? defaultAttributes->fontSize : GetDeviceFontSize(21);
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
     int64_t backup_last_range_index = last_range_index;
@@ -279,7 +281,8 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
                                                                  totalWidth,
                                                                  (*worker)->codepoints,
                                                                  &aLineAscenderMax,
-                                                                 &oneline_count);
+                                                                 &oneline_count,
+                                                                 &font_size);
             
             if (!oneline_count) {
                 //目前只有首个字是换行符这种情况
@@ -372,9 +375,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
 //                             screenDpi,
 //                             0 );                /* set character size */
     
-    //Second method to set font size
-    FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
-    
     unsigned int glyph_count;
     hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
     
@@ -405,6 +405,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     if ((*worker)->default_attributes_func) {
         defaultAttributes = (*worker)->default_attributes_func(*worker);
     }
+    unsigned int font_size = (defaultAttributes != NULL && defaultAttributes->fontSize) ? defaultAttributes->fontSize : GetDeviceFontSize(21);
+    //Second method to set font size
+    FT_Set_Pixel_Sizes(face, 0, font_size);
     
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
@@ -434,7 +437,8 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                                                                      totalWidth,
                                                                      (*worker)->codepoints,
                                                                      &aLineAscenderMax,
-                                                                     &oneline_count);
+                                                                     &oneline_count,
+                                                                     &font_size);
                 checkedLineRange.location = i;
                 checkedLineRange.length = oneline_count;
             } else {
@@ -455,7 +459,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
             if (onceAttributes && onceAttributes->fontSize) {
                 FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
             } else {
-                FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
+                FT_Set_Pixel_Sizes(face, 0, font_size);
             }
         }
         
@@ -737,7 +741,8 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  unsigned int totalWidth,
                                                  hb_codepoint_t *codepoints,
                                                  unsigned int *max_ascender,
-                                                 unsigned int *oneline_count)
+                                                 unsigned int *oneline_count,
+                                                 unsigned int *default_font_size)
 {
     unsigned int typeSettingX=0;
     unsigned int onelineMaxHeight=0;
@@ -745,14 +750,15 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
     unsigned int oneLineCharCount = 0;
     int64_t inner_last_range_index = *last_range_index;
     //默认size
-    FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
+    unsigned int font_size = default_font_size != NULL ? *default_font_size : GetDeviceFontSize(21);
+    FT_Set_Pixel_Sizes(face, 0, font_size);
     for (size_t i = start_cursor; i<glyph_count; i++) {
         if (inner_last_range_index >= 0) {
             TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &inner_last_range_index);
             if (onceAttributes && onceAttributes->fontSize) {
                 FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
             } else {
-                FT_Set_Pixel_Sizes(face, 0, GetDeviceFontSize(21));
+                FT_Set_Pixel_Sizes(face, 0, font_size);
             }
         }
 

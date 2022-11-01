@@ -297,8 +297,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             NSLog(@"page:%@ 被选中的文字：%@", @(page),[self.attributedString.string substringWithRange:NSMakeRange(startIndex, length)]);
 #endif
         }
-        
-        return array;
+        if (pStartIndex >=0) {
+            return array;
+        }
     }
     return nil;
 }
