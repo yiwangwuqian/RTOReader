@@ -366,7 +366,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     if (self.nextPageSemaphore) {
         dispatch_semaphore_wait(self.nextPageSemaphore, DISPATCH_TIME_FOREVER);
     }
-    if (!(self.pageNum < [self totalPage])) {
+    if (!(self.pageNum + 1 < [self totalPage])) {
         return;
     }
     NSInteger afterPageNum = self.pageNum+1;
