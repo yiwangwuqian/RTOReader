@@ -500,10 +500,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
          循环刚开始的时候在文本有属性的情况下，调用了txt_worker_check_oneline_max_height
          这个方法的执行个人认为最好在文本没有属性的情况下不调用，能避免一些耗时
          */
-        if (typeSettingX + aCharAdvance > totalWidth){
-            typeSettingX = 0;
-            typeSettingY += beforeALineHeightMax + line_spacing;
-        } else if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
+        if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
             if (typeSettingX == 0) {
                 /**
                  *如果当前第一个字是换行符，它上一个字是换行即'\n'，它要单独占一行
@@ -518,6 +515,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                 typeSettingY += beforeALineHeightMax + line_spacing;
                 continue;
             }
+        } else if (typeSettingX + aCharAdvance > totalWidth){
+            typeSettingX = 0;
+            typeSettingY += beforeALineHeightMax + line_spacing;
         }
         if (typeSettingX == 0){
             TLTXTRectArray rect_array;
@@ -776,10 +776,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         }
 
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
-        if (typeSettingX + aCharAdvance > totalWidth){
-            oneLineCharCount = (unsigned int)(i - start_cursor);
-            break;
-        } else if (codepoints[i] == '\n' ? 1 : 0) {
+        if (codepoints[i] == '\n' ? 1 : 0) {
             unsigned int countFromStart = (unsigned int)(i - start_cursor);
             /**
              *如果第一个字是换行 那么oneLineCharCount此时等于0
@@ -792,6 +789,9 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             }
             //注意:必须加1下一次从这个换行符之后开始
             oneLineCharCount = countFromStart + 1;
+            break;
+        } else if (typeSettingX + aCharAdvance > totalWidth){
+            oneLineCharCount = (unsigned int)(i - start_cursor);
             break;
         }
 
