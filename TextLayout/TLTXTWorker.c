@@ -482,6 +482,11 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         }
         
         FT_Bitmap bitmap = face->glyph->bitmap;
+        if ((*worker)->codepoints[i] == 0xfffc) {
+            //特殊字符：OBJECT REPLACEMENT CHARACTER这里使用系统字体的处理方法
+            bitmap.width = 0;
+            bitmap.rows = 0;
+        }
         //        printf("bitmap.rows:%d face->glyph->metrics.height/64:%ld\n", bitmap.rows, face->glyph->metrics.height/64);
         //一个字符占位宽
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
