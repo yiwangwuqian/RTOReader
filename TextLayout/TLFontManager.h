@@ -12,11 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TLFontManager : NSObject
 
++ (instancetype)shared;
+
 + (void)configSystemFont;
 
 + (NSString *)defaultFontPath;
 
 + (NSString *)systemFontPath;
+
+- (void)changeDefaultFont:(NSString *)fontPath;
 
 @end
 

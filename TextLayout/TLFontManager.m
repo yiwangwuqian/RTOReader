@@ -11,7 +11,25 @@
 #import "TLFontManager.h"
 #import "CGFontToFontData.h"
 
+@interface TLFontManager()
+
+//外部字体
+@property(nonatomic)NSString *injectionFontPath;
+
+@end
+
 @implementation TLFontManager
+
+static TLFontManager *manager = nil;
+
++ (instancetype)shared
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        manager = [[self alloc] init];
+    });
+    return manager;
+}
 
 + (void)configSystemFont
 {
@@ -26,9 +44,9 @@
 
 + (NSString *)defaultFontPath
 {
-    NSString *fontPath = [self systemFontPath];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:fontPath]) {
-        fontPath = [[NSBundle mainBundle] pathForResource: @"站酷庆科黄油体" ofType: @"ttf"];
+    NSString *fontPath = [[[self class] shared] injectionFontPath];
+    if (!(fontPath.length) || ![[NSFileManager defaultManager] fileExistsAtPath:fontPath]) {
+        fontPath = [self systemFontPath];
     }
     return fontPath;
 }
@@ -37,6 +55,11 @@
 {
     NSString *fontPath = [NSHomeDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"Documents/%@", kSystemFontName]];
     return fontPath;
+}
+
+- (void)changeDefaultFont:(NSString *)fontPath
+{
+    self.injectionFontPath = fontPath;
 }
 
 @end
