@@ -528,7 +528,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         }
         
         TLTXTRectArray rect_array = txt_row_rect_array_current(row_rect_array);
-        struct TLTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+(int)aCharAdvance,typeSettingY+aLineHeightMax};
+        struct TLTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+(int)aCharAdvance,typeSettingY+aLineHeightMax,(int32_t)i};
         txt_rect_array_add(rect_array, one_rect);
         //Y方向偏移量 根据字符各不相同
         unsigned int heightDelta = aLineAscenderMax - face->glyph->bitmap_top;

@@ -31,6 +31,12 @@ struct TLTXTRect_ {
     int32_t y;
     int32_t xx;//x最大值
     int32_t yy;//y最大值
+    /**
+     *纯文本的排版，\n有可能占用一行也有可能不占用任何空间
+     *所以一页的TLTXTRect_数量和文字数量是对不上的
+     *这个字段新增的 使用到的地方需要看是否漏掉
+     */
+    int32_t codepoint_index;
 };
 
 struct TLTXTRowRectArray_ {

@@ -192,6 +192,112 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return cachePage.image;
 }
 
+- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point
+{
+    TLTXTCachePage *desPage;
+    for (NSInteger i=0; i<self.cachedArray.count; i++) {
+        TLTXTCachePage *oncePage = self.cachedArray[i];
+        if (oncePage.pageNum == page) {
+            desPage = oncePage;
+            break;
+        }
+    }
+    
+    if (desPage){
+        CGFloat scale = [UIScreen mainScreen].scale;
+        point.x = scale * point.x;
+        point.y = scale * point.y;
+
+        NSInteger pStartIndex = -1;
+        NSInteger pEndIndex = -1;
+        NSInteger newLineIndex = -1;
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        
+        NSInteger baseIndex = desPage.beforeCursor;
+        if (baseIndex == -1) {
+            baseIndex = 0;
+        }
+        
+        for (NSInteger i=0; i<desPage.rowRectArray->count; i++) {
+            TLTXTRectArray data = desPage.rowRectArray->data[i];
+            if (data->count > 0) {
+                for (NSInteger j=0; j<data->count; j++) {
+                    struct TLTXTRect_ rect = data->data[j];
+                    
+                    if (pStartIndex == -1 && rect.codepoint_index>0) {
+                        NSInteger rectBeforeIndex = rect.codepoint_index>0 ? rect.codepoint_index - 1 : 0 ;
+                        NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectBeforeIndex, 1)];
+                        if ([oneString isEqualToString: @"\n"]) {
+                            [array removeAllObjects];
+                            
+                            newLineIndex = rect.codepoint_index;
+                            //如果上一个字符是换行符
+                        }
+                    } else if (pEndIndex == -1) {
+                        if (i == desPage.rowRectArray->count-1 && j == data->count) {
+                            //本页最后一个字
+                            pEndIndex = rect.codepoint_index;
+                            break;
+                        } else {
+                            NSInteger rectAfterIndex = rect.codepoint_index + 1;
+                            NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectAfterIndex, 1)];
+                            if ([oneString isEqualToString: @"\n"]) {
+                                //下一个字是换行
+                                pEndIndex = rect.codepoint_index;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    CGRect onceRect = CGRectMake(rect.x, rect.y, rect.xx - rect.x, rect.yy - rect.y);
+                    if (CGRectContainsPoint(onceRect, point) && pStartIndex == -1) {
+                        pStartIndex = newLineIndex;
+                    }
+                    
+                    [array addObject:[NSValue valueWithCGRect:onceRect]];
+                }
+            }
+            
+            if (pStartIndex >=0 && pEndIndex >=0) {
+                break;
+            }
+        }
+        
+        if (pStartIndex >=0 && pEndIndex >=0) {
+            //找了具体某一段
+        } else if (pStartIndex >=0) {
+            //只有开始没有结束
+        } else if (pEndIndex >=0) {
+            //只有结束没有开始
+        } else {
+            //一整屏的文字没有换行
+        }
+        
+        NSArray *tempArray = [NSArray arrayWithArray:array];
+        [array removeAllObjects];
+        for (NSValue *rectValue in tempArray) {
+            CGRect onceRect = [rectValue CGRectValue];
+            onceRect.origin.x = onceRect.origin.x/scale;
+            onceRect.origin.y = onceRect.origin.y/scale;
+            onceRect.size.width = onceRect.size.width/scale;
+            onceRect.size.height = onceRect.size.height/scale;
+            [array addObject:[NSValue valueWithCGRect:onceRect]];
+        }
+        
+        if (pStartIndex >=0 && pEndIndex >=0) {
+            //开始位置+1不包含第一个换行
+            NSInteger startIndex = pStartIndex;
+            NSInteger length = pEndIndex - pStartIndex;
+#ifdef DEBUG
+            NSLog(@"page:%@ 被选中的文字：%@", @(page),[self.attributedString.string substringWithRange:NSMakeRange(startIndex, length)]);
+#endif
+        }
+        
+        return array;
+    }
+    return nil;
+}
+
 - (UIImage *)imageWithPageNum:(NSInteger)pageNum
 {
     if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {

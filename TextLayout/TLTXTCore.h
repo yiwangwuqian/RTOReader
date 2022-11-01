@@ -51,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (UIImage *)toNextPageOnce;
 
+/// 获取段落的开始和结束位置坐标，返回CGPoint
+/// - Parameters:
+///   - page: 页码
+///   - point: 点坐标，用户手势的位置
+- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point;
 /**
  *根据页码来决定是否使用已有内容
  */
