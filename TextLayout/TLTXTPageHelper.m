@@ -88,13 +88,13 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             tl_range_array_add(*rArray, tlRange);
             
             NSDictionary *oneAttributeDict = attributes[i];
-            struct TLTXTAttributes_ tlAttributes = {0,0,0,0,0,0};
+            struct TLTXTAttributes_ tlAttributes = {0,0,0,0,0,0,0};
             for (NSNumber *typeNumber in oneAttributeDict.allKeys) {
                 NSInteger result = [oneAttributeDict[typeNumber] integerValue];
                 TLTXTAttributesNameType oneType = (TLTXTAttributesNameType)[typeNumber integerValue];
                 switch (oneType) {
                     case TLTXTAttributesNameTypeFontSize:
-                        tlAttributes.fontSize = result;
+                        tlAttributes.fontSize = (unsigned int)result;
                         break;
                     case TLTXTAttributesNameTypeFontStyle:
                         tlAttributes.fontStyle = result;
@@ -130,13 +130,16 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             TLTXTAttributesNameType oneType = (TLTXTAttributesNameType)[typeNumber integerValue];
             switch (oneType) {
                 case TLTXTAttributesNameTypeFontSize:
-                    oneAttributes->fontSize = result;
+                    oneAttributes->fontSize = (unsigned int)result;
                     break;
                 case TLTXTAttributesNameTypeColor:
                     oneAttributes->color = result;
                     break;
                 case TLTXTAttributesNameTypeLineSpacing:
                     oneAttributes->lineSpacing = result;
+                    break;
+                case TLTXTAttributesNameTypeParagraphFirstHeadIndent:
+                    oneAttributes->firstHeadIndent = (unsigned int)result;
                     break;
                 default:
                     break;

@@ -34,6 +34,7 @@ typedef struct TLTXTAttributes_ {
     size_t fontStyle;
     size_t color;
     size_t lineSpacing;
+    unsigned int firstHeadIndent;//大于0时数字指多少个字宽
     size_t paragraph;
     size_t placeholder;
 } *TLTXTAttributes;

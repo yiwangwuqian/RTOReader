@@ -38,6 +38,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  int64_t *last_range_index,
                                                  bool change_last_range_index,
                                                  unsigned int totalWidth,
+                                                 unsigned int pFirstLineHeadIndent,
                                                  hb_codepoint_t *codepoints,
                                                  unsigned int *max_ascender,
                                                  unsigned int *oneline_count,
@@ -251,6 +252,7 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
         defaultAttributes = (*worker)->default_attributes_func(*worker);
     }
     unsigned int font_size = (defaultAttributes != NULL && defaultAttributes->fontSize) ? defaultAttributes->fontSize : GetDeviceFontSize(21);
+    unsigned int pFirstLineHeadIndent = (defaultAttributes != NULL && defaultAttributes->firstHeadIndent) ? defaultAttributes->firstHeadIndent : 0;
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
     int64_t backup_last_range_index = last_range_index;
@@ -279,6 +281,7 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
                                                                  &last_range_index,
                                                                  true,
                                                                  totalWidth,
+                                                                 pFirstLineHeadIndent,
                                                                  (*worker)->codepoints,
                                                                  &aLineAscenderMax,
                                                                  &oneline_count,
@@ -406,6 +409,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         defaultAttributes = (*worker)->default_attributes_func(*worker);
     }
     unsigned int font_size = (defaultAttributes != NULL && defaultAttributes->fontSize) ? defaultAttributes->fontSize : GetDeviceFontSize(21);
+    unsigned int pFirstLineHeadIndent = (defaultAttributes != NULL && defaultAttributes->firstHeadIndent) ? defaultAttributes->firstHeadIndent : 0;
     //Second method to set font size
     FT_Set_Pixel_Sizes(face, 0, font_size);
     
@@ -435,6 +439,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                                                                      &last_range_index,
                                                                      false,
                                                                      totalWidth,
+                                                                     pFirstLineHeadIndent,
                                                                      (*worker)->codepoints,
                                                                      &aLineAscenderMax,
                                                                      &oneline_count,
@@ -520,7 +525,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                 typeSettingY += beforeALineHeightMax + line_spacing;
                 continue;
             }
-        } else if (typeSettingX + aCharAdvance > totalWidth){
+        } else if (typeSettingX + aCharAdvance > totalWidth) {
             typeSettingX = 0;
             typeSettingY += beforeALineHeightMax + line_spacing;
         }
@@ -528,6 +533,13 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
             TLTXTRectArray rect_array;
             txt_rect_array_create(&rect_array);
             txt_row_rect_array_add(row_rect_array, rect_array);
+        }
+        
+        //段首行缩进处理
+        if (i == 0 || (i > 0 && (*worker)->codepoints[i-1] == '\n')) {
+            if (typeSettingX == 0) {
+                typeSettingX = pFirstLineHeadIndent*(unsigned int)aCharAdvance;
+            }
         }
         
         //大于最大高度,停止
@@ -744,6 +756,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  int64_t *last_range_index,
                                                  bool change_last_range_index,
                                                  unsigned int totalWidth,
+                                                 unsigned int pFirstLineHeadIndent,
                                                  hb_codepoint_t *codepoints,
                                                  unsigned int *max_ascender,
                                                  unsigned int *oneline_count,
@@ -777,7 +790,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                        );
         
         if ( error ) {
-            printf("FT_Load_Glyph error code: %d",error);
+            printf("FT_Load_Glyph error code: %d glyphid:%d\n", error, glyphid);
         }
 
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
@@ -798,6 +811,10 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         } else if (typeSettingX + aCharAdvance > totalWidth){
             oneLineCharCount = (unsigned int)(i - start_cursor);
             break;
+        } else if (i == 0 || (i > 0 && codepoints[i-1] == '\n')) {
+            if (typeSettingX == 0) {
+                typeSettingX = pFirstLineHeadIndent*(unsigned int)aCharAdvance;
+            }
         }
 
         unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height)/64;
