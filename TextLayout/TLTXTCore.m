@@ -224,14 +224,19 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                 for (NSInteger j=0; j<data->count; j++) {
                     struct TLTXTRect_ rect = data->data[j];
                     
-                    if (pStartIndex == -1 && rect.codepoint_index>0) {
-                        NSInteger rectBeforeIndex = rect.codepoint_index>0 ? rect.codepoint_index - 1 : 0 ;
-                        NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectBeforeIndex, 1)];
-                        if ([oneString isEqualToString: @"\n"]) {
+                    if (pStartIndex == -1) {
+                        if (rect.codepoint_index == 0 || (i==0 && j==0)) {
+                            //如果第一个字符是开头
                             [array removeAllObjects];
-                            
                             newLineIndex = rect.codepoint_index;
-                            //如果上一个字符是换行符
+                        } else if (rect.codepoint_index>0) {
+                            NSInteger rectBeforeIndex = rect.codepoint_index - 1;
+                            NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectBeforeIndex, 1)];
+                            if ([oneString isEqualToString: @"\n"]) {
+                                //如果上一个字符是换行符
+                                [array removeAllObjects];
+                                newLineIndex = rect.codepoint_index;
+                            }
                         }
                     } else if (pEndIndex == -1) {
                         if (i == desPage.rowRectArray->count-1 && j == data->count) {
