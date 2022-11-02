@@ -100,12 +100,13 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
     
     self.pageNum = -1;
-    [self firstTimeDraw:YES];
+    [self firstTimeDraw:YES startPage:0];
 }
 
 - (void)resetAttributedString:(TLAttributedString *)aString
                      pageSize:(CGSize)size
                   cursorArray:(NSArray<NSNumber *> *)cursorArray
+                    startPage:(NSInteger)pageNum
 {
     if (!aString) {
         return;
@@ -133,10 +134,10 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     }
     
     self.pageNum = -1;
-    [self firstTimeDraw:NO];
+    [self firstTimeDraw:NO startPage:pageNum];
 }
 
-- (void)firstTimeDraw:(BOOL)needsPaging
+- (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum
 {
     dispatch_async(self.bitmapQueue, ^{
         if (needsPaging) {
@@ -150,8 +151,21 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         }
         //调用三次对应绘制3页
         size_t total_page = txt_worker_total_page(&self->_worker);
-        NSInteger loopCount = total_page > 3 ? 3 : total_page;
-        for (NSInteger i=0; i<loopCount; i++) {
+        NSInteger loopCount = 3;
+        NSInteger startPageNum = pageNum;
+        if (total_page - startPageNum < loopCount) {
+            //如果接近结尾
+            
+            if (total_page > loopCount) {
+                //如果页数较多
+                startPageNum = total_page - loopCount;
+            } else {
+                //如果页数较少 从头开始有多少页执行多少次
+                startPageNum = 0;
+                loopCount = total_page;
+            }
+        }
+        for (NSInteger i=startPageNum; i<startPageNum+loopCount; i++) {
             TLTXTRowRectArray row_rect_array = NULL;
             uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker, i, &row_rect_array);
             if (bitmap != NULL) {
@@ -348,6 +362,54 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return nil;
 }
 
+- (UIImage *_Nullable)onlyCachedImageWithPageNum:(NSInteger)pageNum
+{
+    if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
+        TLTXTCachePage *cachePage = nil;
+        for (NSInteger i=0; i<self.cachedArray.count; i++) {
+            TLTXTCachePage *oncePage = self.cachedArray[i];
+            if (oncePage.pageNum == pageNum) {
+                cachePage = oncePage;
+            }
+        }
+        return cachePage.image;
+    }
+    return nil;
+}
+
+- (void)toCacheWhenMoveTo:(NSInteger)pageNum
+{
+    if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
+        NSInteger index = -1;
+        for (NSInteger i=0; i<self.cachedArray.count; i++) {
+            TLTXTCachePage *oncePage = self.cachedArray[i];
+            if (oncePage.pageNum == pageNum) {
+                index = i;
+            }
+        }
+        bool pageNumIsEqual = true;
+        if (self.pageNum != pageNum){
+            self.pageNum = pageNum;
+            pageNumIsEqual = false;
+        }
+        if (index == 0) {
+            if (pageNum == 0) {
+            } else {
+                if (!pageNumIsEqual){
+                    [self toPreviousPage];
+                }
+            }
+        } else if (index == self.cachedArray.count -1) {
+            if (pageNum == [self totalPage]-1) {
+            } else {
+                if (!pageNumIsEqual){
+                    [self toNextPage];
+                }
+            }
+        }
+    }
+}
+
 - (NSInteger)totalPage
 {
     return txt_worker_total_page(&_worker);
@@ -412,6 +474,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     NSLog(@"%s using time:%@", __func__, @(GetTimeDeltaValue(date) ));
 #endif
             dispatch_semaphore_signal(self.nextPageSemaphore);
+            if (self.drawDelegate) {
+                [self.drawDelegate didDrawPageEnd:afterPageNum];
+            }
         });
             
     } else {
@@ -470,6 +535,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     NSLog(@"%s using time:%@", __func__, @(GetTimeDeltaValue(date) ));
 #endif
             dispatch_semaphore_signal(self.previousPageSemaphore);
+            if (self.drawDelegate) {
+                [self.drawDelegate didDrawPageEnd:afterPageNum];
+            }
         });
             
     } else {

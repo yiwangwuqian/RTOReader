@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)firstPageEnd;
 
+- (void)didDrawPageEnd:(NSInteger)pageNum;
 @end
 
 /**
@@ -35,11 +36,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetAttributedString:(TLAttributedString *)aString pageSize:(CGSize)size;
 
 /**
- *重置内容和页面大小，并使用已有的分页信息
+ *重置内容和页面大小，并使用已有的分页信息，指定开始绘制的页码
+ *调用前需要检查pageNum小于cursorArray.count
  */
 - (void)resetAttributedString:(TLAttributedString *)aString
                      pageSize:(CGSize)size
-                  cursorArray:(NSArray<NSNumber *> *)cursorArray;
+                  cursorArray:(NSArray<NSNumber *> *)cursorArray
+                    startPage:(NSInteger)pageNum;
 
 /**
  *获取上一页的内容，并继续向上一页进一步
@@ -60,6 +63,16 @@ NS_ASSUME_NONNULL_BEGIN
  *根据页码来决定是否使用已有内容
  */
 - (UIImage *)imageWithPageNum:(NSInteger)pageNum;
+
+/**
+ *根据页码来获取已缓存内容
+ */
+- (UIImage *_Nullable)onlyCachedImageWithPageNum:(NSInteger)pageNum;
+
+/**
+ *根据将要使用内容的页码来决定是否缓存
+ */
+- (void)toCacheWhenMoveTo:(NSInteger)pageNum;
 
 - (NSInteger)totalPage;
 
