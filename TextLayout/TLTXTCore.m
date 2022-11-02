@@ -178,10 +178,10 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     cachePage.rowRectArray = row_rect_array;
                     cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, i);
                     cachePage.beforeCursor = i>0 ? txt_worker_page_cursor_array_get(self.worker, i-1) : -1;
-                    NSInteger arrayCount = self.cachedArray.count;
                     [self.cachedArray addObject:cachePage];
+                    NSInteger arrayCount = self.cachedArray.count;
                     
-                    if (arrayCount == 0 && self.drawDelegate) {
+                    if (arrayCount == loopCount && self.drawDelegate) {
                         self.pageNum = 0;
                         [self.drawDelegate firstPageEnd];
                     }
