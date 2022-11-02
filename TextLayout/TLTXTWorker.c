@@ -360,6 +360,11 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         return NULL;
     }
     
+    TLTXTAttributes defaultAttributes = NULL;
+    if ((*worker)->default_attributes_func) {
+        defaultAttributes = (*worker)->default_attributes_func(*worker);
+    }
+    unsigned int font_size = (defaultAttributes != NULL && defaultAttributes->fontSize) ? defaultAttributes->fontSize : GetDeviceFontSize(21);
     FT_Face       face = (*worker)->face;
     
     FT_GlyphSlot  slot;
@@ -377,6 +382,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
 //                             0,
 //                             screenDpi,
 //                             0 );                /* set character size */
+    
+    //Second method to set font size
+    FT_Set_Pixel_Sizes(face, 0, font_size);
     
     unsigned int glyph_count;
     hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
@@ -404,14 +412,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         struct TLRange_ page_range = {before_cursor, next_cursor-before_cursor};
         (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
     }
-    TLTXTAttributes defaultAttributes = NULL;
-    if ((*worker)->default_attributes_func) {
-        defaultAttributes = (*worker)->default_attributes_func(*worker);
-    }
-    unsigned int font_size = (defaultAttributes != NULL && defaultAttributes->fontSize) ? defaultAttributes->fontSize : GetDeviceFontSize(21);
     unsigned int pFirstLineHeadIndent = (defaultAttributes != NULL && defaultAttributes->firstHeadIndent) ? defaultAttributes->firstHeadIndent : 0;
-    //Second method to set font size
-    FT_Set_Pixel_Sizes(face, 0, font_size);
     
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
