@@ -83,8 +83,6 @@
 		2B6B44A429001E7D002929A9 /* FileWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B449E29001E7C002929A9 /* FileWrapper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6B44A529001E7D002929A9 /* FileWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B449F29001E7C002929A9 /* FileWrapper.m */; };
 		2B6B44A629001E7D002929A9 /* TLTXTWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A029001E7C002929A9 /* TLTXTWorker.h */; };
-		2B6B44A729001E7D002929A9 /* TLTXTUtil.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44A129001E7C002929A9 /* TLTXTUtil.c */; };
-		2B6B44A829001E7D002929A9 /* TLTXTUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A229001E7D002929A9 /* TLTXTUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6B44AB29001F4F002929A9 /* TLFontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44A929001F4F002929A9 /* TLFontManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2B6B44AC29001F4F002929A9 /* TLFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AA29001F4F002929A9 /* TLFontManager.m */; };
 		2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */; };
@@ -240,8 +238,6 @@
 		2B6B449E29001E7C002929A9 /* FileWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWrapper.h; sourceTree = "<group>"; };
 		2B6B449F29001E7C002929A9 /* FileWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWrapper.m; sourceTree = "<group>"; };
 		2B6B44A029001E7C002929A9 /* TLTXTWorker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLTXTWorker.h; sourceTree = "<group>"; };
-		2B6B44A129001E7C002929A9 /* TLTXTUtil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TLTXTUtil.c; sourceTree = "<group>"; };
-		2B6B44A229001E7D002929A9 /* TLTXTUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLTXTUtil.h; sourceTree = "<group>"; };
 		2B6B44A929001F4F002929A9 /* TLFontManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLFontManager.h; sourceTree = "<group>"; };
 		2B6B44AA29001F4F002929A9 /* TLFontManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLFontManager.m; sourceTree = "<group>"; };
 		2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGFontToFontData.h; sourceTree = "<group>"; };
@@ -462,8 +458,6 @@
 				2B5605D9290682410093EF38 /* TLTXTRowRect.c */,
 				2B233A672907B42900C60F1A /* TLTXTAttributes.h */,
 				2B233A682907B42900C60F1A /* TLTXTAttributes.c */,
-				2B6B44A229001E7D002929A9 /* TLTXTUtil.h */,
-				2B6B44A129001E7C002929A9 /* TLTXTUtil.c */,
 				2BBFD54C2906BE4C00FAC492 /* TLTXTTypes.h */,
 				2B233A62290782DE00C60F1A /* TLAttributedString.h */,
 				2B233A63290782DE00C60F1A /* TLAttributedString.m */,
@@ -770,7 +764,6 @@
 				2BBBEBB3290BB25B00DF738C /* tttags.h in Headers */,
 				2BBBEBB7290BB25B00DF738C /* t1tables.h in Headers */,
 				2BBBEB79290BB25B00DF738C /* ftwinfnt.h in Headers */,
-				2B6B44A829001E7D002929A9 /* TLTXTUtil.h in Headers */,
 				2BBBEB87290BB25B00DF738C /* svwinfnt.h in Headers */,
 				2BBBEBA9290BB25B00DF738C /* ftobjs.h in Headers */,
 				2BBBEB83290BB25B00DF738C /* psaux.h in Headers */,
@@ -1000,7 +993,6 @@
 				2B6B448A29001B8D002929A9 /* hb-ot-shape-complex-use.cc in Sources */,
 				2B6B449529001BAB002929A9 /* hb-static.cc in Sources */,
 				2B6B447829001B5A002929A9 /* hb-ot-face.cc in Sources */,
-				2B6B44A729001E7D002929A9 /* TLTXTUtil.c in Sources */,
 				2B6B448629001B7B002929A9 /* hb-ot-shape-complex-khmer.cc in Sources */,
 				2B6B448129001B6E002929A9 /* hb-ot-shape-complex-default.cc in Sources */,
 				2B6B446F29001B07002929A9 /* hb-ft.cc in Sources */,
