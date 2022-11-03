@@ -18,6 +18,7 @@
 @interface RTOReadView()<TLTXTCoreDrawDelegate,UIScrollViewDelegate>
 
 @property(nonatomic)TLTXTCore       *txtCore;
+@property(nonatomic)NSArray         *cursorArray;
 @property(nonatomic)UIImageView*    imageView;
 @property(nonatomic)RTOReadSelectionView*   selectionView;
 @property(nonatomic)NSNumber*               selectionSNumber;
@@ -28,6 +29,11 @@
 @end
 
 @implementation RTOReadView
+
+- (void)dealloc
+{
+    [[TLTXTCoreManager shared] removeOnce:@"xxx"];
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -71,16 +77,22 @@
         _scrollView.frame = self.bounds;
         
         if (_txtCore == nil) {
-            self.txtCore = [[TLTXTCore alloc] init];
-            self.txtCore.drawDelegate = self;
             CGFloat drawWidth = CGRectGetWidth(self.bounds) * [UIScreen mainScreen].scale;
             CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
             NSString *fileContent = [[NSString alloc] initWithContentsOfFile:self.filePath encoding:NSUTF8StringEncoding error:nil];
-            TLAttributedString *aString = [[TLAttributedString alloc] initWithString:fileContent attributes:@{}];
+            TLAttributedString *aString = [[TLAttributedString alloc] initWithString:fileContent attributes:@{} textId:@"1"];
             [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF0000)} range:NSMakeRange(30, 10)];
             [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0x00FF00)} range:NSMakeRange(100, 3)];
             [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0x00FF00), @(TLTXTAttributesNameTypeFontSize): @(70)} range:NSMakeRange(650, 12)];
-            [self.txtCore resetAttributedString:aString pageSize:CGSizeMake(drawWidth, drawHeight)];
+            CGSize pageSize = CGSizeMake(drawWidth, drawHeight);
+            CGFloat endPageHeight;
+            NSArray *cursorArray = [TLTXTCore oncePaging:aString pageSize:pageSize endPageHeight:&endPageHeight];
+            self.cursorArray = cursorArray;
+            NSString *coreId = @"xxx";
+            [[TLTXTCoreManager shared] prepareAttributedString:aString pageSize:pageSize cursorArray:cursorArray coreId:coreId];
+            _txtCore = [[TLTXTCoreManager shared] coreWithId:coreId];
+            _txtCore.drawDelegate = self;
+            [_txtCore firstTimeDraw:NO startPage:NO textId:aString.textId];
         }
     }
 }
@@ -191,6 +203,7 @@
 //    }
 }
 
+/*
 - (void)toNextPage
 {
 #if DEBUG
@@ -212,13 +225,16 @@
     NSLog(@"%s using time:%f", __func__, GetTimeDeltaValue(date));
 #endif
 }
+ */
 
+/*
 - (void)toPreviousPage
 {
     _imageView.image = [self.txtCore toPreviousPageOnce];
     [[self class] turnPageToNext:NO forView:_imageView];
     self.selectionView.rectArray = nil;
 }
+ */
 
 + (void)turnPageToNext:(BOOL)next forView:(UIView *) view
 {
@@ -235,16 +251,30 @@
      */
 }
 
-- (void)firstPageEnd
+- (void)firstPageEnd:(NSString *)textId
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self firstPageEndWork];
     });
 }
 
+- (void)didDrawPageEnd:(NSInteger)pageNum textId:(NSString *)textId
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSInteger index = pageNum;
+        if (index < self.imageViewArray.count) {
+            UIImageView *imageView = self.imageViewArray[index];
+            if (!imageView.image) {
+                UIImage *image = [self.txtCore onlyCachedImageWithPageNum:index textId:@"1"];
+                imageView.image = image;
+            }
+        }
+    });
+}
+
 - (void)firstPageEndWork
 {
-    NSInteger totalCount = self.txtCore.totalPage;
+    NSInteger totalCount = self.cursorArray.count;
     CGSize contentSize = self.bounds.size;
     //横滑配置
     contentSize.width = contentSize.width * totalCount;
@@ -268,7 +298,7 @@
     }
     
     UIImageView *imageView = self.imageViewArray.firstObject;
-    imageView.image = [self.txtCore imageWithPageNum:0];
+    imageView.image = [self.txtCore onlyCachedImageWithPageNum:0 textId:@"1"];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -291,7 +321,9 @@
                 //TEST END
                 
                 UIImageView *imageView = self.imageViewArray[index];
-                imageView.image = [self.txtCore imageWithPageNum:index];
+                UIImage *image = [self.txtCore onlyCachedImageWithPageNum:index textId:@"1"];
+                [self.txtCore toCacheWhenMoveTo:index textId:@"1" whetherEnd:NULL];
+                imageView.image = image;
             }
         } else {
 //            //向左
