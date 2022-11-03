@@ -20,14 +20,18 @@
 #import "TLTXTCachePage.h"
 #import "TLTXTPageHelper.h"
 
-@interface TLTXTCore()
+dispatch_queue_t    bitmapQueue;//bitmap绘制专用
+dispatch_queue_t    imageQueue;//UIImage创建专用
 
+/**
+ *拆分业务逻辑，单个对象对应一段文本即单个txt文件
+ *这样在TLTXTCore内聚合以后就支持处理多个txt文件
+ */
+@interface TLTXTCoreUnit : NSObject
+@property(nonatomic,weak)id<TLTXTCoreDrawDelegate>  drawDelegate;
 @property(nonatomic)TLAttributedString  *attributedString;
 @property(nonatomic)CGSize              pageSize;
 @property(nonatomic)TLTXTWorker         worker;
-
-@property(nonatomic)dispatch_queue_t    bitmapQueue;//bitmap绘制专用
-@property(nonatomic)dispatch_queue_t    imageQueue;//UIImage创建专用
 
 @property(nonatomic)NSInteger           pageNum;//页码翻页时的判断使用 最后一次被请求的页码
 @property(nonatomic)NSMutableArray      *cachedArray;//被缓存数组(每个元素包含有这些字段：页码、图片、图片中每个字位置信息)
@@ -39,22 +43,22 @@
 @property(nonatomic)dispatch_semaphore_t    previousPageSemaphore;
 @end
 
+@implementation TLTXTCoreUnit
+
 static void rangeAttributesFunc(TLTXTWorker worker,
                                 TLRange range,
                                 TLRangeArray *rArray,
                                 TLTXTAttributesArray *aArray)
 {
-    TLTXTCore *txtCore = (__bridge TLTXTCore *)(txt_worker_get_context(worker));
+    TLTXTCoreUnit *txtCore = (__bridge TLTXTCoreUnit *)(txt_worker_get_context(worker));
     [TLTXTPageHelper checkRangeAttributes:txtCore.attributedString range:range rArray:rArray aArray:aArray];
 }
 
 static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 {
-    TLTXTCore *txtCore = (__bridge TLTXTCore *)(txt_worker_get_context(worker));
+    TLTXTCoreUnit *txtCore = (__bridge TLTXTCoreUnit *)(txt_worker_get_context(worker));
     return [TLTXTPageHelper checkDefaultAttributes:txtCore.attributedString];
 }
-
-@implementation TLTXTCore
 
 - (void)dealloc
 {
@@ -68,38 +72,10 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 {
     self = [super init];
     if (self) {
-        _bitmapQueue = dispatch_queue_create("TextLayout.bitmap", DISPATCH_QUEUE_SERIAL);
-        _imageQueue = dispatch_queue_create("TextLayout.image", DISPATCH_QUEUE_SERIAL);
         _cachedArray = [NSMutableArray array];
         _pageNum = -1;
     }
     return self;
-}
-
-- (void)resetAttributedString:(TLAttributedString *)aString pageSize:(CGSize)size
-{
-    if (!aString) {
-        return;
-    } else if (CGSizeEqualToSize(size, CGSizeZero)) {
-        return;
-    }
-    
-    self.attributedString = aString;
-    self.pageSize = size;
-    
-    if (_worker) {
-        txt_worker_destroy(&_worker);
-        _worker = NULL;
-    }
-    
-    //TODO: 第二个参数不是const的需要改一下
-    txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
-    txt_worker_set_context(_worker, (__bridge void *)(self));
-    txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
-    txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
-    
-    self.pageNum = -1;
-    [self firstTimeDraw:YES startPage:0];
 }
 
 - (void)resetAttributedString:(TLAttributedString *)aString
@@ -136,9 +112,41 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     [self firstTimeDraw:NO startPage:pageNum];
 }
 
+- (void)resetAttributedString:(TLAttributedString *)aString
+                     pageSize:(CGSize)size
+                  cursorArray:(NSArray<NSNumber *> *)cursorArray
+{
+    if (!aString) {
+        return;
+    } else if (CGSizeEqualToSize(size, CGSizeZero)) {
+        return;
+    }
+    
+    self.attributedString = aString;
+    self.pageSize = size;
+    
+    if (_worker) {
+        txt_worker_destroy(&_worker);
+        _worker = NULL;
+    }
+    
+    txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
+    txt_worker_set_context(_worker, (__bridge void *)(self));
+    txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
+    txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
+    if (cursorArray.count) {
+        for (NSNumber *number in cursorArray) {
+            txt_worker_page_cursor_array_prefill(_worker, [number integerValue]);
+        }
+        txt_worker_total_page_prefill(_worker, cursorArray.count);
+    }
+    
+    self.pageNum = -1;
+}
+
 - (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum
 {
-    dispatch_async(self.bitmapQueue, ^{
+    dispatch_async(bitmapQueue, ^{
         if (needsPaging) {
 #if kTLTXTPerformanceLog
             NSDate *pagingDate = [NSDate date];
@@ -169,7 +177,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker, i, &row_rect_array);
             if (bitmap != NULL) {
                 
-                dispatch_async(self.imageQueue, ^{
+                dispatch_async(imageQueue, ^{
                     UIImage *image = [[self class] imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
                     TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
                     cachePage.image = image;
@@ -182,27 +190,13 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     
                     if (arrayCount == loopCount && self.drawDelegate) {
                         self.pageNum = 0;
-                        [self.drawDelegate firstPageEnd];
+                        [self.drawDelegate firstPageEnd:self.attributedString.textId];
                     }
                 });
                 
             }
         }
     });
-}
-
-- (UIImage *)toPreviousPageOnce
-{
-    [self toPreviousPage];
-    TLTXTCachePage *cachePage = self.cachedArray.firstObject;
-    return cachePage.image;
-}
-
-- (UIImage *)toNextPageOnce
-{
-    [self toNextPage];
-    TLTXTCachePage *cachePage = self.cachedArray.lastObject;
-    return cachePage.image;
 }
 
 - (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point
@@ -317,50 +311,6 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return nil;
 }
 
-- (UIImage *)imageWithPageNum:(NSInteger)pageNum
-{
-    if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
-        NSInteger index = -1;
-        for (NSInteger i=0; i<self.cachedArray.count; i++) {
-            TLTXTCachePage *oncePage = self.cachedArray[i];
-            if (oncePage.pageNum == pageNum) {
-                index = i;
-            }
-        }
-        bool pageNumIsEqual = true;
-        if (self.pageNum != pageNum){
-            self.pageNum = pageNum;
-            pageNumIsEqual = false;
-        }
-        if (index == 0) {
-            if (pageNum == 0) {
-                TLTXTCachePage *cachePage = self.cachedArray.firstObject;
-                return cachePage.image;
-            } else {
-                if (!pageNumIsEqual){
-                    return [self toPreviousPageOnce];
-                }
-            }
-        } else if (index == self.cachedArray.count -1) {
-            if (pageNum == [self totalPage]-1) {
-                TLTXTCachePage *cachePage = self.cachedArray.lastObject;
-                return cachePage.image;
-            } else {
-                if (!pageNumIsEqual){
-                    return [self toNextPageOnce];
-                }
-            }
-        } else {
-            TLTXTCachePage *cachePage = nil;
-            if (self.cachedArray.count > 1) {
-                cachePage = self.cachedArray[1];
-            }
-            return cachePage.image;
-        }
-    }
-    return nil;
-}
-
 - (UIImage *_Nullable)onlyCachedImageWithPageNum:(NSInteger)pageNum
 {
     if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
@@ -414,11 +364,6 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return txt_worker_total_page(&_worker);
 }
 
-+ (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height
-{
-    return [TLTXTPageHelper oncePaging:aString pageSize:pageSize endPageHeight:height];
-}
-
 #pragma mark- Private methods
 
 - (void)toNextPage
@@ -433,7 +378,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     NSInteger afterPageNum = self.pageNum+1;
     self.nextPageSemaphore = dispatch_semaphore_create(0);
     
-    dispatch_async(self.bitmapQueue, ^{
+    dispatch_async(bitmapQueue, ^{
     
 #if kTLTXTPerformanceLog
     NSDate *date = [NSDate date];
@@ -449,7 +394,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #endif
     if (bitmap != NULL) {
         
-        dispatch_async(self.imageQueue, ^{
+        dispatch_async(imageQueue, ^{
 #if kTLTXTPerformanceLog
             NSDate *imageStartDate = [NSDate date];
 #endif
@@ -474,7 +419,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #endif
             dispatch_semaphore_signal(self.nextPageSemaphore);
             if (self.drawDelegate) {
-                [self.drawDelegate didDrawPageEnd:afterPageNum];
+                [self.drawDelegate didDrawPageEnd:afterPageNum textId:self.attributedString.textId];
             }
         });
             
@@ -495,7 +440,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     }
     NSInteger afterPageNum = self.pageNum-1;
     self.previousPageSemaphore = dispatch_semaphore_create(0);
-    dispatch_async(self.bitmapQueue, ^{
+    dispatch_async(bitmapQueue, ^{
     
 #if kTLTXTPerformanceLog
     NSDate *date = [NSDate date];
@@ -511,7 +456,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #endif
     if (bitmap != NULL) {
         
-        dispatch_async(self.imageQueue, ^{
+        dispatch_async(imageQueue, ^{
 #if kTLTXTPerformanceLog
             NSDate *imageStartDate = [NSDate date];
 #endif
@@ -535,7 +480,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #endif
             dispatch_semaphore_signal(self.previousPageSemaphore);
             if (self.drawDelegate) {
-                [self.drawDelegate didDrawPageEnd:afterPageNum];
+                [self.drawDelegate didDrawPageEnd:afterPageNum textId:self.attributedString.textId];
             }
         });
             
@@ -568,80 +513,181 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return result;
 }
 
-+ (NSString *)convertCodePoint:(uint32_t)code_point
+@end
+
+@interface TLTXTCore()
+
+@property(nonatomic)NSString        *coreId;
+@property(nonatomic)NSMutableArray  *unitArray;
+
+@end
+
+@implementation TLTXTCore
+
++(void)load
 {
-    uint8_t one = (code_point>>24)&0XFF;//按当前标准 这个字节忽略；只考虑后三个字节
-    uint8_t two = (code_point>>16)&0XFF;
-    uint8_t three = (code_point>>8)&0XFF;
-    uint8_t four = code_point&0XFF;
-    
-    NSString *result = nil;
-    if (one == 0 && two == 0) {
-        if (three != 0) {
-            if (three >= 8) {
-                //三字节
-                Byte byteData[] = {0xe0+((three>>4)&0xf), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
-                NSData *data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
-                result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            } else {
-                //两字节
-                Byte byteData[] = {0xc0+((three>>3)&0x1f), 0x80+(four&0x3f)};
-                result = [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding];
-            }
-        } else {
-            Byte byteData[] = {four};
-            result = [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding];
-        }
-    } else {
-        //四字节
-        Byte byteData[] = {0xf0 + ((two>>2)&0x7), 0x80+ ((three>>4)&0xf) + ((two<<4)&0x30), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
-        result = [[NSString alloc] initWithData:[NSData dataWithBytes:byteData length:sizeof(byteData)] encoding:NSUTF8StringEncoding];
+    if (bitmapQueue == NULL) {
+        bitmapQueue = dispatch_queue_create("TextLayout.bitmap", DISPATCH_QUEUE_SERIAL);
     }
-    NSLog(@"点选结果是:%@", result);
-    NSLog(@"%x %x %x %x code_point:%x", one, two, three, four, code_point);
-    return result;
+    if (imageQueue == NULL) {
+        imageQueue = dispatch_queue_create("TextLayout.image", DISPATCH_QUEUE_SERIAL);
+    }
 }
 
-+ (NSData *)dataWithCodePoint:(uint32_t)code_point
+- (instancetype)init
 {
-    uint8_t one = (code_point>>24)&0XFF;
-    uint8_t two = (code_point>>16)&0XFF;
-    uint8_t three = (code_point>>8)&0XFF;
-    uint8_t four = code_point&0XFF;
-    
-    NSData *data;
-    if (one == 0 && two == 0) {
-        if (three != 0) {
-            if (three >= 8) {
-                //三字节
-                Byte byteData[] = {0xe0+((three>>4)&0xf), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
-                data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
-            } else {
-                //两字节
-                Byte byteData[] = {0xc0+((three>>3)&0x1f), 0x80+(four&0x3f)};
-                data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
-            }
-        } else {
-            Byte byteData[] = {four};
-            data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
-        }
-    } else {
-        //四字节
-        Byte byteData[] = {0xf0 + ((two>>2)&0x7), 0x80+ ((three>>4)&0xf) + ((two<<4)&0x30), 0x80+ ((three<<2)&0x3c) + ((four>>6)&0x3), 0x80+(four&0x3f)};
-        data = [NSData dataWithBytes:byteData length:sizeof(byteData)];
+    self = [super init];
+    if (self) {
+        _unitArray = [[NSMutableArray alloc] init];
     }
-    return data;
+    return self;
 }
 
-+ (NSString *)convertCodePoints:(uint32_t*)code_points count:(size_t)count
+- (void)fillAttributedString:(TLAttributedString *)aString
+                    pageSize:(CGSize)size
+                 cursorArray:(NSArray<NSNumber *> *)cursorArray
+                   startPage:(NSInteger)pageNum
 {
-    NSMutableData *result = [NSMutableData data];
-    for (size_t i=0; i<count; i++) {
-        NSData *data = [self dataWithCodePoint:code_points[i]];
-        [result appendData:data];
+    TLTXTCoreUnit *unit = [[TLTXTCoreUnit alloc] init];
+    unit.drawDelegate = self.drawDelegate;
+    [self.unitArray addObject:unit];
+    [unit resetAttributedString:aString pageSize:size cursorArray:cursorArray startPage:pageNum];
+}
+
+- (void)fillAttributedString:(TLAttributedString *)aString
+                    pageSize:(CGSize)size
+                 cursorArray:(NSArray<NSNumber *> *)cursorArray
+{
+    TLTXTCoreUnit *unit = [[TLTXTCoreUnit alloc] init];
+    unit.drawDelegate = self.drawDelegate;
+    [self.unitArray addObject:unit];
+    [unit resetAttributedString:aString pageSize:size cursorArray:cursorArray];
+}
+
+- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point textId:(nonnull NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return [unit paragraphStartEnd:page point:point];
+}
+
+- (UIImage *_Nullable)onlyCachedImageWithPageNum:(NSInteger)pageNum textId:(nonnull NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return [unit onlyCachedImageWithPageNum:pageNum];
+}
+
+- (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum textId:(nonnull NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    [unit firstTimeDraw:needsPaging startPage:pageNum];
+}
+
+- (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(nonnull NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    [unit toCacheWhenMoveTo:pageNum];
+}
+
+- (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId whetherEnd:(BOOL*)whetherEnd
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    if (pageNum == [unit totalPage]-1) {
+        if (whetherEnd) {
+            *whetherEnd = YES;
+        }
     }
-    NSString *string = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
-    return string;
+    [unit toCacheWhenMoveTo:pageNum];
+}
+
++ (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height
+{
+    return [TLTXTPageHelper oncePaging:aString pageSize:pageSize endPageHeight:height];
+}
+
+#pragma mark- Private methods
+
+- (TLTXTCoreUnit *)unitWithTextId:(nonnull NSString *)textId
+{
+    TLTXTCoreUnit *unit = nil;
+    NSArray *unitArray = self.unitArray;
+    for (TLTXTCoreUnit *oneUnit in unitArray) {
+        if ([oneUnit.attributedString.textId isEqualToString:textId]) {
+            unit = oneUnit;
+            break;
+        }
+    }
+    return unit;
+}
+
+@end
+
+@interface TLTXTCoreManager()
+
+@property(nonatomic)NSMutableArray *coreArray;
+
+@end
+
+@implementation TLTXTCoreManager
+
+static TLTXTCoreManager *manager = nil;
+
++ (instancetype)shared
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        manager = [[self alloc] init];
+    });
+    return manager;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _coreArray = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
+- (TLTXTCore *)coreWithId:(nonnull NSString *)coreId
+{
+    TLTXTCore *core = nil;
+    NSArray *coreArray = self.coreArray;
+    for (TLTXTCore *oneCore in coreArray) {
+        if ([oneCore.coreId isEqualToString:coreId]) {
+            core = oneCore;
+            break;
+        }
+    }
+    return core;
+}
+
+- (void)prepareAttributedString:(TLAttributedString *)aString
+                       pageSize:(CGSize)size
+                    cursorArray:(NSArray<NSNumber *> *)cursorArray
+                         coreId:(NSString *)coreId
+{
+    //TEST
+    NSLog(@"%s size%@", __FUNCTION__, @(size));
+    //TEST END
+    TLTXTCore *core = [self coreWithId:coreId];
+    if (!core) {
+        core = [[TLTXTCore alloc] init];
+        core.coreId = coreId;
+        [self.coreArray addObject:core];
+    }
+    [core fillAttributedString:aString pageSize:size cursorArray:cursorArray];
+}
+
+- (void)removeOnce:(NSString *)coreId
+{
+    NSArray *coreArray = self.coreArray;
+    for (TLTXTCore *oneCore in coreArray) {
+        if ([oneCore.coreId isEqualToString:coreId]) {
+            [self.coreArray removeObject:oneCore];
+            break;
+        }
+    }
 }
 
 @end

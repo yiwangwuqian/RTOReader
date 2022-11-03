@@ -22,6 +22,8 @@
 
 @property(nonatomic,copy)NSString               *string;
 
+@property(nonatomic,copy)NSString               *textId;
+
 @end
 
 @implementation TLAttributedString
@@ -42,6 +44,15 @@
         self.defaultAttributes = defaultAttributes;
         self.rangeArray = [[NSMutableArray alloc] init];
         self.attributesArray = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
+- (instancetype)initWithString:(NSString *)str attributes:(NSDictionary<NSNumber *,id> *)attrs textId:(NSString *)textId
+{
+    self = [self initWithString:str attributes:attrs];
+    if (self) {
+        self.textId = textId;
     }
     return self;
 }

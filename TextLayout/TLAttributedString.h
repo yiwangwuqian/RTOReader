@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TLAttributedString : NSObject
 
-@property(readonly) NSString *string;
+@property(nonatomic,readonly) NSString *string;
+@property(nonatomic,readonly) NSString *textId;
 @property(nonatomic,readonly)NSDictionary *defaultAttributes;
 
 /// 创建对象
@@ -21,6 +22,15 @@ NS_ASSUME_NONNULL_BEGIN
 ///   - attrs: 属性字典，NSNumber的key内部包含的是TLTXTAttributesNameType
 - (instancetype)initWithString:(NSString *)str
                     attributes:(NSDictionary<NSNumber *, id> *)attrs;
+
+/// 创建对象
+/// - Parameters:
+///   - str: 内容
+///   - attrs: 属性字典，NSNumber的key内部包含的是TLTXTAttributesNameType
+///   - textId: 文本Id用于各文本之间区分
+- (instancetype)initWithString:(NSString *)str
+                    attributes:(NSDictionary<NSNumber *, id> *)attrs
+                        textId:(NSString *)textId;
 
 /// 设置指定范围内的内容的属性，NSNumber的key内部包含的是TLTXTAttributesNameType
 /// 该范围需要设置的所有属性应该一次性全出现在attrs里
