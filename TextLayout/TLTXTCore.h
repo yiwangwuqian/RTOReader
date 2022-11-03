@@ -53,8 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *根据将要使用内容的页码来决定是否缓存
  */
-- (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId;
-
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId whetherEnd:(BOOL*)whetherEnd;
 
 /// 执行一次分页，返回结果为各页的游标，并返回最后一页的高度

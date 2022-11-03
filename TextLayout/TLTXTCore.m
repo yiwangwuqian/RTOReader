@@ -326,7 +326,11 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return nil;
 }
 
-- (void)toCacheWhenMoveTo:(NSInteger)pageNum
+///  从传入的页码判断该缓存哪一页内容
+/// - Parameters:
+///   - pageNum: 页码
+///   - whetherEnd: 在当前方向是否到了结束的位置
+- (void)toCacheWhenMoveTo:(NSInteger)pageNum whetherEnd:(BOOL *)whetherEnd
 {
     if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
         NSInteger index = -1;
@@ -343,16 +347,32 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         }
         if (index == 0) {
             if (pageNum == 0) {
+                //不足三页时
+                if (whetherEnd && [self totalPage] <3) {
+                    *whetherEnd = YES;
+                }
             } else {
                 if (!pageNumIsEqual){
                     [self toPreviousPage];
+                    //大于两页的情况下 上一句是去缓存第一页内容
+                    if (whetherEnd && [self totalPage] > 2 && pageNum == 1) {
+                        *whetherEnd = YES;
+                    }
                 }
             }
         } else if (index == self.cachedArray.count -1) {
             if (pageNum == [self totalPage]-1) {
+                //不足三页时
+                if (whetherEnd && [self totalPage] <3) {
+                    *whetherEnd = YES;
+                }
             } else {
                 if (!pageNumIsEqual){
                     [self toNextPage];
+                    //大于两页的情况下 上一句是去缓存最后一页内容
+                    if (whetherEnd && [self totalPage] > 2 && pageNum == [self totalPage] - 2) {
+                        *whetherEnd = YES;
+                    }
                 }
             }
         }
@@ -534,6 +554,15 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     }
 }
 
+- (void)setDrawDelegate:(id<TLTXTCoreDrawDelegate>)drawDelegate
+{
+    _drawDelegate = drawDelegate;
+    NSArray *unitArray = self.unitArray;
+    for (TLTXTCoreUnit *oneUnit in unitArray) {
+        oneUnit.drawDelegate = drawDelegate;
+    }
+}
+
 - (instancetype)init
 {
     self = [super init];
@@ -582,21 +611,10 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     [unit firstTimeDraw:needsPaging startPage:pageNum];
 }
 
-- (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(nonnull NSString *)textId
-{
-    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
-    [unit toCacheWhenMoveTo:pageNum];
-}
-
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId whetherEnd:(BOOL*)whetherEnd
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
-    if (pageNum == [unit totalPage]-1) {
-        if (whetherEnd) {
-            *whetherEnd = YES;
-        }
-    }
-    [unit toCacheWhenMoveTo:pageNum];
+    [unit toCacheWhenMoveTo:pageNum whetherEnd:whetherEnd];
 }
 
 + (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height
@@ -667,9 +685,6 @@ static TLTXTCoreManager *manager = nil;
                     cursorArray:(NSArray<NSNumber *> *)cursorArray
                          coreId:(NSString *)coreId
 {
-    //TEST
-    NSLog(@"%s size%@", __FUNCTION__, @(size));
-    //TEST END
     TLTXTCore *core = [self coreWithId:coreId];
     if (!core) {
         core = [[TLTXTCore alloc] init];
