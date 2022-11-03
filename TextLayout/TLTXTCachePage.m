@@ -40,6 +40,9 @@
 - (void)saveBackup
 {
     if (self.backupPath && (self.backupBytes || self.fileData)) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:self.backupPath]) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:self.backupPath withIntermediateDirectories:YES attributes:NULL error:nil];
+        }
         NSString *desPath = [self.backupPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%ld.bin",self.pageNum]];
         FILE *write_ptr;
         write_ptr = fopen([desPath UTF8String],"wb");
@@ -52,6 +55,7 @@
             free(_backupBytes);
             _backupBytes = NULL;
         }
+        _image = nil;
     }
 }
 
@@ -61,7 +65,7 @@
         NSString *desPath = [self.backupPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%ld.bin",self.pageNum]];
         if ([[NSFileManager defaultManager] fileExistsAtPath:desPath]) {
             NSData *desData = [NSData dataWithContentsOfFile:desPath];
-            UIImage *image = [[self class] imageWith:(uint8_t *)desData.bytes width:self.imageSize.width height:self.imageSize.height scale:1];
+            UIImage *image = [TLTXTCore imageWith:(uint8_t *)desData.bytes width:self.imageSize.width height:self.imageSize.height scale:1];
             self.image = image;
             self.fileData = desData;
         }

@@ -28,6 +28,8 @@ dispatch_queue_t    imageQueue;//UIImage创建专用
  *这样在TLTXTCore内聚合以后就支持处理多个txt文件
  */
 @interface TLTXTCoreUnit : NSObject
+@property(nonatomic)NSString            *unitBackupDirPath;
+@property(nonatomic)NSString            *pageBackupDirPath;
 @property(nonatomic,weak)id<TLTXTCoreDrawDelegate>  drawDelegate;
 @property(nonatomic)TLAttributedString  *attributedString;
 @property(nonatomic)CGSize              pageSize;
@@ -193,7 +195,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             if (bitmap != NULL) {
                 
                 dispatch_async(imageQueue, ^{
-                    UIImage *image = [[self class] imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
+                    UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
                     TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
                     cachePage.image = image;
                     cachePage.backupBytes = bitmap;
@@ -432,10 +434,11 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #if kTLTXTPerformanceLog
             NSDate *imageStartDate = [NSDate date];
 #endif
-            UIImage *image = [[self class] imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
+            UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
             TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
+            cachePage.backupPath = self.pageBackupDirPath;
             cachePage.backupBytes = bitmap;
             cachePage.rowRectArray = row_rect_array;
             cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
@@ -495,10 +498,11 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #if kTLTXTPerformanceLog
             NSDate *imageStartDate = [NSDate date];
 #endif
-            UIImage *image = [[self class] imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
+            UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
             TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
+            cachePage.backupPath = self.pageBackupDirPath;
             cachePage.backupBytes = bitmap;
             cachePage.rowRectArray = row_rect_array;
             cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
@@ -526,32 +530,35 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     });
 }
 
-+ (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale
+- (NSString *)pageBackupDirPath
 {
-    NSInteger componentsCount = 4;
-    CGFloat width = bWidth;
-    CGFloat height = bHeight;
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    
-    CGContextRef contextRef = CGBitmapContextCreate(bytes,                 // Pointer to backing data
-                                                    width,                       // Width of bitmap
-                                                    height,                       // Height of bitmap
-                                                    8,                          // Bits per component
-                                                    width*componentsCount,              // Bytes per row
-                                                    colorSpace,                 // Colorspace
-                                                    kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big); // Bitmap info flags
-    CGImageRef mainViewContentBitmapContext = CGBitmapContextCreateImage(contextRef);
-    CGContextRelease(contextRef);
-    UIImage *result = [UIImage imageWithCGImage:mainViewContentBitmapContext scale:scale orientation:UIImageOrientationUp];
-    CGImageRelease(mainViewContentBitmapContext);
-    return result;
+    if (!_pageBackupDirPath) {
+        _pageBackupDirPath = [self.unitBackupDirPath stringByAppendingPathComponent:self.attributedString.textId];
+    }
+    return _pageBackupDirPath;
+}
+
+- (void)checkCachedImageBackup
+{
+    NSArray *cachedArray = self.cachedArray;
+    for (TLTXTCachePage *onePage in cachedArray) {
+        [onePage saveBackup];
+    }
+}
+
+- (void)checkCachedImageRestore
+{
+    NSArray *cachedArray = self.cachedArray;
+    for (TLTXTCachePage *onePage in cachedArray) {
+        [onePage restoreBackup];
+    }
 }
 
 @end
 
 @interface TLTXTCore()
 
+@property(nonatomic)NSString        *backupDirPath;
 @property(nonatomic)NSString        *coreId;
 @property(nonatomic)NSMutableArray  *unitArray;
 
@@ -610,6 +617,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                  cursorArray:(NSArray<NSNumber *> *)cursorArray
 {
     TLTXTCoreUnit *unit = [[TLTXTCoreUnit alloc] init];
+    unit.unitBackupDirPath = self.backupDirPath;
     unit.drawDelegate = self.drawDelegate;
     [self.unitArray addObject:unit];
     [unit resetAttributedString:aString pageSize:size cursorArray:cursorArray];
@@ -644,6 +652,28 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return [TLTXTPageHelper oncePaging:aString pageSize:pageSize endPageHeight:height];
 }
 
++ (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale
+{
+    NSInteger componentsCount = 4;
+    CGFloat width = bWidth;
+    CGFloat height = bHeight;
+    
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    CGContextRef contextRef = CGBitmapContextCreate(bytes,                 // Pointer to backing data
+                                                    width,                       // Width of bitmap
+                                                    height,                       // Height of bitmap
+                                                    8,                          // Bits per component
+                                                    width*componentsCount,              // Bytes per row
+                                                    colorSpace,                 // Colorspace
+                                                    kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big); // Bitmap info flags
+    CGImageRef mainViewContentBitmapContext = CGBitmapContextCreateImage(contextRef);
+    CGContextRelease(contextRef);
+    UIImage *result = [UIImage imageWithCGImage:mainViewContentBitmapContext scale:scale orientation:UIImageOrientationUp];
+    CGImageRelease(mainViewContentBitmapContext);
+    return result;
+}
+
 #pragma mark- Private methods
 
 - (TLTXTCoreUnit *)unitWithTextId:(nonnull NSString *)textId
@@ -657,6 +687,15 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         }
     }
     return unit;
+}
+
+- (NSString *)backupDirPath
+{
+    if (!_backupDirPath) {
+        NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+        _backupDirPath = [documentsPath stringByAppendingPathComponent:[NSString stringWithFormat:@".TextLayoutCache/%@", self.coreId]];
+    }
+    return _backupDirPath;
 }
 
 @end
