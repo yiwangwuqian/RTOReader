@@ -147,6 +147,21 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 - (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum
 {
     dispatch_async(bitmapQueue, ^{
+        /**
+         *|A|-|B|-|C|
+         *1.从第一页开始顺序翻页时，如果总页数大于3那么不管往左还是往右，
+         *在进入B这一页时去缓存A或者C此时也应该调用本方法为上一或下一章节缓存
+         *这个逻辑toCacheWhenMoveTo有判断
+         *
+         *2.如果顺序翻页停止后再退出，那么此时有可能停在某一章的第一页，
+         *即在A的位置往左翻页此时外部也需要调用本方法
+         *
+         *所以这里加了if和return，外部如果有办法区分以上两种情况只调一次本方法时，
+         *if和return才能去掉
+         */
+        if (self.cachedArray.count > 0) {
+            return;
+        }
         if (needsPaging) {
 #if kTLTXTPerformanceLog
             NSDate *pagingDate = [NSDate date];
@@ -347,10 +362,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         }
         if (index == 0) {
             if (pageNum == 0) {
-                //不足三页时
-                if (whetherEnd && [self totalPage] <3) {
-                    *whetherEnd = YES;
-                }
+                *whetherEnd = YES;
             } else {
                 if (!pageNumIsEqual){
                     [self toPreviousPage];
@@ -362,10 +374,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             }
         } else if (index == self.cachedArray.count -1) {
             if (pageNum == [self totalPage]-1) {
-                //不足三页时
-                if (whetherEnd && [self totalPage] <3) {
-                    *whetherEnd = YES;
-                }
+                *whetherEnd = YES;
             } else {
                 if (!pageNumIsEqual){
                     [self toNextPage];
@@ -543,6 +552,13 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 @end
 
 @implementation TLTXTCore
+
+- (void)dealloc
+{
+#ifdef DEBUG
+    NSLog(@"%@ dealloc", self);
+#endif
+}
 
 +(void)load
 {
