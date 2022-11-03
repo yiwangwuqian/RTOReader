@@ -20,13 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Parameters:
 ///   - str: 内容
 ///   - attrs: 属性字典，NSNumber的key内部包含的是TLTXTAttributesNameType
-- (instancetype)initWithString:(NSString *)str
-                    attributes:(NSDictionary<NSNumber *, id> *)attrs;
-
-/// 创建对象
-/// - Parameters:
-///   - str: 内容
-///   - attrs: 属性字典，NSNumber的key内部包含的是TLTXTAttributesNameType
 ///   - textId: 文本Id用于各文本之间区分
 - (instancetype)initWithString:(NSString *)str
                     attributes:(NSDictionary<NSNumber *, id> *)attrs
