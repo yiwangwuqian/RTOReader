@@ -61,6 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///   - pageSize: 页面大小
 ///   - height: 最后一页的高度
 + (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height;
+
++ (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale;
 @end
 
 @interface TLTXTCoreManager : NSObject

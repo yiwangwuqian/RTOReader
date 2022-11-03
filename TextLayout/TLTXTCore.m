@@ -196,6 +196,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     UIImage *image = [[self class] imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
                     TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
                     cachePage.image = image;
+                    cachePage.backupBytes = bitmap;
                     cachePage.pageNum = i;
                     cachePage.rowRectArray = row_rect_array;
                     cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, i);
@@ -362,7 +363,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         }
         if (index == 0) {
             if (pageNum == 0) {
-                *whetherEnd = YES;
+                if (whetherEnd) {
+                    *whetherEnd = YES;
+                }
             } else {
                 if (!pageNumIsEqual){
                     [self toPreviousPage];
@@ -374,7 +377,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             }
         } else if (index == self.cachedArray.count -1) {
             if (pageNum == [self totalPage]-1) {
-                *whetherEnd = YES;
+                if (whetherEnd) {
+                    *whetherEnd = YES;
+                }
             } else {
                 if (!pageNumIsEqual){
                     [self toNextPage];
@@ -431,6 +436,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
+            cachePage.backupBytes = bitmap;
             cachePage.rowRectArray = row_rect_array;
             cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
             cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
@@ -493,6 +499,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
+            cachePage.backupBytes = bitmap;
             cachePage.rowRectArray = row_rect_array;
             cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
             cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
@@ -536,7 +543,6 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                                                     kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big); // Bitmap info flags
     CGImageRef mainViewContentBitmapContext = CGBitmapContextCreateImage(contextRef);
     CGContextRelease(contextRef);
-    free(bytes);
     UIImage *result = [UIImage imageWithCGImage:mainViewContentBitmapContext scale:scale orientation:UIImageOrientationUp];
     CGImageRelease(mainViewContentBitmapContext);
     return result;
