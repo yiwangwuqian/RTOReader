@@ -39,6 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 ///   - range: 待检查范围
 ///   - subRanges: 子返回数量与返回数组相等，元素与数组一一对应
 - (NSArray<NSDictionary *> *_Nullable)attributesCheckRange:(NSRange)range haveSubRanges:(NSArray *_Nullable*_Nullable)subRanges;
+
+/// 更新默认属性，所有出现在参数中的值会替代原有值
+/// - Parameter attrs: 属性字典，NSNumber的key内部包含的是TLTXTAttributesNameType
+- (void)updateDefaultAttributes:(NSDictionary *)attrs;
 @end
 
 NS_ASSUME_NONNULL_END

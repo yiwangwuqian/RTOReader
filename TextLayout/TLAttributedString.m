@@ -108,4 +108,20 @@
     return nil;
 }
 
+- (void)updateDefaultAttributes:(NSDictionary *)attrs
+{
+    NSMutableDictionary *defaultAttributes = nil;
+    if (self.defaultAttributes.count) {
+        defaultAttributes = [[NSMutableDictionary alloc] initWithDictionary:self.defaultAttributes];
+    } else {
+        defaultAttributes = [[NSMutableDictionary alloc] init];
+    }
+    if (attrs.count){
+        for (id key in attrs.allKeys) {
+            defaultAttributes[key] = attrs[key];
+        }
+    }
+    self.defaultAttributes = defaultAttributes;
+}
+
 @end

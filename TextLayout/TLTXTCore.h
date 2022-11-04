@@ -43,7 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
 
-- (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum textId:(nonnull NSString *)textId;
+/**
+ *一次绘制多页(最大3页)，通常是第一次进入新打开的内容时缓存使用，也可用于改变了内容属性后刷新使用(即清空原有缓存)
+ */
+- (void)batchDraw:(NSInteger)pageNum textId:(nonnull NSString *)textId cleanCache:(BOOL)cleanCache;
 
 /**
  *根据页码来获取已缓存内容
@@ -54,6 +57,11 @@ NS_ASSUME_NONNULL_BEGIN
  *根据将要使用内容的页码来决定是否缓存
  */
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId whetherEnd:(BOOL*)whetherEnd;
+
+/**
+ *获取属性字符串，修改属性使用
+ */
+- (TLAttributedString *)attributedStringWithTextId:(NSString *)textId;
 
 /// 执行一次分页，返回结果为各页的游标，并返回最后一页的高度
 /// - Parameters:

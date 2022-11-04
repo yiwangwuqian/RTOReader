@@ -32,6 +32,7 @@ dispatch_queue_t    imageQueue;//UIImage创建专用
 @property(nonatomic)NSString            *pageBackupDirPath;
 @property(nonatomic,weak)id<TLTXTCoreDrawDelegate>  drawDelegate;
 @property(nonatomic)TLAttributedString  *attributedString;
+@property(nonatomic)NSString            *string;
 @property(nonatomic)CGSize              pageSize;
 @property(nonatomic)TLTXTWorker         worker;
 
@@ -80,40 +81,15 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return self;
 }
 
-- (void)resetAttributedString:(TLAttributedString *)aString
-                     pageSize:(CGSize)size
-                  cursorArray:(NSArray<NSNumber *> *)cursorArray
-                    startPage:(NSInteger)pageNum
-{
-    if (!aString) {
-        return;
-    } else if (CGSizeEqualToSize(size, CGSizeZero)) {
-        return;
-    }
-    
-    self.attributedString = aString;
-    self.pageSize = size;
-    
-    if (_worker) {
-        txt_worker_destroy(&_worker);
-        _worker = NULL;
-    }
-    
-    txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
-    txt_worker_set_context(_worker, (__bridge void *)(self));
-    txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
-    txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
-    if (cursorArray.count) {
-        for (NSNumber *number in cursorArray) {
-            txt_worker_page_cursor_array_prefill(_worker, [number integerValue]);
-        }
-        txt_worker_total_page_prefill(_worker, cursorArray.count);
-    }
-    
-    self.pageNum = -1;
-    [self firstTimeDraw:NO startPage:pageNum];
-}
 
+/// 设置属性字串准备绘制工作
+///
+/// 注意这个方法可以在同一段文字改变属性后再次调用，
+/// 如果内容都变，那就是另外一段文字了需要销毁当前对象或新增方法。
+/// - Parameters:
+///   - aString: 属性字串
+///   - size: 页面大小
+///   - cursorArray: 游标数组，分页信息
 - (void)resetAttributedString:(TLAttributedString *)aString
                      pageSize:(CGSize)size
                   cursorArray:(NSArray<NSNumber *> *)cursorArray
@@ -126,12 +102,30 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     
     self.attributedString = aString;
     self.pageSize = size;
-    
-    if (_worker) {
-        txt_worker_destroy(&_worker);
-        _worker = NULL;
+    if (!self.string) {
+        self.string = [aString string];
     }
     
+    /**
+     *对象创建也是需要消耗一些时间的，
+     *内容不算长的情况下20毫秒，后续留意和验证一下需不需要这么做
+     */
+    /*
+    if (!_worker) {
+#ifdef kTLTXTPerformanceLog
+        NSDate *createDate = [NSDate date];
+#endif
+        txt_worker_create(&_worker, [self.string UTF8String], size.width, size.height);
+        txt_worker_set_context(_worker, (__bridge void *)(self));
+        txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
+        txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
+#ifdef kTLTXTPerformanceLog
+        NSLog(@"%s create _worker using time:%@", __func__, @(GetTimeDeltaValue(createDate) ));
+#endif
+    } else {
+        txt_worker_page_cursor_array_destroy(_worker);
+    }
+     */
     txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
     txt_worker_set_context(_worker, (__bridge void *)(self));
     txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
@@ -146,7 +140,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     self.pageNum = -1;
 }
 
-- (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum
+- (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum cleanCache:(BOOL)cleanCache
 {
     dispatch_async(bitmapQueue, ^{
         /**
@@ -161,7 +155,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
          *所以这里加了if和return，外部如果有办法区分以上两种情况只调一次本方法时，
          *if和return才能去掉
          */
-        if (self.cachedArray.count > 0) {
+        if (!cleanCache && self.cachedArray.count > 0) {
             return;
         }
         if (needsPaging) {
@@ -203,6 +197,10 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     cachePage.rowRectArray = row_rect_array;
                     cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, i);
                     cachePage.beforeCursor = i>0 ? txt_worker_page_cursor_array_get(self.worker, i-1) : -1;
+                    //其它方法对cachedArray的赋值都在imageQueue，暂保持
+                    if (cleanCache && i == 0) {
+                        self.cachedArray = [[NSMutableArray alloc] init];
+                    }
                     [self.cachedArray addObject:cachePage];
                     NSInteger arrayCount = self.cachedArray.count;
                     
@@ -604,22 +602,14 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 - (void)fillAttributedString:(TLAttributedString *)aString
                     pageSize:(CGSize)size
                  cursorArray:(NSArray<NSNumber *> *)cursorArray
-                   startPage:(NSInteger)pageNum
 {
-    TLTXTCoreUnit *unit = [[TLTXTCoreUnit alloc] init];
+    TLTXTCoreUnit *unit = [self unitWithTextId:aString.textId];
+    if (!unit) {
+        unit = [[TLTXTCoreUnit alloc] init];
+        unit.unitBackupDirPath = self.backupDirPath;
+        [self.unitArray addObject:unit];
+    }
     unit.drawDelegate = self.drawDelegate;
-    [self.unitArray addObject:unit];
-    [unit resetAttributedString:aString pageSize:size cursorArray:cursorArray startPage:pageNum];
-}
-
-- (void)fillAttributedString:(TLAttributedString *)aString
-                    pageSize:(CGSize)size
-                 cursorArray:(NSArray<NSNumber *> *)cursorArray
-{
-    TLTXTCoreUnit *unit = [[TLTXTCoreUnit alloc] init];
-    unit.unitBackupDirPath = self.backupDirPath;
-    unit.drawDelegate = self.drawDelegate;
-    [self.unitArray addObject:unit];
     [unit resetAttributedString:aString pageSize:size cursorArray:cursorArray];
 }
 
@@ -635,16 +625,22 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return [unit onlyCachedImageWithPageNum:pageNum];
 }
 
-- (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum textId:(nonnull NSString *)textId
+- (void)batchDraw:(NSInteger)pageNum textId:(nonnull NSString *)textId cleanCache:(BOOL)cleanCache
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
-    [unit firstTimeDraw:needsPaging startPage:pageNum];
+    [unit firstTimeDraw:NO startPage:pageNum cleanCache:cleanCache];
 }
 
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId whetherEnd:(BOOL*)whetherEnd
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
     [unit toCacheWhenMoveTo:pageNum whetherEnd:whetherEnd];
+}
+
+- (TLAttributedString *)attributedStringWithTextId:(NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return unit.attributedString;
 }
 
 + (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height
