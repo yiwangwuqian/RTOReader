@@ -44,6 +44,7 @@ dispatch_queue_t    imageQueue;//UIImage创建专用
  */
 @property(nonatomic)dispatch_semaphore_t    nextPageSemaphore;
 @property(nonatomic)dispatch_semaphore_t    previousPageSemaphore;
+@property(nonatomic)BOOL                    needCleanCache;
 @end
 
 @implementation TLTXTCoreUnit
@@ -100,6 +101,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         return;
     }
     
+    self.needCleanCache = _attributedString != nil;
     self.attributedString = aString;
     self.pageSize = size;
     if (!self.string) {
@@ -140,7 +142,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     self.pageNum = -1;
 }
 
-- (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum cleanCache:(BOOL)cleanCache
+- (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum
 {
     dispatch_async(bitmapQueue, ^{
         /**
@@ -155,9 +157,11 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
          *所以这里加了if和return，外部如果有办法区分以上两种情况只调一次本方法时，
          *if和return才能去掉
          */
-        if (!cleanCache && self.cachedArray.count > 0) {
+        if (!self.needCleanCache && self.cachedArray.count > 0) {
             return;
         }
+        BOOL cleanCache = self.needCleanCache;
+        self.needCleanCache = NO;
         if (needsPaging) {
 #if kTLTXTPerformanceLog
             NSDate *pagingDate = [NSDate date];
@@ -629,10 +633,10 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return [unit onlyCachedImageWithPageNum:pageNum];
 }
 
-- (void)batchDraw:(NSInteger)pageNum textId:(nonnull NSString *)textId cleanCache:(BOOL)cleanCache
+- (void)batchDraw:(NSInteger)pageNum textId:(NSString *)textId
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
-    [unit firstTimeDraw:NO startPage:pageNum cleanCache:cleanCache];
+    [unit firstTimeDraw:NO startPage:pageNum];
 }
 
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId whetherEnd:(BOOL*)whetherEnd

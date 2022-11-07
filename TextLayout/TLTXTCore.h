@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *一次绘制多页(最大3页)，通常是第一次进入新打开的内容时缓存使用，也可用于改变了内容属性后刷新使用(即清空原有缓存)
  */
-- (void)batchDraw:(NSInteger)pageNum textId:(nonnull NSString *)textId cleanCache:(BOOL)cleanCache;
+- (void)batchDraw:(NSInteger)pageNum textId:(nonnull NSString *)textId;
 
 /**
  *根据页码来获取已缓存内容
