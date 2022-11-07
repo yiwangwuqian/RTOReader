@@ -193,7 +193,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             if (bitmap != NULL) {
                 
                 dispatch_async(imageQueue, ^{
-                    UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
+                    NSNumber *nightMode = self.attributedString.defaultAttributes[@(TLTXTAttributesNameTypeColorMode)];
+                    UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1 nightMode:[nightMode integerValue]];
                     TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
                     cachePage.image = image;
                     cachePage.backupBytes = bitmap;
@@ -440,7 +441,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #if kTLTXTPerformanceLog
             NSDate *imageStartDate = [NSDate date];
 #endif
-            UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
+            NSNumber *nightMode = self.attributedString.defaultAttributes[@(TLTXTAttributesNameTypeColorMode)];
+            UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1 nightMode:[nightMode integerValue]];
             TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
@@ -504,7 +506,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #if kTLTXTPerformanceLog
             NSDate *imageStartDate = [NSDate date];
 #endif
-            UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1];
+            NSNumber *nightMode = self.attributedString.defaultAttributes[@(TLTXTAttributesNameTypeColorMode)];
+            UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1 nightMode:[nightMode integerValue]];
             TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
             cachePage.pageNum = afterPageNum;
             cachePage.image = image;
@@ -675,6 +678,29 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     CGContextRelease(contextRef);
     UIImage *result = [UIImage imageWithCGImage:mainViewContentBitmapContext scale:scale orientation:UIImageOrientationUp];
     CGImageRelease(mainViewContentBitmapContext);
+    return result;
+}
+
++ (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale nightMode:(BOOL)nightMode
+{
+    /**
+     *为什么要再次封装：实际上下面这一句内部bitmap转UIImage就有alpha的操作，最终图片也体现了透明度。
+     *
+     *但是很奇怪在纯黑的背景色时，那些锯齿上的alpha值没有效果，也许是苹果的bug，暂如以下代码处理。
+     *实际上在Xcode的debug工具预览下是能看到效果的，只是app看不到。
+     */
+    UIImage *result = [self imageWith:bytes width:bWidth height:bHeight scale:scale];
+    if (nightMode) {
+#if kTLTXTPerformanceLog
+        NSDate *pngStartDate = [NSDate date];
+#endif
+        NSData *data = UIImagePNGRepresentation(result);
+        result = [[UIImage alloc] initWithData:data];
+#if kTLTXTPerformanceLog
+        NSLog(@"%s to png using time:%@", __func__, @(GetTimeDeltaValue(pngStartDate) ));
+#endif
+        return result;
+    }
     return result;
 }
 

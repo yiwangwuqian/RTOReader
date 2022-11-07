@@ -480,12 +480,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                 FT_Set_Pixel_Sizes(face, 0, font_size);
             }
         }
-        //TEST
-        last_red = 0;
-        last_green = 0;
-        last_blue = 255;
-        last_alpha_float = 0.1;
-        //TEST END
         
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
         FT_Int32 flags =  FT_LOAD_DEFAULT;

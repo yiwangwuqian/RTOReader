@@ -92,7 +92,7 @@
             [[TLTXTCoreManager shared] prepareAttributedString:aString pageSize:pageSize cursorArray:cursorArray coreId:coreId];
             _txtCore = [[TLTXTCoreManager shared] coreWithId:coreId];
             _txtCore.drawDelegate = self;
-            [_txtCore firstTimeDraw:NO startPage:NO textId:aString.textId];
+            [_txtCore batchDraw:0 textId:aString.textId];
         }
     }
 }
@@ -250,8 +250,8 @@
      
      */
 }
-
-- (void)firstPageEnd:(NSString *)textId
+ 
+- (void)firstPageEnd:(NSInteger)pageNum textId:(NSString *)textId
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self firstPageEndWork];
@@ -299,6 +299,9 @@
     
     UIImageView *imageView = self.imageViewArray.firstObject;
     imageView.image = [self.txtCore onlyCachedImageWithPageNum:0 textId:@"1"];
+    
+    imageView.image = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"image_3" ofType:@"png"]];
+    imageView.backgroundColor = [UIColor blackColor];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

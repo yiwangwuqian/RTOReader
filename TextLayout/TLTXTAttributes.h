@@ -33,6 +33,7 @@ typedef struct TLTXTAttributes_ {
     unsigned int fontSize;
     size_t fontStyle;
     size_t color;
+    unsigned int colorMode;//0日间 1夜间
     size_t lineSpacing;
     unsigned int firstHeadIndent;//大于0时数字指多少个字宽
     size_t paragraph;

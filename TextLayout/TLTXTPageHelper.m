@@ -88,7 +88,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             tl_range_array_add(*rArray, tlRange);
             
             NSDictionary *oneAttributeDict = attributes[i];
-            struct TLTXTAttributes_ tlAttributes = {0,0,0,0,0,0,0};
+            struct TLTXTAttributes_ tlAttributes = {0,0,0,0,0,0,0,0};
             for (NSNumber *typeNumber in oneAttributeDict.allKeys) {
                 NSInteger result = [oneAttributeDict[typeNumber] integerValue];
                 TLTXTAttributesNameType oneType = (TLTXTAttributesNameType)[typeNumber integerValue];
@@ -134,6 +134,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     break;
                 case TLTXTAttributesNameTypeColor:
                     oneAttributes->color = result;
+                    break;
+                case TLTXTAttributesNameTypeColorMode:
+                    oneAttributes->colorMode = (unsigned int)result;
                     break;
                 case TLTXTAttributesNameTypeLineSpacing:
                     oneAttributes->lineSpacing = result;
