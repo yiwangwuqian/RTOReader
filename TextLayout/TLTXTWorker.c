@@ -25,7 +25,7 @@ bool txt_page_cursor_array_add(struct RTOTXTPageCursorArray_ *array,size_t curso
 
 void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array);
 
-void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b);
+void txt_color_split_from(size_t color, size_t *a, size_t *r, size_t *g, size_t*b);
 
 TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, int64_t *output_last_range_index);
 
@@ -416,9 +416,15 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
+    size_t last_alpha = 255;
     size_t last_red = 0;
     size_t last_green = 0;
     size_t last_blue = 0;
+    float last_alpha_float = 1;
+    if (defaultAttributes->color>0){
+        txt_color_split_from(defaultAttributes->color, &last_alpha, &last_red, &last_green, &last_blue);
+        last_alpha_float = last_alpha/255.0;
+    }
     
     size_t now_cursor = before_cursor;
     TLTXTRowRectArray row_rect_array;
@@ -456,11 +462,17 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
         if (last_range_index >= 0 && last_range_index < range_total_count) {
             TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &last_range_index);
             if (onceAttributes && onceAttributes->color) {
-                txt_color_split_from(onceAttributes->color, &last_red, &last_green, &last_blue);
+                txt_color_split_from(onceAttributes->color, &last_alpha, &last_red, &last_green, &last_blue);
+                last_alpha_float = last_alpha/255.0;
+            } else if (defaultAttributes->color>0){
+                txt_color_split_from(defaultAttributes->color, &last_alpha, &last_red, &last_green, &last_blue);
+                last_alpha_float = last_alpha/255.0;
             } else {
+                last_alpha = 255;
                 last_red = 0;
                 last_green = 0;
                 last_blue = 0;
+                last_alpha_float = 1;
             }
             if (onceAttributes && onceAttributes->fontSize) {
                 FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
@@ -468,6 +480,12 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                 FT_Set_Pixel_Sizes(face, 0, font_size);
             }
         }
+        //TEST
+        last_red = 0;
+        last_green = 0;
+        last_blue = 255;
+        last_alpha_float = 0.1;
+        //TEST END
         
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
         FT_Int32 flags =  FT_LOAD_DEFAULT;
@@ -574,7 +592,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                         textureBuffer[pixelPosition*4] = last_red;
                         textureBuffer[pixelPosition*4+1] = last_green;
                         textureBuffer[pixelPosition*4+2] = last_blue;
-                        textureBuffer[pixelPosition*4+3] = pixelValue;
+                        textureBuffer[pixelPosition*4+3] = last_alpha_float * pixelValue;
                     }
                 }else{
                     
@@ -585,7 +603,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                             textureBuffer[pixelPosition*4] = last_red;
                             textureBuffer[pixelPosition*4+1] = last_green;
                             textureBuffer[pixelPosition*4+2] = last_blue;
-                            textureBuffer[pixelPosition*4+3] = pixelValue;
+                            textureBuffer[pixelPosition*4+3] = last_alpha_float * pixelValue;
                         }
                     } else {
                         
@@ -714,9 +732,10 @@ void txt_worker_page_cursor_array_prefill(TLTXTWorker worker,size_t cursor)
     txt_page_cursor_array_add(worker->cursor_array, cursor);
 }
 
-void txt_color_split_from(size_t color, size_t *r, size_t *g, size_t*b)
+void txt_color_split_from(size_t color, size_t *a, size_t *r, size_t *g, size_t*b)
 {
     int32_t c = (int32_t)color;
+    *a = (c >> 24) & 0xFF;
     *r = (c >> 16) & 0xFF;
     *g = (c >> 8) & 0xFF;
     *b = (c) & 0xFF;
