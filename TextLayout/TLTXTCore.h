@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *第一次绘制完成
  */
-- (void)firstPageEnd:(NSString *)textId;
+- (void)firstPageEnd:(NSInteger)pageNum textId:(NSString *)textId;
 /**
  *具体某页绘制完成
  */
@@ -31,15 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TLTXTCore : NSObject
 
 @property(nonatomic,weak)id<TLTXTCoreDrawDelegate>  drawDelegate;
-
-/**
- *填入一段文本，指定页面大小，并使用已有的分页信息，指定开始绘制的页码
- *调用前需要检查pageNum小于cursorArray.count
- */
-- (void)fillAttributedString:(TLAttributedString *)aString
-                    pageSize:(CGSize)size
-                 cursorArray:(NSArray<NSNumber *> *)cursorArray
-                   startPage:(NSInteger)pageNum;
 
 - (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
 

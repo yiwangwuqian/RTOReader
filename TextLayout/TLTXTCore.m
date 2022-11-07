@@ -198,15 +198,18 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, i);
                     cachePage.beforeCursor = i>0 ? txt_worker_page_cursor_array_get(self.worker, i-1) : -1;
                     //其它方法对cachedArray的赋值都在imageQueue，暂保持
-                    if (cleanCache && i == 0) {
+                    if (cleanCache && i == startPageNum) {
                         self.cachedArray = [[NSMutableArray alloc] init];
                     }
                     [self.cachedArray addObject:cachePage];
                     NSInteger arrayCount = self.cachedArray.count;
+
+                    if (self.drawDelegate) {
+                        [self.drawDelegate firstPageEnd:i textId:self.attributedString.textId];
+                    }
                     
-                    if (arrayCount == loopCount && self.drawDelegate) {
+                    if (arrayCount == loopCount) {
                         self.pageNum = 0;
-                        [self.drawDelegate firstPageEnd:self.attributedString.textId];
                     }
                 });
                 
@@ -348,7 +351,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 ///   - whetherEnd: 在当前方向是否到了结束的位置
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum whetherEnd:(BOOL *)whetherEnd
 {
-    if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
+    //self.pageNum初始化为-1所以>=0表示可以去缓存了
+    if (self.pageNum >=0 && pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
         NSInteger index = -1;
         for (NSInteger i=0; i<self.cachedArray.count; i++) {
             TLTXTCachePage *oncePage = self.cachedArray[i];
