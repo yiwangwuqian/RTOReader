@@ -29,6 +29,9 @@
     if (_backupBytes) {
         free(_backupBytes);
     }
+    if (_paragraphTailArray) {
+        tl_generic_array_destroy(&_paragraphTailArray);
+    }
 }
 
 - (void)setImage:(UIImage *)image

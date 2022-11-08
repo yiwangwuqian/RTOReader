@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include "TLTXTRowRect.h"
 #include "TLTXTAttributes.h"
+#include "TLGenericArray.h"
 
 #ifdef __cplusplus
 
@@ -62,7 +63,12 @@ void txt_worker_total_page_prefill(TLTXTWorker worker,size_t count);
 /// - Parameters:
 ///   - worker: worker对象
 ///   - page: 页码
-uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRectArray *page_row_rect_array);
+///   - page_row_rect_array: 本页所有rect数组
+///   - page_paragraph_tail_array: 本页段落末尾索引数组
+uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
+                                    size_t page,
+                                    TLTXTRowRectArray *page_row_rect_array,
+                                    TLGenericArray *page_paragraph_tail_array);
 
 uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_t end, size_t *count);
 

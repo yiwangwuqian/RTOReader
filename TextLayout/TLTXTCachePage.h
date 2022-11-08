@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #include "TLTXTRowRect.h"
+#include "TLGenericArray.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic)NSString            *backupPath;
 @property(nonatomic)uint8_t             *backupBytes;
 @property(nonatomic)TLTXTRowRectArray   rowRectArray;
+@property(nonatomic)TLGenericArray      paragraphTailArray;
 @property(nonatomic)NSInteger           beforeCursor;//上一页游标(-1时为第一页)
 @property(nonatomic)NSInteger           cursor;//游标
 

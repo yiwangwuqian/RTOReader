@@ -35,6 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
 
 /**
+ *某一页的所有段尾索引和rect
+ */
+- (NSDictionary<NSNumber *,NSValue *> *_Nullable)paragraphTailIndexAndRect:(NSInteger)page textId:(NSString *)textId;
+/**
  *一次绘制多页(最大3页)，通常是第一次进入新打开的内容时缓存使用，也可用于改变了内容属性后刷新使用(即清空原有缓存)
  */
 - (void)batchDraw:(NSInteger)pageNum textId:(nonnull NSString *)textId;

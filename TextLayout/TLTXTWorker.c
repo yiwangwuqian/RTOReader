@@ -354,7 +354,10 @@ void txt_worker_total_page_prefill(TLTXTWorker worker,size_t count)
     worker->total_page = count;
 }
 
-uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRectArray *page_row_rect_array)
+uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
+                                    size_t page,
+                                    TLTXTRowRectArray *page_row_rect_array,
+                                    TLGenericArray *page_paragraph_tail_array)
 {
     if ( page >= (*worker)->total_page ) {
         return NULL;
@@ -430,6 +433,11 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
     TLTXTRowRectArray row_rect_array;
     txt_row_rect_array_create(&row_rect_array);
     *page_row_rect_array = row_rect_array;
+    
+    TLGenericArray paragraph_tail_array;
+    tl_generic_array_create(&paragraph_tail_array);
+    *page_paragraph_tail_array = paragraph_tail_array;
+    
     for (size_t i = before_cursor; i<(*(*worker)->cursor_array).data[page]; i++) {
         unsigned int beforeALineHeightMax = aLineHeightMax;
         
@@ -531,11 +539,18 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker, size_t page,TLTXTRowRec
                  */
                 if ((i > 0 && (*worker)->codepoints[i-1] == '\n') || i==0) {
                     typeSettingY += (beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight) + line_spacing;
+                } else if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
+                    //到了一段的末尾
+                    tl_generic_array_add(paragraph_tail_array, i-1);
                 }
                 continue;
             } else {
                 typeSettingX = 0;
                 typeSettingY += beforeALineHeightMax + line_spacing;
+                if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
+                    //到了一段的末尾
+                    tl_generic_array_add(paragraph_tail_array, i-1);
+                }
                 continue;
             }
         } else if (typeSettingX + aCharAdvance > totalWidth) {

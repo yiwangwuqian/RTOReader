@@ -17,6 +17,7 @@
 #import "TLTXTWorker.h"
 #import "FileWrapper.h"
 
+#import "TLGenericArray.h"
 #import "TLTXTCachePage.h"
 #import "TLTXTPageHelper.h"
 
@@ -189,7 +190,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         }
         for (NSInteger i=startPageNum; i<startPageNum+loopCount; i++) {
             TLTXTRowRectArray row_rect_array = NULL;
-            uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker, i, &row_rect_array);
+            TLGenericArray paragraph_tail_array = NULL;
+            uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker, i, &row_rect_array, &paragraph_tail_array);
             if (bitmap != NULL) {
                 
                 dispatch_async(imageQueue, ^{
@@ -200,6 +202,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     cachePage.backupBytes = bitmap;
                     cachePage.pageNum = i;
                     cachePage.rowRectArray = row_rect_array;
+                    cachePage.paragraphTailArray = paragraph_tail_array;
                     cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, i);
                     cachePage.beforeCursor = i>0 ? txt_worker_page_cursor_array_get(self.worker, i-1) : -1;
                     //其它方法对cachedArray的赋值都在imageQueue，暂保持
@@ -335,6 +338,45 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return nil;
 }
 
+- (NSDictionary<NSNumber *,NSValue *> *_Nullable)paragraphTailIndexAndRect:(NSInteger)page
+{
+    TLTXTCachePage *desPage;
+    for (NSInteger i=0; i<self.cachedArray.count; i++) {
+        TLTXTCachePage *oncePage = self.cachedArray[i];
+        if (oncePage.pageNum == page) {
+            desPage = oncePage;
+            break;
+        }
+    }
+    
+    if (desPage && desPage.paragraphTailArray) {
+        CGFloat scale = [UIScreen mainScreen].scale;
+        NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+        
+        NSInteger tailCount = tl_generic_array_get_count(desPage.paragraphTailArray);
+        NSInteger tailIndex = 0;
+        for (NSInteger i=0; i<desPage.rowRectArray->count; i++) {
+            TLTXTRectArray data = desPage.rowRectArray->data[i];
+            NSInteger oneRowCount = txt_worker_rect_array_get_count(&data);
+            TLTXTRect one_row_last_rect = txt_worker_rect_array_object_at(&data, (int)oneRowCount-1 );
+            if (tailIndex < tailCount) {
+                NSInteger onceTailIndex = tl_generic_array_object_at(desPage.paragraphTailArray, (int)tailIndex);
+                if (one_row_last_rect->codepoint_index == onceTailIndex) {
+                    CGRect onceRect;
+                    onceRect.origin.x = one_row_last_rect->x/scale;
+                    onceRect.origin.y = one_row_last_rect->y/scale;
+                    onceRect.size.width = (one_row_last_rect->xx - one_row_last_rect->x)/scale;
+                    onceRect.size.height = (one_row_last_rect->yy - one_row_last_rect->y)/scale;
+                    [result setObject:@(onceRect) forKey:@(onceTailIndex)];
+                    tailIndex++;
+                }
+            }
+        }
+        return result;
+    }
+    return nil;
+}
+
 - (UIImage *_Nullable)onlyCachedImageWithPageNum:(NSInteger)pageNum
 {
     if (pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
@@ -431,7 +473,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     NSDate *bitmapStartDate = [NSDate date];
 #endif
     TLTXTRowRectArray row_rect_array = NULL;
-    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum, &row_rect_array);
+    TLGenericArray paragraph_tail_array = NULL;
+    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum, &row_rect_array, &paragraph_tail_array);
 #if kTLTXTPerformanceLog
     NSLog(@"%s bitmap using time:%@", __func__, @(GetTimeDeltaValue(bitmapStartDate) ));
 #endif
@@ -449,6 +492,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             cachePage.backupPath = self.pageBackupDirPath;
             cachePage.backupBytes = bitmap;
             cachePage.rowRectArray = row_rect_array;
+            cachePage.paragraphTailArray = paragraph_tail_array;
             cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
             cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
             NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
@@ -496,7 +540,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     NSDate *bitmapStartDate = [NSDate date];
 #endif
     TLTXTRowRectArray row_rect_array = NULL;
-    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum, &row_rect_array);
+    TLGenericArray paragraph_tail_array = NULL;
+    uint8_t *bitmap = txt_worker_bitmap_one_page(&self->_worker,afterPageNum, &row_rect_array, &paragraph_tail_array);
 #if kTLTXTPerformanceLog
     NSLog(@"%s bitmap using time:%@", __func__, @(GetTimeDeltaValue(bitmapStartDate) ));
 #endif
@@ -514,6 +559,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             cachePage.backupPath = self.pageBackupDirPath;
             cachePage.backupBytes = bitmap;
             cachePage.rowRectArray = row_rect_array;
+            cachePage.paragraphTailArray = paragraph_tail_array;
             cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
             cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
             NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
@@ -628,6 +674,12 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
     return [unit paragraphStartEnd:page point:point];
+}
+
+- (NSDictionary<NSNumber *,NSValue *> *_Nullable)paragraphTailIndexAndRect:(NSInteger)page textId:(NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return [unit paragraphTailIndexAndRect:page];
 }
 
 - (UIImage *_Nullable)onlyCachedImageWithPageNum:(NSInteger)pageNum textId:(nonnull NSString *)textId
