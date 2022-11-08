@@ -226,7 +226,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     });
 }
 
-- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point
+- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point endIndex:(NSInteger *)endIndex
 {
     TLTXTCachePage *desPage;
     for (NSInteger i=0; i<self.cachedArray.count; i++) {
@@ -276,14 +276,12 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                         if (i == desPage.rowRectArray->count-1 && j == data->count) {
                             //本页最后一个字
                             pEndIndex = rect.codepoint_index;
-                            break;
                         } else {
                             NSInteger rectAfterIndex = rect.codepoint_index + 1;
                             NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectAfterIndex, 1)];
                             if ([oneString isEqualToString: @"\n"]) {
                                 //下一个字是换行
                                 pEndIndex = rect.codepoint_index;
-                                break;
                             }
                         }
                     }
@@ -294,6 +292,11 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     }
                     
                     [array addObject:[NSValue valueWithCGRect:onceRect]];
+                    
+                    //pEndIndex被赋值此时结束
+                    if (pEndIndex >= 0) {
+                        break;
+                    }
                 }
             }
             
@@ -330,6 +333,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 #ifdef DEBUG
             NSLog(@"page:%@ 被选中的文字：%@", @(page),[self.attributedString.string substringWithRange:NSMakeRange(startIndex, length)]);
 #endif
+        }
+        if (pEndIndex >= 0 && *endIndex) {
+            *endIndex = pEndIndex;
         }
         if (pStartIndex >=0) {
             return array;
@@ -670,10 +676,10 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     [unit resetAttributedString:aString pageSize:size cursorArray:cursorArray];
 }
 
-- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point textId:(nonnull NSString *)textId
+- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point endIndex:(NSInteger *)endIndex textId:(NSString *)textId
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
-    return [unit paragraphStartEnd:page point:point];
+    return [unit paragraphStartEnd:page point:point endIndex:endIndex];
 }
 
 - (NSDictionary<NSNumber *,NSValue *> *_Nullable)paragraphTailIndexAndRect:(NSInteger)page textId:(NSString *)textId

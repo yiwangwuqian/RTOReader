@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic,weak)id<TLTXTCoreDrawDelegate>  drawDelegate;
 
-- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
+- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point endIndex:(NSInteger *)endIndex textId:(NSString *)textId;
 
 /**
  *某一页的所有段尾索引和rect
