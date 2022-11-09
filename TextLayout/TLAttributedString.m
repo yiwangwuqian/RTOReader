@@ -65,6 +65,27 @@
     }
 }
 
+- (void)updateAttributes:(NSDictionary<NSNumber *, id> *)attrs range:(NSRange)range
+{
+    if (attrs != nil && range.length != 0) {
+        NSInteger desIndex = -1;
+        for (NSInteger i=0; i<self.rangeArray.count; i++) {
+            NSRange onceRange = [self.rangeArray[i] rangeValue];
+            if (NSEqualRanges(range, onceRange)) {
+                desIndex = i;
+                break;
+            }
+        }
+        if (desIndex >=0) {
+            NSMutableDictionary *resultAttrs = [[NSMutableDictionary alloc] initWithDictionary:self.attributesArray[desIndex]];
+            for (NSNumber *oneKey in attrs.allKeys) {
+                resultAttrs[oneKey] = attrs[oneKey];
+            }
+            [self.attributesArray replaceObjectAtIndex:desIndex withObject:resultAttrs];
+        }
+    }
+}
+
 - (NSArray<NSDictionary *> *_Nullable)attributesCheckRange:(NSRange)range haveSubRanges:(NSArray *_Nullable*_Nullable)subRanges
 {
     if (self.rangeArray.count > 0 && self.attributesArray.count > 0 && subRanges != nil) {

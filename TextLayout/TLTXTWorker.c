@@ -416,6 +416,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
         (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
     }
     unsigned int pFirstLineHeadIndent = (defaultAttributes != NULL && defaultAttributes->firstHeadIndent) ? defaultAttributes->firstHeadIndent : 0;
+    unsigned int oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
     
     size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
     int64_t last_range_index = range_total_count > 0 ? 0 : -1;
@@ -486,6 +487,11 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                 FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
             } else {
                 FT_Set_Pixel_Sizes(face, 0, font_size);
+            }
+            if (onceAttributes) {
+                oneLineFirstLineHeadIndent = onceAttributes->firstHeadIndent;
+            } else {
+                oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
             }
         }
         
@@ -566,7 +572,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
         //段首行缩进处理
         if (i == 0 || (i > 0 && (*worker)->codepoints[i-1] == '\n')) {
             if (typeSettingX == 0) {
-                typeSettingX = pFirstLineHeadIndent*(unsigned int)aCharAdvance;
+                typeSettingX = oneLineFirstLineHeadIndent*(unsigned int)aCharAdvance;
             }
         }
         
@@ -799,6 +805,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
     //默认size
     unsigned int font_size = default_font_size != NULL ? *default_font_size : GetDeviceFontSize(21);
     FT_Set_Pixel_Sizes(face, 0, font_size);
+    unsigned int oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
     for (size_t i = start_cursor; i<glyph_count; i++) {
         if (inner_last_range_index >= 0) {
             TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &inner_last_range_index);
@@ -806,6 +813,11 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                 FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
             } else {
                 FT_Set_Pixel_Sizes(face, 0, font_size);
+            }
+            if (onceAttributes) {
+                oneLineFirstLineHeadIndent = onceAttributes->firstHeadIndent;
+            } else {
+                oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
             }
         }
 
@@ -842,7 +854,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             break;
         } else if (i == 0 || (i > 0 && codepoints[i-1] == '\n')) {
             if (typeSettingX == 0) {
-                typeSettingX = pFirstLineHeadIndent*(unsigned int)aCharAdvance;
+                typeSettingX = oneLineFirstLineHeadIndent*(unsigned int)aCharAdvance;
             }
         }
 

@@ -102,6 +102,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     case TLTXTAttributesNameTypeColor:
                         tlAttributes.color = result;
                         break;
+                    case TLTXTAttributesNameTypeParagraphFirstHeadIndent:
+                        tlAttributes.firstHeadIndent = (unsigned int)result;
+                        break;
                         /*
                     case TLTXTAttributesNameTypeParagraph:
                         tlAttributes.paragraph = result;

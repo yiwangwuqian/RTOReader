@@ -34,6 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addAttributes:(NSDictionary<NSNumber *, id> *)attrs
                 range:(NSRange)range;
 
+/// 更新已有属性，和addAttributes不同，该方法是修改属性时使用
+/// - Parameters:
+///   - attrs: 属性字段
+///   - range: 指定范围，range参数一定要和某次调用addAttributes时传入的值相等
+- (void)updateAttributes:(NSDictionary<NSNumber *, id> *)attrs
+                   range:(NSRange)range;
+
 /// 对当前存在的所有属性进行检查，如果range内有属性，返回一组属性和对应的一组range
 /// - Parameters:
 ///   - range: 待检查范围
