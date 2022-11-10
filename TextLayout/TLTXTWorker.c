@@ -6,10 +6,13 @@
 //  Copyright © 2021 ghy. All rights reserved.
 //
 
+#define TLTXTWorkerBoldStrength 1 * 64
+
 #include "TLTXTWorker.h"
 #include "FileWrapper.h"
 
 #include <ft2build.h>
+#include "ftoutln.h"
 #include FT_FREETYPE_H
 
 #include "hb-ft.h"
@@ -490,6 +493,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
             }
         }
         
+        bool bold_font_style = false;
         if (last_range_index >= 0 && last_range_index < range_total_count) {
             TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &last_range_index);
             if (onceAttributes && onceAttributes->color) {
@@ -512,6 +516,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
             }
             if (onceAttributes) {
                 oneLineFirstLineHeadIndent = onceAttributes->firstHeadIndent;
+                bold_font_style = onceAttributes->fontStyle > 0;
             } else {
                 oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
             }
@@ -526,6 +531,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                               );
         if ( error ) {
             printf("FT_Load_Glyph error code: %d",error);
+        }
+        if (bold_font_style && face->glyph->format == FT_GLYPH_FORMAT_OUTLINE ) {
+            FT_Outline_Embolden( &face->glyph->outline, TLTXTWorkerBoldStrength );
         }
         
         slot = face->glyph;
@@ -833,6 +841,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
     FT_Set_Pixel_Sizes(face, 0, font_size);
     unsigned int oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
     for (size_t i = start_cursor; i<glyph_count; i++) {
+        bool bold_font_style = false;
         if (inner_last_range_index >= 0) {
             TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &inner_last_range_index);
             if (onceAttributes && onceAttributes->fontSize) {
@@ -842,11 +851,12 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             }
             if (onceAttributes) {
                 oneLineFirstLineHeadIndent = onceAttributes->firstHeadIndent;
+                bold_font_style = onceAttributes->fontStyle > 0;
             } else {
                 oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
             }
         }
-
+        
         hb_codepoint_t glyphid = glyph_info[i].codepoint;
         FT_Int32 flags =  FT_LOAD_DEFAULT;
         
@@ -858,6 +868,12 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         
         if ( error ) {
             printf("FT_Load_Glyph error code: %d glyphid:%d\n", error, glyphid);
+        }
+        if (bold_font_style && face->glyph->format == FT_GLYPH_FORMAT_OUTLINE ) {
+            /**
+             *这种加粗方式字不会变大或变小，不过笔画间距会变小，要留意。
+             */
+            FT_Outline_Embolden( &face->glyph->outline, TLTXTWorkerBoldStrength );
         }
 
         FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;

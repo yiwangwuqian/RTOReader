@@ -15,7 +15,7 @@
 typedef enum TLTXTAttributesNameType{
     TLTXTAttributesNameTypeNone = 0,
     TLTXTAttributesNameTypeFontSize,    //字号
-    TLTXTAttributesNameTypeFontStyle,   //字体样式  暂无实现
+    TLTXTAttributesNameTypeFontStyle,   //字体样式
     TLTXTAttributesNameTypeColor,       //文字颜色
     TLTXTAttributesNameTypeColorMode,   //日间或夜间
     TLTXTAttributesNameTypeLineSpacing, //行间距
