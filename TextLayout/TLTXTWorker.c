@@ -259,6 +259,15 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
     
     size_t endPageHeight = 0;
     
+    size_t line_spacing = 0;
+    if (defaultAttributes && defaultAttributes->lineSpacing > 0) {
+        line_spacing = defaultAttributes->lineSpacing;
+    }
+    size_t paragraph_spacing = 0;
+    if (defaultAttributes && defaultAttributes->paragraphSpacing > 0) {
+        paragraph_spacing = defaultAttributes->paragraphSpacing;
+    }
+    
     while (glyph_count != now_cursor) {
         
         unsigned int typeSettingY=0;
@@ -297,19 +306,32 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
                 aLineHeightMax = wholeFontHeight;
             }
             
-            size_t line_spacing = 0;
-            if (defaultAttributes && defaultAttributes->lineSpacing > 0) {
-                line_spacing = defaultAttributes->lineSpacing;
+            //判断要在这一行的底部使用行间距还是段间距
+            size_t one_line_spacing = line_spacing;
+            if ((*worker)->codepoints[i+oneline_count-1] == '\n') {
+                //这一行最后一个字是换行
+                one_line_spacing = paragraph_spacing;
             }
             
             //无论这一行是多少字 Y坐标都要下移
-            if (typeSettingY + aLineHeightMax + line_spacing > totalHeight){
-                //大于最大高度,停止 恢复last_range_index
-                now_cursor = i;
-                last_range_index = backup_last_range_index;
+            if (typeSettingY + aLineHeightMax + one_line_spacing > totalHeight){
+                
+                //在不包含这一行的底部使用的间距时是否能放下这一行
+                if (typeSettingY + aLineHeightMax > totalHeight) {
+                    //仍然放不下
+                    
+                    //大于最大高度,停止 恢复last_range_index
+                    now_cursor = i;
+                    last_range_index = backup_last_range_index;
+                } else {
+                    //放得下
+                    
+                    //停止
+                    now_cursor = i + oneline_count;
+                }
                 break;
             } else {
-                typeSettingY += aLineHeightMax + line_spacing;
+                typeSettingY += aLineHeightMax + one_line_spacing;
                 i += oneline_count;
             }
             
@@ -528,6 +550,10 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
         if (defaultAttributes && defaultAttributes->lineSpacing > 0) {
             line_spacing = defaultAttributes->lineSpacing;
         }
+        size_t paragraph_spacing = 0;
+        if (defaultAttributes && defaultAttributes->paragraphSpacing > 0) {
+            paragraph_spacing = defaultAttributes->paragraphSpacing;
+        }
         
         /*
          以下这个if else if判断的作用在于检查是否修改Y坐标，或进行下一个字的绘制
@@ -544,7 +570,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                  *无论上一个字是什么都需要continue
                  */
                 if ((i > 0 && (*worker)->codepoints[i-1] == '\n') || i==0) {
-                    typeSettingY += (beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight) + line_spacing;
+                    typeSettingY += (beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight) + paragraph_spacing;
                 } else if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
                     //到了一段的末尾
                     tl_generic_array_add(paragraph_tail_array, i-1);
@@ -552,7 +578,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                 continue;
             } else {
                 typeSettingX = 0;
-                typeSettingY += beforeALineHeightMax + line_spacing;
+                typeSettingY += beforeALineHeightMax + paragraph_spacing;
                 if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
                     //到了一段的末尾
                     tl_generic_array_add(paragraph_tail_array, i-1);
