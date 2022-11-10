@@ -706,6 +706,14 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     [unit toCacheWhenMoveTo:pageNum whetherEnd:whetherEnd];
 }
 
+- (void)removeOnce:(NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    if (unit) {
+        [self.unitArray removeObject:unit];
+    }
+}
+
 - (TLAttributedString *)attributedStringWithTextId:(NSString *)textId
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];

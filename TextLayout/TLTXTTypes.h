@@ -20,7 +20,7 @@ typedef enum TLTXTAttributesNameType{
     TLTXTAttributesNameTypeColorMode,   //日间或夜间
     TLTXTAttributesNameTypeLineSpacing, //行间距
     TLTXTAttributesNameTypeParagraphFirstHeadIndent,     //段首缩进
-    TLTXTAttributesNameTypeParagraph,   //段落    暂无实现
+    TLTXTAttributesNameTypeParagraphSpacing,             //段间距(段后空间)
     TLTXTAttributesNameTypePlaceholder, //占位    暂无实现
 } TLTXTAttributesNameType;
 

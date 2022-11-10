@@ -105,6 +105,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     case TLTXTAttributesNameTypeParagraphFirstHeadIndent:
                         tlAttributes.firstHeadIndent = (unsigned int)result;
                         break;
+                    case TLTXTAttributesNameTypeParagraphSpacing:
+                        tlAttributes.paragraphSpacing = (unsigned int)result;
+                        break;
                         /*
                     case TLTXTAttributesNameTypeParagraph:
                         tlAttributes.paragraph = result;
@@ -146,6 +149,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     break;
                 case TLTXTAttributesNameTypeParagraphFirstHeadIndent:
                     oneAttributes->firstHeadIndent = (unsigned int)result;
+                    break;
+                case TLTXTAttributesNameTypeParagraphSpacing:
+                    oneAttributes->paragraphSpacing = (unsigned int)result;
                     break;
                 default:
                     break;

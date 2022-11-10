@@ -54,6 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId whetherEnd:(BOOL*)whetherEnd;
 
 /**
+ *移除一段文字(内容)
+ */
+- (void)removeOnce:(NSString *)textId;
+
+/**
  *获取属性字符串，修改属性使用
  */
 - (TLAttributedString *)attributedStringWithTextId:(NSString *)textId;

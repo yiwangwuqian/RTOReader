@@ -36,7 +36,7 @@ typedef struct TLTXTAttributes_ {
     unsigned int colorMode;//0日间 1夜间
     size_t lineSpacing;
     unsigned int firstHeadIndent;//大于0时数字指多少个字宽
-    size_t paragraph;
+    size_t paragraphSpacing;
     size_t placeholder;
 } *TLTXTAttributes;
 
