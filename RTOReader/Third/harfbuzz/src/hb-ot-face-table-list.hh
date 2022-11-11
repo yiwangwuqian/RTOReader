@@ -32,6 +32,11 @@
 #define HB_OT_FACE_TABLE_LIST_HH
 #endif /* HB_OT_FACE_TABLE_LIST_HH */ /* Dummy header guards */
 
+#ifndef HB_OT_CORE_TABLE
+#define HB_OT_CORE_TABLE(Namespace, Type) HB_OT_TABLE (Namespace, Type)
+#define _HB_OT_CORE_TABLE_UNDEF
+#endif
+
 #ifndef HB_OT_ACCELERATOR
 #define HB_OT_ACCELERATOR(Namespace, Type) HB_OT_TABLE (Namespace, Type)
 #define _HB_OT_ACCELERATOR_UNDEF
@@ -40,26 +45,27 @@
 
 /* This lists font tables that the hb_face_t will contain and lazily
  * load.  Don't add a table unless it's used though.  This is not
- * exactly free. */
+ * exactly zero-cost. */
 
 /* v--- Add new tables in the right place here. */
 
 
 /* OpenType fundamentals. */
-HB_OT_TABLE (OT, head)
+HB_OT_CORE_TABLE (OT, head)
+HB_OT_CORE_TABLE (OT, maxp)
 #if !defined(HB_NO_FACE_COLLECT_UNICODES) || !defined(HB_NO_OT_FONT)
 HB_OT_ACCELERATOR (OT, cmap)
 #endif
 HB_OT_TABLE (OT, hhea)
 HB_OT_ACCELERATOR (OT, hmtx)
 HB_OT_TABLE (OT, OS2)
-#if !defined(HB_NO_OT_FONT_GLYPH_NAMES) || !defined(HB_NO_METRICS)
+#if !defined(HB_NO_OT_FONT_GLYPH_NAMES) || !defined(HB_NO_METRICS) || !defined(HB_NO_STYLE)
 HB_OT_ACCELERATOR (OT, post)
 #endif
 #ifndef HB_NO_NAME
 HB_OT_ACCELERATOR (OT, name)
 #endif
-#ifndef HB_NO_STAT
+#ifndef HB_NO_STYLE
 HB_OT_TABLE (OT, STAT)
 #endif
 #ifndef HB_NO_META
@@ -67,17 +73,20 @@ HB_OT_ACCELERATOR (OT, meta)
 #endif
 
 /* Vertical layout. */
+#ifndef HB_NO_VERTICAL
 HB_OT_TABLE (OT, vhea)
 HB_OT_ACCELERATOR (OT, vmtx)
+HB_OT_TABLE (OT, VORG)
+#endif
 
 /* TrueType outlines. */
+HB_OT_CORE_TABLE (OT, loca) // Also used to determine number of glyphs
 HB_OT_ACCELERATOR (OT, glyf)
 
 /* CFF outlines. */
 #ifndef HB_NO_CFF
 HB_OT_ACCELERATOR (OT, cff1)
 HB_OT_ACCELERATOR (OT, cff2)
-HB_OT_TABLE (OT, VORG)
 #endif
 
 /* OpenType variations. */
@@ -113,7 +122,6 @@ HB_OT_TABLE (AAT, mort)
 HB_OT_TABLE (AAT, kerx)
 HB_OT_TABLE (AAT, ankr)
 HB_OT_TABLE (AAT, trak)
-HB_OT_TABLE (AAT, lcar)
 HB_OT_TABLE (AAT, ltag)
 HB_OT_TABLE (AAT, feat)
 // HB_OT_TABLE (AAT, opbd)
@@ -136,4 +144,8 @@ HB_OT_TABLE (OT, MATH)
 
 #ifdef _HB_OT_ACCELERATOR_UNDEF
 #undef HB_OT_ACCELERATOR
+#endif
+
+#ifdef _HB_OT_CORE_TABLE_UNDEF
+#undef HB_OT_CORE_TABLE
 #endif

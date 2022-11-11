@@ -52,18 +52,6 @@
 		2B6B447D29001B65002929A9 /* hb-ot-meta.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CF2460DD6B00ABBDEF /* hb-ot-meta.cc */; };
 		2B6B447E29001B68002929A9 /* hb-ot-metrics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4CB2460DD6B00ABBDEF /* hb-ot-metrics.cc */; };
 		2B6B447F29001B69002929A9 /* hb-ot-name.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C12460DD6B00ABBDEF /* hb-ot-name.cc */; };
-		2B6B448029001B6C002929A9 /* hb-ot-shape-complex-arabic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D92460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc */; };
-		2B6B448129001B6E002929A9 /* hb-ot-shape-complex-default.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C62460DD6B00ABBDEF /* hb-ot-shape-complex-default.cc */; };
-		2B6B448229001B71002929A9 /* hb-ot-shape-complex-hangul.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B22460DD6B00ABBDEF /* hb-ot-shape-complex-hangul.cc */; };
-		2B6B448329001B73002929A9 /* hb-ot-shape-complex-hebrew.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4AD2460DD6A00ABBDEF /* hb-ot-shape-complex-hebrew.cc */; };
-		2B6B448429001B76002929A9 /* hb-ot-shape-complex-indic-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BC2460DD6B00ABBDEF /* hb-ot-shape-complex-indic-table.cc */; };
-		2B6B448529001B79002929A9 /* hb-ot-shape-complex-indic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E32460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc */; };
-		2B6B448629001B7B002929A9 /* hb-ot-shape-complex-khmer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4D02460DD6B00ABBDEF /* hb-ot-shape-complex-khmer.cc */; };
-		2B6B448729001B7D002929A9 /* hb-ot-shape-complex-myanmar.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B52460DD6B00ABBDEF /* hb-ot-shape-complex-myanmar.cc */; };
-		2B6B448829001B88002929A9 /* hb-ot-shape-complex-thai.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4E52460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc */; };
-		2B6B448929001B8B002929A9 /* hb-ot-shape-complex-use-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DA2460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc */; };
-		2B6B448A29001B8D002929A9 /* hb-ot-shape-complex-use.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4C52460DD6B00ABBDEF /* hb-ot-shape-complex-use.cc */; };
-		2B6B448B29001B8F002929A9 /* hb-ot-shape-complex-vowel-constraints.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DF2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc */; };
 		2B6B448C29001B94002929A9 /* hb-ot-shape-fallback.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4BD2460DD6B00ABBDEF /* hb-ot-shape-fallback.cc */; };
 		2B6B448D29001B97002929A9 /* hb-ot-shape-normalize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4DB2460DD6C00ABBDEF /* hb-ot-shape-normalize.cc */; };
 		2B6B448E29001B9A002929A9 /* hb-ot-shape.cc in Sources */ = {isa = PBXBuildFile; fileRef = 86F1D4B92460DD6B00ABBDEF /* hb-ot-shape.cc */; };
@@ -89,6 +77,25 @@
 		2B6B44AC29001F4F002929A9 /* TLFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AA29001F4F002929A9 /* TLFontManager.m */; };
 		2B6B44AF29001FC0002929A9 /* CGFontToFontData.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */; };
 		2B6B44B029001FC0002929A9 /* CGFontToFontData.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */; };
+		2B8FA6B7291DF2B300F3BEE0 /* hb-uniscribe.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA68E291DF1CC00F3BEE0 /* hb-uniscribe.cc */; };
+		2B8FA6B8291DF2B600F3BEE0 /* hb-subset-repacker.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA699291DF1CC00F3BEE0 /* hb-subset-repacker.cc */; };
+		2B8FA6BA291DF2BA00F3BEE0 /* hb-style.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA69D291DF1CC00F3BEE0 /* hb-style.cc */; };
+		2B8FA6BB291DF2BD00F3BEE0 /* hb-ot-shaper-vowel-constraints.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA69C291DF1CC00F3BEE0 /* hb-ot-shaper-vowel-constraints.cc */; };
+		2B8FA6BC291DF2BF00F3BEE0 /* hb-ot-shaper-use.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA68F291DF1CC00F3BEE0 /* hb-ot-shaper-use.cc */; };
+		2B8FA6BD291DF2C200F3BEE0 /* hb-ot-shaper-thai.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA6A0291DF1CD00F3BEE0 /* hb-ot-shaper-thai.cc */; };
+		2B8FA6BE291DF2C500F3BEE0 /* hb-ot-shaper-syllabic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA690291DF1CC00F3BEE0 /* hb-ot-shaper-syllabic.cc */; };
+		2B8FA6BF291DF2C800F3BEE0 /* hb-ot-shaper-myanmar.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA69B291DF1CC00F3BEE0 /* hb-ot-shaper-myanmar.cc */; };
+		2B8FA6C0291DF2CB00F3BEE0 /* hb-ot-shaper-khmer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA694291DF1CC00F3BEE0 /* hb-ot-shaper-khmer.cc */; };
+		2B8FA6C1291DF2CD00F3BEE0 /* hb-ot-shaper-indic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA695291DF1CC00F3BEE0 /* hb-ot-shaper-indic.cc */; };
+		2B8FA6C2291DF2D100F3BEE0 /* hb-ot-shaper-indic-table.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA698291DF1CC00F3BEE0 /* hb-ot-shaper-indic-table.cc */; };
+		2B8FA6C3291DF2D300F3BEE0 /* hb-ot-shaper-hebrew.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA69A291DF1CC00F3BEE0 /* hb-ot-shaper-hebrew.cc */; };
+		2B8FA6C4291DF2D600F3BEE0 /* hb-ot-shaper-hangul.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA692291DF1CC00F3BEE0 /* hb-ot-shaper-hangul.cc */; };
+		2B8FA6C5291DF2D800F3BEE0 /* hb-ot-shaper-default.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA69F291DF1CD00F3BEE0 /* hb-ot-shaper-default.cc */; };
+		2B8FA6C6291DF2DB00F3BEE0 /* hb-ot-shaper-arabic.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA696291DF1CC00F3BEE0 /* hb-ot-shaper-arabic.cc */; };
+		2B8FA6C7291DF2DE00F3BEE0 /* hb-icu.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA697291DF1CC00F3BEE0 /* hb-icu.cc */; };
+		2B8FA6C8291DF2E100F3BEE0 /* hb-coretext.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA691291DF1CC00F3BEE0 /* hb-coretext.cc */; };
+		2B8FA6C9291DF2E300F3BEE0 /* hb-buffer-verify.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA69E291DF1CC00F3BEE0 /* hb-buffer-verify.cc */; };
+		2B8FA6CC291DF2FA00F3BEE0 /* gsubgpos-context.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2B8FA6B5291DF1F200F3BEE0 /* gsubgpos-context.cc */; };
 		2BBBEB76290BB25B00DF738C /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BBBEB1C290BB25B00DF738C /* libfreetype.a */; };
 		2BBBEB77290BB25B00DF738C /* ftsnames.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BBBEB1E290BB25B00DF738C /* ftsnames.h */; };
 		2BBBEB78290BB25B00DF738C /* sfnt.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BBBEB1F290BB25B00DF738C /* sfnt.h */; };
@@ -246,6 +253,27 @@
 		2B6B44AA29001F4F002929A9 /* TLFontManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLFontManager.m; sourceTree = "<group>"; };
 		2B6B44AD29001FBF002929A9 /* CGFontToFontData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGFontToFontData.h; sourceTree = "<group>"; };
 		2B6B44AE29001FBF002929A9 /* CGFontToFontData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGFontToFontData.m; sourceTree = "<group>"; };
+		2B8FA68D291DF1CC00F3BEE0 /* harfbuzz.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = harfbuzz.cc; path = harfbuzz/src/harfbuzz.cc; sourceTree = "<group>"; };
+		2B8FA68E291DF1CC00F3BEE0 /* hb-uniscribe.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-uniscribe.cc"; path = "harfbuzz/src/hb-uniscribe.cc"; sourceTree = "<group>"; };
+		2B8FA68F291DF1CC00F3BEE0 /* hb-ot-shaper-use.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-use.cc"; path = "harfbuzz/src/hb-ot-shaper-use.cc"; sourceTree = "<group>"; };
+		2B8FA690291DF1CC00F3BEE0 /* hb-ot-shaper-syllabic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-syllabic.cc"; path = "harfbuzz/src/hb-ot-shaper-syllabic.cc"; sourceTree = "<group>"; };
+		2B8FA691291DF1CC00F3BEE0 /* hb-coretext.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-coretext.cc"; path = "harfbuzz/src/hb-coretext.cc"; sourceTree = "<group>"; };
+		2B8FA692291DF1CC00F3BEE0 /* hb-ot-shaper-hangul.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-hangul.cc"; path = "harfbuzz/src/hb-ot-shaper-hangul.cc"; sourceTree = "<group>"; };
+		2B8FA693291DF1CC00F3BEE0 /* harfbuzz-subset.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "harfbuzz-subset.cc"; path = "harfbuzz/src/harfbuzz-subset.cc"; sourceTree = "<group>"; };
+		2B8FA694291DF1CC00F3BEE0 /* hb-ot-shaper-khmer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-khmer.cc"; path = "harfbuzz/src/hb-ot-shaper-khmer.cc"; sourceTree = "<group>"; };
+		2B8FA695291DF1CC00F3BEE0 /* hb-ot-shaper-indic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-indic.cc"; path = "harfbuzz/src/hb-ot-shaper-indic.cc"; sourceTree = "<group>"; };
+		2B8FA696291DF1CC00F3BEE0 /* hb-ot-shaper-arabic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-arabic.cc"; path = "harfbuzz/src/hb-ot-shaper-arabic.cc"; sourceTree = "<group>"; };
+		2B8FA697291DF1CC00F3BEE0 /* hb-icu.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-icu.cc"; path = "harfbuzz/src/hb-icu.cc"; sourceTree = "<group>"; };
+		2B8FA698291DF1CC00F3BEE0 /* hb-ot-shaper-indic-table.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-indic-table.cc"; path = "harfbuzz/src/hb-ot-shaper-indic-table.cc"; sourceTree = "<group>"; };
+		2B8FA699291DF1CC00F3BEE0 /* hb-subset-repacker.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-subset-repacker.cc"; path = "harfbuzz/src/hb-subset-repacker.cc"; sourceTree = "<group>"; };
+		2B8FA69A291DF1CC00F3BEE0 /* hb-ot-shaper-hebrew.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-hebrew.cc"; path = "harfbuzz/src/hb-ot-shaper-hebrew.cc"; sourceTree = "<group>"; };
+		2B8FA69B291DF1CC00F3BEE0 /* hb-ot-shaper-myanmar.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-myanmar.cc"; path = "harfbuzz/src/hb-ot-shaper-myanmar.cc"; sourceTree = "<group>"; };
+		2B8FA69C291DF1CC00F3BEE0 /* hb-ot-shaper-vowel-constraints.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-vowel-constraints.cc"; path = "harfbuzz/src/hb-ot-shaper-vowel-constraints.cc"; sourceTree = "<group>"; };
+		2B8FA69D291DF1CC00F3BEE0 /* hb-style.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-style.cc"; path = "harfbuzz/src/hb-style.cc"; sourceTree = "<group>"; };
+		2B8FA69E291DF1CC00F3BEE0 /* hb-buffer-verify.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-buffer-verify.cc"; path = "harfbuzz/src/hb-buffer-verify.cc"; sourceTree = "<group>"; };
+		2B8FA69F291DF1CD00F3BEE0 /* hb-ot-shaper-default.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-default.cc"; path = "harfbuzz/src/hb-ot-shaper-default.cc"; sourceTree = "<group>"; };
+		2B8FA6A0291DF1CD00F3BEE0 /* hb-ot-shaper-thai.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shaper-thai.cc"; path = "harfbuzz/src/hb-ot-shaper-thai.cc"; sourceTree = "<group>"; };
+		2B8FA6B5291DF1F200F3BEE0 /* gsubgpos-context.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gsubgpos-context.cc"; path = "harfbuzz/src/graph/gsubgpos-context.cc"; sourceTree = "<group>"; };
 		2BBBEB1C290BB25B00DF738C /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfreetype.a; sourceTree = "<group>"; };
 		2BBBEB1E290BB25B00DF738C /* ftsnames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftsnames.h; sourceTree = "<group>"; };
 		2BBBEB1F290BB25B00DF738C /* sfnt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sfnt.h; sourceTree = "<group>"; };
@@ -364,22 +392,18 @@
 		86A41176242B99E000E9F637 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		86A4117B242B99E000E9F637 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		86A4117C242B99E000E9F637 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		86F1D4AD2460DD6A00ABBDEF /* hb-ot-shape-complex-hebrew.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-hebrew.cc"; path = "harfbuzz/src/hb-ot-shape-complex-hebrew.cc"; sourceTree = "<group>"; };
 		86F1D4AE2460DD6A00ABBDEF /* hb-ucd.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ucd.cc"; path = "harfbuzz/src/hb-ucd.cc"; sourceTree = "<group>"; };
 		86F1D4AF2460DD6A00ABBDEF /* hb-buffer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-buffer.cc"; path = "harfbuzz/src/hb-buffer.cc"; sourceTree = "<group>"; };
 		86F1D4B02460DD6A00ABBDEF /* hb-blob.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-blob.cc"; path = "harfbuzz/src/hb-blob.cc"; sourceTree = "<group>"; };
 		86F1D4B12460DD6B00ABBDEF /* hb-ot-layout.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-layout.cc"; path = "harfbuzz/src/hb-ot-layout.cc"; sourceTree = "<group>"; };
-		86F1D4B22460DD6B00ABBDEF /* hb-ot-shape-complex-hangul.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-hangul.cc"; path = "harfbuzz/src/hb-ot-shape-complex-hangul.cc"; sourceTree = "<group>"; };
 		86F1D4B32460DD6B00ABBDEF /* hb-subset.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-subset.cc"; path = "harfbuzz/src/hb-subset.cc"; sourceTree = "<group>"; };
 		86F1D4B42460DD6B00ABBDEF /* hb-shape.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-shape.cc"; path = "harfbuzz/src/hb-shape.cc"; sourceTree = "<group>"; };
-		86F1D4B52460DD6B00ABBDEF /* hb-ot-shape-complex-myanmar.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-myanmar.cc"; path = "harfbuzz/src/hb-ot-shape-complex-myanmar.cc"; sourceTree = "<group>"; };
 		86F1D4B62460DD6B00ABBDEF /* hb-common.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-common.cc"; path = "harfbuzz/src/hb-common.cc"; sourceTree = "<group>"; };
 		86F1D4B72460DD6B00ABBDEF /* hb-ot-cff2-table.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-cff2-table.cc"; path = "harfbuzz/src/hb-ot-cff2-table.cc"; sourceTree = "<group>"; };
 		86F1D4B82460DD6B00ABBDEF /* hb-ot-map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-map.cc"; path = "harfbuzz/src/hb-ot-map.cc"; sourceTree = "<group>"; };
 		86F1D4B92460DD6B00ABBDEF /* hb-ot-shape.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape.cc"; path = "harfbuzz/src/hb-ot-shape.cc"; sourceTree = "<group>"; };
 		86F1D4BA2460DD6B00ABBDEF /* hb-gdi.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-gdi.cc"; path = "harfbuzz/src/hb-gdi.cc"; sourceTree = "<group>"; };
 		86F1D4BB2460DD6B00ABBDEF /* hb-ot-var.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-var.cc"; path = "harfbuzz/src/hb-ot-var.cc"; sourceTree = "<group>"; };
-		86F1D4BC2460DD6B00ABBDEF /* hb-ot-shape-complex-indic-table.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-indic-table.cc"; path = "harfbuzz/src/hb-ot-shape-complex-indic-table.cc"; sourceTree = "<group>"; };
 		86F1D4BD2460DD6B00ABBDEF /* hb-ot-shape-fallback.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-fallback.cc"; path = "harfbuzz/src/hb-ot-shape-fallback.cc"; sourceTree = "<group>"; };
 		86F1D4BE2460DD6B00ABBDEF /* hb-map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-map.cc"; path = "harfbuzz/src/hb-map.cc"; sourceTree = "<group>"; };
 		86F1D4BF2460DD6B00ABBDEF /* hb-ot-cff1-table.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-cff1-table.cc"; path = "harfbuzz/src/hb-ot-cff1-table.cc"; sourceTree = "<group>"; };
@@ -387,8 +411,6 @@
 		86F1D4C22460DD6B00ABBDEF /* hb-ot-face.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-face.cc"; path = "harfbuzz/src/hb-ot-face.cc"; sourceTree = "<group>"; };
 		86F1D4C32460DD6B00ABBDEF /* hb-gobject-structs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-gobject-structs.cc"; path = "harfbuzz/src/hb-gobject-structs.cc"; sourceTree = "<group>"; };
 		86F1D4C42460DD6B00ABBDEF /* hb-subset-cff2.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-subset-cff2.cc"; path = "harfbuzz/src/hb-subset-cff2.cc"; sourceTree = "<group>"; };
-		86F1D4C52460DD6B00ABBDEF /* hb-ot-shape-complex-use.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-use.cc"; path = "harfbuzz/src/hb-ot-shape-complex-use.cc"; sourceTree = "<group>"; };
-		86F1D4C62460DD6B00ABBDEF /* hb-ot-shape-complex-default.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-default.cc"; path = "harfbuzz/src/hb-ot-shape-complex-default.cc"; sourceTree = "<group>"; };
 		86F1D4C82460DD6B00ABBDEF /* hb-ot-color.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-color.cc"; path = "harfbuzz/src/hb-ot-color.cc"; sourceTree = "<group>"; };
 		86F1D4C92460DD6B00ABBDEF /* hb-subset-input.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-subset-input.cc"; path = "harfbuzz/src/hb-subset-input.cc"; sourceTree = "<group>"; };
 		86F1D4CA2460DD6B00ABBDEF /* hb-font.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-font.cc"; path = "harfbuzz/src/hb-font.cc"; sourceTree = "<group>"; };
@@ -397,7 +419,6 @@
 		86F1D4CD2460DD6B00ABBDEF /* hb-subset-cff-common.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-subset-cff-common.cc"; path = "harfbuzz/src/hb-subset-cff-common.cc"; sourceTree = "<group>"; };
 		86F1D4CE2460DD6B00ABBDEF /* hb-directwrite.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-directwrite.cc"; path = "harfbuzz/src/hb-directwrite.cc"; sourceTree = "<group>"; };
 		86F1D4CF2460DD6B00ABBDEF /* hb-ot-meta.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-meta.cc"; path = "harfbuzz/src/hb-ot-meta.cc"; sourceTree = "<group>"; };
-		86F1D4D02460DD6B00ABBDEF /* hb-ot-shape-complex-khmer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-khmer.cc"; path = "harfbuzz/src/hb-ot-shape-complex-khmer.cc"; sourceTree = "<group>"; };
 		86F1D4D12460DD6B00ABBDEF /* hb-number.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-number.cc"; path = "harfbuzz/src/hb-number.cc"; sourceTree = "<group>"; };
 		86F1D4D22460DD6B00ABBDEF /* hb-aat-map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-aat-map.cc"; path = "harfbuzz/src/hb-aat-map.cc"; sourceTree = "<group>"; };
 		86F1D4D32460DD6B00ABBDEF /* hb-face.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-face.cc"; path = "harfbuzz/src/hb-face.cc"; sourceTree = "<group>"; };
@@ -405,19 +426,14 @@
 		86F1D4D52460DD6B00ABBDEF /* hb-graphite2.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-graphite2.cc"; path = "harfbuzz/src/hb-graphite2.cc"; sourceTree = "<group>"; };
 		86F1D4D62460DD6C00ABBDEF /* hb-set.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-set.cc"; path = "harfbuzz/src/hb-set.cc"; sourceTree = "<group>"; };
 		86F1D4D72460DD6C00ABBDEF /* hb-ot-font.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-font.cc"; path = "harfbuzz/src/hb-ot-font.cc"; sourceTree = "<group>"; };
-		86F1D4D92460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-arabic.cc"; path = "harfbuzz/src/hb-ot-shape-complex-arabic.cc"; sourceTree = "<group>"; };
-		86F1D4DA2460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-use-table.cc"; path = "harfbuzz/src/hb-ot-shape-complex-use-table.cc"; sourceTree = "<group>"; };
 		86F1D4DB2460DD6C00ABBDEF /* hb-ot-shape-normalize.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-normalize.cc"; path = "harfbuzz/src/hb-ot-shape-normalize.cc"; sourceTree = "<group>"; };
 		86F1D4DC2460DD6C00ABBDEF /* hb-fallback-shape.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-fallback-shape.cc"; path = "harfbuzz/src/hb-fallback-shape.cc"; sourceTree = "<group>"; };
 		86F1D4DD2460DD6C00ABBDEF /* hb-ot-tag.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-tag.cc"; path = "harfbuzz/src/hb-ot-tag.cc"; sourceTree = "<group>"; };
 		86F1D4DE2460DD6C00ABBDEF /* hb-ot-math.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-math.cc"; path = "harfbuzz/src/hb-ot-math.cc"; sourceTree = "<group>"; };
-		86F1D4DF2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-vowel-constraints.cc"; path = "harfbuzz/src/hb-ot-shape-complex-vowel-constraints.cc"; sourceTree = "<group>"; };
 		86F1D4E02460DD6C00ABBDEF /* hb-ft.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ft.cc"; path = "harfbuzz/src/hb-ft.cc"; sourceTree = "<group>"; };
 		86F1D4E12460DD6C00ABBDEF /* hb-subset-plan.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-subset-plan.cc"; path = "harfbuzz/src/hb-subset-plan.cc"; sourceTree = "<group>"; };
 		86F1D4E22460DD6C00ABBDEF /* hb-draw.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-draw.cc"; path = "harfbuzz/src/hb-draw.cc"; sourceTree = "<group>"; };
-		86F1D4E32460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-indic.cc"; path = "harfbuzz/src/hb-ot-shape-complex-indic.cc"; sourceTree = "<group>"; };
 		86F1D4E42460DD6C00ABBDEF /* hb-aat-layout.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-aat-layout.cc"; path = "harfbuzz/src/hb-aat-layout.cc"; sourceTree = "<group>"; };
-		86F1D4E52460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-ot-shape-complex-thai.cc"; path = "harfbuzz/src/hb-ot-shape-complex-thai.cc"; sourceTree = "<group>"; };
 		86F1D4E62460DD6C00ABBDEF /* hb-buffer-serialize.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-buffer-serialize.cc"; path = "harfbuzz/src/hb-buffer-serialize.cc"; sourceTree = "<group>"; };
 		86F1D4E82460DD6C00ABBDEF /* hb-static.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-static.cc"; path = "harfbuzz/src/hb-static.cc"; sourceTree = "<group>"; };
 		86F1D4E92460DD6C00ABBDEF /* hb-unicode.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "hb-unicode.cc"; path = "harfbuzz/src/hb-unicode.cc"; sourceTree = "<group>"; };
@@ -681,6 +697,27 @@
 		86F1D4AC2460460600ABBDEF /* HarfBuzz */ = {
 			isa = PBXGroup;
 			children = (
+				2B8FA6B5291DF1F200F3BEE0 /* gsubgpos-context.cc */,
+				2B8FA693291DF1CC00F3BEE0 /* harfbuzz-subset.cc */,
+				2B8FA68D291DF1CC00F3BEE0 /* harfbuzz.cc */,
+				2B8FA69E291DF1CC00F3BEE0 /* hb-buffer-verify.cc */,
+				2B8FA691291DF1CC00F3BEE0 /* hb-coretext.cc */,
+				2B8FA697291DF1CC00F3BEE0 /* hb-icu.cc */,
+				2B8FA696291DF1CC00F3BEE0 /* hb-ot-shaper-arabic.cc */,
+				2B8FA69F291DF1CD00F3BEE0 /* hb-ot-shaper-default.cc */,
+				2B8FA692291DF1CC00F3BEE0 /* hb-ot-shaper-hangul.cc */,
+				2B8FA69A291DF1CC00F3BEE0 /* hb-ot-shaper-hebrew.cc */,
+				2B8FA698291DF1CC00F3BEE0 /* hb-ot-shaper-indic-table.cc */,
+				2B8FA695291DF1CC00F3BEE0 /* hb-ot-shaper-indic.cc */,
+				2B8FA694291DF1CC00F3BEE0 /* hb-ot-shaper-khmer.cc */,
+				2B8FA69B291DF1CC00F3BEE0 /* hb-ot-shaper-myanmar.cc */,
+				2B8FA690291DF1CC00F3BEE0 /* hb-ot-shaper-syllabic.cc */,
+				2B8FA6A0291DF1CD00F3BEE0 /* hb-ot-shaper-thai.cc */,
+				2B8FA68F291DF1CC00F3BEE0 /* hb-ot-shaper-use.cc */,
+				2B8FA69C291DF1CC00F3BEE0 /* hb-ot-shaper-vowel-constraints.cc */,
+				2B8FA69D291DF1CC00F3BEE0 /* hb-style.cc */,
+				2B8FA699291DF1CC00F3BEE0 /* hb-subset-repacker.cc */,
+				2B8FA68E291DF1CC00F3BEE0 /* hb-uniscribe.cc */,
 				86F1D4E42460DD6C00ABBDEF /* hb-aat-layout.cc */,
 				86F1D4D22460DD6B00ABBDEF /* hb-aat-map.cc */,
 				86F1D4B02460DD6A00ABBDEF /* hb-blob.cc */,
@@ -709,18 +746,6 @@
 				86F1D4CF2460DD6B00ABBDEF /* hb-ot-meta.cc */,
 				86F1D4CB2460DD6B00ABBDEF /* hb-ot-metrics.cc */,
 				86F1D4C12460DD6B00ABBDEF /* hb-ot-name.cc */,
-				86F1D4D92460DD6C00ABBDEF /* hb-ot-shape-complex-arabic.cc */,
-				86F1D4C62460DD6B00ABBDEF /* hb-ot-shape-complex-default.cc */,
-				86F1D4B22460DD6B00ABBDEF /* hb-ot-shape-complex-hangul.cc */,
-				86F1D4AD2460DD6A00ABBDEF /* hb-ot-shape-complex-hebrew.cc */,
-				86F1D4BC2460DD6B00ABBDEF /* hb-ot-shape-complex-indic-table.cc */,
-				86F1D4E32460DD6C00ABBDEF /* hb-ot-shape-complex-indic.cc */,
-				86F1D4D02460DD6B00ABBDEF /* hb-ot-shape-complex-khmer.cc */,
-				86F1D4B52460DD6B00ABBDEF /* hb-ot-shape-complex-myanmar.cc */,
-				86F1D4E52460DD6C00ABBDEF /* hb-ot-shape-complex-thai.cc */,
-				86F1D4DA2460DD6C00ABBDEF /* hb-ot-shape-complex-use-table.cc */,
-				86F1D4C52460DD6B00ABBDEF /* hb-ot-shape-complex-use.cc */,
-				86F1D4DF2460DD6C00ABBDEF /* hb-ot-shape-complex-vowel-constraints.cc */,
 				86F1D4BD2460DD6B00ABBDEF /* hb-ot-shape-fallback.cc */,
 				86F1D4DB2460DD6C00ABBDEF /* hb-ot-shape-normalize.cc */,
 				86F1D4B92460DD6B00ABBDEF /* hb-ot-shape.cc */,
@@ -956,73 +981,80 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B6B447229001B0D002929A9 /* hb-graphite2.cc in Sources */,
-				2B6B448029001B6C002929A9 /* hb-ot-shape-complex-arabic.cc in Sources */,
 				2B6B449329001BA7002929A9 /* hb-shape.cc in Sources */,
 				2B6B446E29001B05002929A9 /* hb-font.cc in Sources */,
 				2B6B446D29001B02002929A9 /* hb-fallback-shape.cc in Sources */,
-				2B6B448429001B76002929A9 /* hb-ot-shape-complex-indic-table.cc in Sources */,
 				2B6B449629001BAE002929A9 /* hb-subset-cff-common.cc in Sources */,
 				2B6B44A329001E7D002929A9 /* TLTXTWorker.c in Sources */,
 				2B6B447729001B58002929A9 /* hb-ot-color.cc in Sources */,
 				2B6B44A529001E7D002929A9 /* FileWrapper.m in Sources */,
 				2B6B449029001B9E002929A9 /* hb-ot-var.cc in Sources */,
+				2B8FA6BB291DF2BD00F3BEE0 /* hb-ot-shaper-vowel-constraints.cc in Sources */,
 				2B6B446C29001AFE002929A9 /* hb-face.cc in Sources */,
+				2B8FA6BD291DF2C200F3BEE0 /* hb-ot-shaper-thai.cc in Sources */,
+				2B8FA6C1291DF2CD00F3BEE0 /* hb-ot-shaper-indic.cc in Sources */,
 				2B6B447529001B54002929A9 /* hb-ot-cff1-table.cc in Sources */,
-				2B6B448329001B73002929A9 /* hb-ot-shape-complex-hebrew.cc in Sources */,
+				2B8FA6C4291DF2D600F3BEE0 /* hb-ot-shaper-hangul.cc in Sources */,
 				2B6B44AC29001F4F002929A9 /* TLFontManager.m in Sources */,
+				2B8FA6C9291DF2E300F3BEE0 /* hb-buffer-verify.cc in Sources */,
 				2B2E4A032900F09700A41EEA /* TLTXTCore.m in Sources */,
 				2B6B447E29001B68002929A9 /* hb-ot-metrics.cc in Sources */,
+				2B8FA6BC291DF2BF00F3BEE0 /* hb-ot-shaper-use.cc in Sources */,
 				2B6B446729001AF3002929A9 /* hb-buffer-serialize.cc in Sources */,
 				2B233A65290782DE00C60F1A /* TLAttributedString.m in Sources */,
 				2B6B449B29001BBE002929A9 /* hb-ucd.cc in Sources */,
 				2B6B447B29001B60002929A9 /* hb-ot-map.cc in Sources */,
+				2B8FA6B8291DF2B600F3BEE0 /* hb-subset-repacker.cc in Sources */,
+				2B8FA6BE291DF2C500F3BEE0 /* hb-ot-shaper-syllabic.cc in Sources */,
 				2B6B449129001BA0002929A9 /* hb-set.cc in Sources */,
 				2B6B447929001B5C002929A9 /* hb-ot-font.cc in Sources */,
 				2B6B447F29001B69002929A9 /* hb-ot-name.cc in Sources */,
 				2B5605DB290682410093EF38 /* TLTXTRowRect.c in Sources */,
 				2B6B448D29001B97002929A9 /* hb-ot-shape-normalize.cc in Sources */,
+				2B8FA6BF291DF2C800F3BEE0 /* hb-ot-shaper-myanmar.cc in Sources */,
 				2B6B447A29001B5E002929A9 /* hb-ot-layout.cc in Sources */,
 				2B6B449C29001BC0002929A9 /* hb-unicode.cc in Sources */,
 				2B6B447D29001B65002929A9 /* hb-ot-meta.cc in Sources */,
 				2B6B446629001AF1002929A9 /* hb-blob.cc in Sources */,
 				2B6B449229001BA3002929A9 /* hb-shape-plan.cc in Sources */,
+				2B8FA6CC291DF2FA00F3BEE0 /* gsubgpos-context.cc in Sources */,
 				2B6B446A29001AF9002929A9 /* hb-directwrite.cc in Sources */,
 				2B6B44B029001FC0002929A9 /* CGFontToFontData.m in Sources */,
+				2B8FA6BA291DF2BA00F3BEE0 /* hb-style.cc in Sources */,
+				2B8FA6C2291DF2D100F3BEE0 /* hb-ot-shaper-indic-table.cc in Sources */,
 				2BBBEBD7290BFF5500DF738C /* TLTXTPageHelper.m in Sources */,
 				2B6B448C29001B94002929A9 /* hb-ot-shape-fallback.cc in Sources */,
+				2B8FA6C0291DF2CB00F3BEE0 /* hb-ot-shaper-khmer.cc in Sources */,
+				2B8FA6C6291DF2DB00F3BEE0 /* hb-ot-shaper-arabic.cc in Sources */,
 				2B6B449729001BB2002929A9 /* hb-subset-cff1.cc in Sources */,
 				2B54E743291A01820079005F /* TLGenericArray.c in Sources */,
+				2B8FA6C5291DF2D800F3BEE0 /* hb-ot-shaper-default.cc in Sources */,
 				2B6B449829001BB4002929A9 /* hb-subset-cff2.cc in Sources */,
 				2B6B446929001AF7002929A9 /* hb-common.cc in Sources */,
 				2B6B447429001B51002929A9 /* hb-number.cc in Sources */,
-				2B6B448729001B7D002929A9 /* hb-ot-shape-complex-myanmar.cc in Sources */,
 				2B6B448F29001B9C002929A9 /* hb-ot-tag.cc in Sources */,
 				2B6B449429001BA9002929A9 /* hb-shaper.cc in Sources */,
-				2B6B448A29001B8D002929A9 /* hb-ot-shape-complex-use.cc in Sources */,
 				2B6B449529001BAB002929A9 /* hb-static.cc in Sources */,
 				2B6B447829001B5A002929A9 /* hb-ot-face.cc in Sources */,
-				2B6B448629001B7B002929A9 /* hb-ot-shape-complex-khmer.cc in Sources */,
-				2B6B448129001B6E002929A9 /* hb-ot-shape-complex-default.cc in Sources */,
+				2B8FA6C7291DF2DE00F3BEE0 /* hb-icu.cc in Sources */,
 				2B6B446F29001B07002929A9 /* hb-ft.cc in Sources */,
 				2B6B447029001B09002929A9 /* hb-gdi.cc in Sources */,
 				2B6B447629001B56002929A9 /* hb-ot-cff2-table.cc in Sources */,
 				2B6B446429001AEC002929A9 /* hb-aat-layout.cc in Sources */,
 				2B6B447329001B10002929A9 /* hb-map.cc in Sources */,
+				2B8FA6B7291DF2B300F3BEE0 /* hb-uniscribe.cc in Sources */,
 				2B6B449A29001BB9002929A9 /* hb-subset-plan.cc in Sources */,
 				2B6B445A29001ACD002929A9 /* TextLayout.docc in Sources */,
-				2B6B448229001B71002929A9 /* hb-ot-shape-complex-hangul.cc in Sources */,
+				2B8FA6C3291DF2D300F3BEE0 /* hb-ot-shaper-hebrew.cc in Sources */,
 				2B5605D6290644970093EF38 /* TLTXTCachePage.m in Sources */,
-				2B6B448B29001B8F002929A9 /* hb-ot-shape-complex-vowel-constraints.cc in Sources */,
 				2B6B446529001AEF002929A9 /* hb-aat-map.cc in Sources */,
 				2B6B446B29001AFB002929A9 /* hb-draw.cc in Sources */,
 				2B6B447129001B0C002929A9 /* hb-gobject-structs.cc in Sources */,
 				2B6B449929001BB7002929A9 /* hb-subset-input.cc in Sources */,
 				2B233A6A2907B42900C60F1A /* TLTXTAttributes.c in Sources */,
 				2B6B448E29001B9A002929A9 /* hb-ot-shape.cc in Sources */,
-				2B6B448929001B8B002929A9 /* hb-ot-shape-complex-use-table.cc in Sources */,
+				2B8FA6C8291DF2E100F3BEE0 /* hb-coretext.cc in Sources */,
 				2B6B447C29001B63002929A9 /* hb-ot-math.cc in Sources */,
-				2B6B448829001B88002929A9 /* hb-ot-shape-complex-thai.cc in Sources */,
-				2B6B448529001B79002929A9 /* hb-ot-shape-complex-indic.cc in Sources */,
 				2B6B446829001AF5002929A9 /* hb-buffer.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1072,8 +1104,9 @@
 					"$(inherited)",
 					"COCOAPODS=1",
 					"HAVE_FREETYPE=1",
-					"HAVE_FALLBACK=1",
 					HB_NO_OPEN,
+					HB_NO_OT_FONT,
+					HB_NO_OT_SHAPE,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -1121,8 +1154,9 @@
 					"$(inherited)",
 					"COCOAPODS=1",
 					"HAVE_FREETYPE=1",
-					"HAVE_FALLBACK=1",
 					HB_NO_OPEN,
+					HB_NO_OT_FONT,
+					HB_NO_OT_SHAPE,
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -1275,13 +1309,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"COCOAPODS=1",
-					"HAVE_FREETYPE=1",
-					"HAVE_FALLBACK=1",
-					HB_NO_OPEN,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -1315,13 +1343,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"COCOAPODS=1",
-					"HAVE_FREETYPE=1",
-					"HAVE_FALLBACK=1",
-					HB_NO_OPEN,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",

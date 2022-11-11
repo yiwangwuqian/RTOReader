@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-import io, os.path, sys, re
+"""usage: ./gen-ucd-table ucd.nounihan.grouped.xml [/path/to/hb-common.h]
+
+Input file:
+* https://unicode.org/Public/UCD/latest/ucdxml/ucd.nounihan.grouped.zip
+"""
+
+import sys, re
 import logging
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
 if len (sys.argv) not in (2, 3):
-	print("""usage: ./gen-ucd-table ucd.nounihan.grouped.xml [/path/to/hb-common.h]
-
-Input file, as of Unicode 12:
-* https://unicode.org/Public/UCD/latest/ucdxml/ucd.nounihan.grouped.zip""", file=sys.stderr)
-	sys.exit(1)
+	sys.exit (__doc__)
 
 # https://github.com/harfbuzz/packtab
 import packTab
@@ -81,9 +83,9 @@ for line in open(hb_common_h):
     sc_order[i] = tag
     sc_array.append(name)
 
-DEFAULT = 1
-COMPACT = 3
-SLOPPY  = 5
+DEFAULT = 3
+COMPACT = 5
+SLOPPY  = 9
 
 
 logging.info('Generating output...')
