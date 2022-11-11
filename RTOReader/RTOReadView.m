@@ -81,9 +81,9 @@
             CGFloat drawHeight = CGRectGetHeight(self.bounds)  * [UIScreen mainScreen].scale;
             NSString *fileContent = [[NSString alloc] initWithContentsOfFile:self.filePath encoding:NSUTF8StringEncoding error:nil];
             TLAttributedString *aString = [[TLAttributedString alloc] initWithString:fileContent attributes:@{} textId:@"1"];
-            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF0000)} range:NSMakeRange(30, 10)];
-            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0x00FF00)} range:NSMakeRange(100, 3)];
-            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0x00FF00), @(TLTXTAttributesNameTypeFontSize): @(70)} range:NSMakeRange(650, 12)];
+            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFFFF0000)} range:NSMakeRange(30, 10)];
+            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF00FF00)} range:NSMakeRange(100, 3)];
+            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF00FF00), @(TLTXTAttributesNameTypeFontSize): @(70)} range:NSMakeRange(650, 12)];
             CGSize pageSize = CGSizeMake(drawWidth, drawHeight);
             CGFloat endPageHeight;
             NSArray *cursorArray = [TLTXTCore oncePaging:aString pageSize:pageSize endPageHeight:&endPageHeight];
@@ -299,9 +299,6 @@
     
     UIImageView *imageView = self.imageViewArray.firstObject;
     imageView.image = [self.txtCore onlyCachedImageWithPageNum:0 textId:@"1"];
-    
-    imageView.image = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"image_3" ofType:@"png"]];
-    imageView.backgroundColor = [UIColor blackColor];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -322,11 +319,12 @@
                 //TEST
                 NSLog(@"Now need prepare image for index:%@", @(index));
                 //TEST END
-                
                 UIImageView *imageView = self.imageViewArray[index];
                 UIImage *image = [self.txtCore onlyCachedImageWithPageNum:index textId:@"1"];
                 [self.txtCore toCacheWhenMoveTo:index textId:@"1" whetherEnd:NULL];
-                imageView.image = image;
+                if (imageView.image == nil) {
+                    imageView.image = image;
+                }
             }
         } else {
 //            //向左
