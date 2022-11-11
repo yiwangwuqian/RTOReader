@@ -621,9 +621,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
         if (i == 0 || (i > 0 && (*worker)->codepoints[i-1] == '\n')) {
             if (typeSettingX == 0) {
                 unsigned int tempCharAdvance = txt_worker_get_recorded_font_width(*worker, last_font_size);
-                //TEST
-                printf("aCharAdvance:%ld tempCharAdvance:%ld\n", aCharAdvance,tempCharAdvance);
-                //TEST END
                 typeSettingX = oneLineFirstLineHeadIndent*tempCharAdvance;
             }
         }
@@ -858,9 +855,6 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
     //默认size
     unsigned int font_size = default_font_size != NULL ? *default_font_size : GetDeviceFontSize(21);
     unsigned int last_font_size = font_size;
-    //TEST
-    printf("txt_worker_check_oneline_max_height font_size:%ld", font_size);
-    //TEST END
     FT_Set_Pixel_Sizes(face, 0, font_size);
     unsigned int oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
     for (size_t i = start_cursor; i<glyph_count; i++) {
@@ -925,6 +919,10 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             if (typeSettingX == 0) {
                 unsigned int tempCharAdvance = txt_worker_get_recorded_font_width(worker, last_font_size);
                 if (tempCharAdvance == 0) {
+                    /**
+                     *这里使用的codepoint是中文的'国'
+                     *为了避免当前是一个半角符号而aCharAdvance不够一个字宽的问题
+                     */
                     FT_Load_Glyph(face,FT_Get_Char_Index( face, 20013 ),flags);
                     tempCharAdvance = (unsigned int)face->glyph->metrics.horiAdvance/64;
                     txt_worker_set_recorded_font_width(worker, last_font_size, tempCharAdvance);

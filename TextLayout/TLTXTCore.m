@@ -476,6 +476,16 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                 }
             }
         }
+#ifdef DEBUG
+        if (index == -1) {
+            NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+            for (NSInteger i=0; i<self.cachedArray.count; i++) {
+                TLTXTCachePage *oncePage = self.cachedArray[i];
+                [numberArray addObject:@(oncePage.pageNum)];
+            }
+            NSLog(@"⚠️pageNum %@ not in %@ things wrong!!!", @(pageNum), [numberArray componentsJoinedByString:@","]);
+        }
+#endif
     }
 }
 
@@ -499,6 +509,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     self.nextPageSemaphore = dispatch_semaphore_create(0);
     
     dispatch_async(bitmapQueue, ^{
+#ifdef DEBUG
+        NSLog(@"⚠️begin draw %@ %s", @(afterPageNum), __FUNCTION__);
+#endif
     
 #if kTLTXTPerformanceLog
     NSDate *date = [NSDate date];
@@ -535,6 +548,16 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             [array addObject:cachePage];
             
             self.cachedArray = array;
+            
+#ifdef DEBUG
+            NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+            for (NSInteger i=0; i<self.cachedArray.count; i++) {
+                TLTXTCachePage *oncePage = self.cachedArray[i];
+                [numberArray addObject:@(oncePage.pageNum)];
+            }
+            NSLog(@"⚠️end draw %@ %s %@", @(afterPageNum), __FUNCTION__, [numberArray componentsJoinedByString:@","]);
+#endif
+            
 #if kTLTXTPerformanceLog
             NSLog(@"%s image create using time:%@", __func__, @(GetTimeDeltaValue(imageStartDate) ));
 #endif
