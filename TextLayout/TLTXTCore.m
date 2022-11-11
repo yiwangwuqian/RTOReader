@@ -94,7 +94,6 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 ///   - cursorArray: 游标数组，分页信息
 - (void)resetAttributedString:(TLAttributedString *)aString
                      pageSize:(CGSize)size
-                  cursorArray:(NSArray<NSNumber *> *)cursorArray
 {
     if (!aString) {
         return;
@@ -129,18 +128,40 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         txt_worker_page_cursor_array_destroy(_worker);
     }
      */
+#if kTLTXTPerformanceLog
+    NSDate *startDate = [NSDate date];
+#endif
     txt_worker_create(&_worker, [[aString string] UTF8String], size.width, size.height);
     txt_worker_set_context(_worker, (__bridge void *)(self));
     txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
     txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
-    if (cursorArray.count) {
-        for (NSNumber *number in cursorArray) {
-            txt_worker_page_cursor_array_prefill(_worker, [number integerValue]);
-        }
-        txt_worker_total_page_prefill(_worker, cursorArray.count);
-    }
+#if kTLTXTPerformanceLog
+    NSLog(@"%s worker create using time:%@", __func__, @(GetTimeDeltaValue(startDate) ));
+#endif
     
     self.pageNum = -1;
+}
+
+- (NSArray<NSNumber *> *)oncePaging:(CGFloat*)endPageHeight
+{
+#if kTLTXTPerformanceLog
+    NSDate *startDate = [NSDate date];
+#endif
+    *endPageHeight = txt_worker_data_paging(&self->_worker);
+#if kTLTXTPerformanceLog
+    NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(startDate) ));
+#endif
+    
+    size_t total_page = txt_worker_total_page(&self->_worker);
+    if (total_page) {
+        NSMutableArray *result = [[NSMutableArray alloc] init];
+        for (NSInteger i=0; i<total_page; i++) {
+            size_t cursor = txt_worker_page_cursor_array_get(self->_worker, i);
+            [result addObject:@(cursor)];
+        }
+        return result;
+    }
+    return NULL;
 }
 
 - (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum
@@ -393,8 +414,16 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                 cachePage = oncePage;
             }
         }
+#ifdef DEBUG
+        if (!cachePage.image) {
+            NSLog(@"%s %@ pageNum %@ self.cachedArray %@", __FUNCTION__, self, @(pageNum), self.cachedArray);
+        }
+#endif
         return cachePage.image;
     }
+#ifdef DEBUG
+    NSLog(@"%s %@ pageNum %@ self.cachedArray %@", __FUNCTION__, self, @(pageNum), self.cachedArray);
+#endif
     return nil;
 }
 
@@ -664,7 +693,6 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 
 - (void)fillAttributedString:(TLAttributedString *)aString
                     pageSize:(CGSize)size
-                 cursorArray:(NSArray<NSNumber *> *)cursorArray
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:aString.textId];
     if (!unit) {
@@ -673,7 +701,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
         [self.unitArray addObject:unit];
     }
     unit.drawDelegate = self.drawDelegate;
-    [unit resetAttributedString:aString pageSize:size cursorArray:cursorArray];
+    [unit resetAttributedString:aString pageSize:size];
 }
 
 - (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point endIndex:(NSInteger *)endIndex textId:(NSString *)textId
@@ -723,6 +751,12 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 + (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height
 {
     return [TLTXTPageHelper oncePaging:aString pageSize:pageSize endPageHeight:height];
+}
+
+- (NSArray<NSNumber *> *)oncePaging:(NSString *)textId endPageHeight:(CGFloat*)height
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return [unit oncePaging:height];
 }
 
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale
@@ -839,7 +873,6 @@ static TLTXTCoreManager *manager = nil;
 
 - (void)prepareAttributedString:(TLAttributedString *)aString
                        pageSize:(CGSize)size
-                    cursorArray:(NSArray<NSNumber *> *)cursorArray
                          coreId:(NSString *)coreId
 {
     TLTXTCore *core = [self coreWithId:coreId];
@@ -848,7 +881,7 @@ static TLTXTCoreManager *manager = nil;
         core.coreId = coreId;
         [self.coreArray addObject:core];
     }
-    [core fillAttributedString:aString pageSize:size cursorArray:cursorArray];
+    [core fillAttributedString:aString pageSize:size];
 }
 
 - (void)removeOnce:(NSString *)coreId

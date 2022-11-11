@@ -65,10 +65,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 执行一次分页，返回结果为各页的游标，并返回最后一页的高度
 /// - Parameters:
-///   - aString: 属性字符串
-///   - pageSize: 页面大小
+///   - textId: 文本id
 ///   - height: 最后一页的高度
-+ (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height;
+- (NSArray<NSNumber *> *)oncePaging:(NSString *)textId endPageHeight:(CGFloat*)height;
 
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale;
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale nightMode:(BOOL)nightMode;
@@ -87,11 +86,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Parameters:
 ///   - aString: 属性字符串
 ///   - size: 页面大小
-///   - cursorArray: 游标数组
 ///   - coreId: TLTXTCore对象的id，实际使用过程中对应一本书
 - (void)prepareAttributedString:(TLAttributedString *)aString
                        pageSize:(CGSize)size
-                    cursorArray:(NSArray<NSNumber *> *)cursorArray
                          coreId:(NSString *)coreId;
 
 /// 移除一个TLTXTCore对象
