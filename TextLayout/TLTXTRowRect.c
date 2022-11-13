@@ -77,6 +77,19 @@ TLTXTRectArray txt_row_rect_array_current(TLTXTRowRectArray array)
     return NULL;
 }
 
+size_t txt_row_rect_array_get_count(TLTXTRowRectArray array)
+{
+    return array->count;
+}
+
+TLTXTRectArray txt_row_rect_array_object_at(TLTXTRowRectArray array, int index)
+{
+    if (index < array->count) {
+        return array->data[index];
+    }
+    return NULL;
+}
+
 size_t txt_row_rect_array_index_from(TLTXTRowRectArray array, size_t r_index, size_t c_index)
 {
     size_t result=0;
@@ -266,4 +279,54 @@ void txt_worker_rect_array_from(TLTXTRowRectArray array, TLTXTRectArray *rect_ar
     
     *s_index += index;
     *e_index += index;
+}
+
+void txt_paging_rect_array_create(TLTXTPagingRectArray *array)
+{
+    TLTXTPagingRectArray object = calloc(1, sizeof(struct TLTXTPagingRectArray_));
+    
+    size_t length = 20;
+    object->length = length;
+    object->data = calloc(length, sizeof(TLTXTRowRectArray));
+    
+    *array = object;
+}
+
+bool txt_paging_rect_array_add(struct TLTXTPagingRectArray_ *array,TLTXTRowRectArray item)
+{
+    if( !((*array).count < (*array).length) ) {
+        size_t length = (*array).length + 100;
+        TLTXTRowRectArray *data = realloc((*array).data, length*sizeof(TLTXTRowRectArray));
+        if (data == NULL) {
+            return false;
+        }
+        (*array).data = data;
+        (*array).length = length;
+    }
+    (*array).data[(*array).count] = item;
+    (*array).count+=1;
+    return true;
+}
+
+void txt_paging_rect_array_destroy(TLTXTPagingRectArray *array)
+{
+    if ((*array)->count > 0) {
+        for (size_t i = 0; i< (*array)->count; i++) {
+            txt_row_rect_array_destroy((*array)->data+i);
+        }
+    }
+    free((*array)->data);
+    
+    free(*array);
+    *array = NULL;
+}
+
+size_t txt_paging_rect_array_get_count(TLTXTPagingRectArray array)
+{
+    return array->count;
+}
+
+TLTXTRowRectArray txt_paging_rect_array_object_at(TLTXTPagingRectArray array, size_t index)
+{
+    return array->data[index];
 }

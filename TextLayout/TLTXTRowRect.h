@@ -19,6 +19,7 @@ extern "C" {
 typedef struct TLTXTRect_* TLTXTRect;
 typedef struct TLTXTRectArray_* TLTXTRectArray;
 typedef struct TLTXTRowRectArray_* TLTXTRowRectArray;
+typedef struct TLTXTPagingRectArray_* TLTXTPagingRectArray;
 
 struct TLTXTRectArray_ {
     struct TLTXTRect_ *data;
@@ -66,6 +67,10 @@ void txt_row_rect_array_create(TLTXTRowRectArray *array);
 
 TLTXTRectArray txt_row_rect_array_current(TLTXTRowRectArray array);
 
+size_t txt_row_rect_array_get_count(TLTXTRowRectArray array);
+
+TLTXTRectArray txt_row_rect_array_object_at(TLTXTRowRectArray array, int index);
+
 size_t txt_row_rect_array_index_from(TLTXTRowRectArray array, size_t r_index, size_t c_index);
 
 bool txt_row_rect_array_add(struct TLTXTRowRectArray_ *array,TLTXTRectArray item);
@@ -83,6 +88,22 @@ void txt_rect_values(TLTXTRect* rect, int *x, int *y, int *xx, int *yy);
 /// @param ey 结束y
 void txt_worker_rect_array_from(TLTXTRowRectArray array, TLTXTRectArray *rect_array, int sx, int sy, int ex, int ey, size_t *s_index, size_t *e_index, size_t start_cursor);
 
+/// 分页使用
+struct TLTXTPagingRectArray_ {
+    TLTXTRowRectArray *data;//每个元素代表一页对应的数据
+    size_t length;//真实长度
+    size_t count;//元素个数
+};
+
+void txt_paging_rect_array_create(TLTXTPagingRectArray *array);
+
+bool txt_paging_rect_array_add(struct TLTXTPagingRectArray_ *array,TLTXTRowRectArray item);
+
+void txt_paging_rect_array_destroy(TLTXTPagingRectArray *array);
+
+size_t txt_paging_rect_array_get_count(TLTXTPagingRectArray array);
+
+TLTXTRowRectArray txt_paging_rect_array_object_at(TLTXTPagingRectArray array, size_t index);
 #ifdef __cplusplus
 }
 #endif

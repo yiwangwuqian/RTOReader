@@ -72,8 +72,6 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
 
 uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_t end, size_t *count);
 
-uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,TLTXTRect* contains);
-
 size_t txt_worker_page_cursor_array_get(TLTXTWorker worker,size_t page);
 
 ///  TLTXTWorker游标数组从外部预填入(存在分页和绘制上下文不一致的情况，该函数后续不一定保留)

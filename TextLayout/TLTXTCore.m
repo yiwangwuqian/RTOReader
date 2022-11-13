@@ -21,6 +21,7 @@
 #import "TLTXTCachePage.h"
 #import "TLTXTPageHelper.h"
 
+dispatch_queue_t    pagingQueue;//分页专用
 dispatch_queue_t    bitmapQueue;//bitmap绘制专用
 dispatch_queue_t    imageQueue;//UIImage创建专用
 
@@ -144,24 +145,27 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 
 - (NSArray<NSNumber *> *)oncePaging:(CGFloat*)endPageHeight
 {
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    dispatch_sync(pagingQueue, ^{
+        if (!txt_worker_total_page(&self->_worker)) {
 #if kTLTXTPerformanceLog
-    NSDate *startDate = [NSDate date];
+            NSDate *startDate = [NSDate date];
 #endif
-    *endPageHeight = txt_worker_data_paging(&self->_worker);
+            *endPageHeight = txt_worker_data_paging(&self->_worker);
 #if kTLTXTPerformanceLog
-    NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(startDate) ));
+            NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(startDate) ));
 #endif
-    
-    size_t total_page = txt_worker_total_page(&self->_worker);
-    if (total_page) {
-        NSMutableArray *result = [[NSMutableArray alloc] init];
-        for (NSInteger i=0; i<total_page; i++) {
-            size_t cursor = txt_worker_page_cursor_array_get(self->_worker, i);
-            [result addObject:@(cursor)];
         }
-        return result;
-    }
-    return NULL;
+        
+        size_t total_page = txt_worker_total_page(&self->_worker);
+        if (total_page) {
+            for (NSInteger i=0; i<total_page; i++) {
+                size_t cursor = txt_worker_page_cursor_array_get(self->_worker, i);
+                [result addObject:@(cursor)];
+            }
+        }
+    });
+    return result;
 }
 
 - (void)firstTimeDraw:(BOOL)needsPaging startPage:(NSInteger)pageNum
@@ -433,6 +437,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 ///   - whetherEnd: 在当前方向是否到了结束的位置
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum whetherEnd:(BOOL *)whetherEnd
 {
+//#ifdef DEBUG
+//    NSLog(@"%s ⚠️pageNum %@ textId:%@", __FUNCTION__, @(pageNum), self.attributedString.textId);
+//#endif
     //self.pageNum初始化为-1所以>=0表示可以去缓存了
     if (self.pageNum >=0 && pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
         NSInteger index = -1;
@@ -510,7 +517,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     
     dispatch_async(bitmapQueue, ^{
 #ifdef DEBUG
-        NSLog(@"⚠️begin draw %@ %s", @(afterPageNum), __FUNCTION__);
+        NSLog(@"⚠️begin draw %@ %s textId:%@", @(afterPageNum), __FUNCTION__, self.attributedString.textId);
 #endif
     
 #if kTLTXTPerformanceLog
@@ -555,7 +562,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                 TLTXTCachePage *oncePage = self.cachedArray[i];
                 [numberArray addObject:@(oncePage.pageNum)];
             }
-            NSLog(@"⚠️end draw %@ %s %@", @(afterPageNum), __FUNCTION__, [numberArray componentsJoinedByString:@","]);
+            NSLog(@"⚠️end draw %@ %s %@ textId:%@", @(afterPageNum), __FUNCTION__, [numberArray componentsJoinedByString:@","], self.attributedString.textId);
 #endif
             
 #if kTLTXTPerformanceLog
@@ -589,6 +596,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     NSInteger afterPageNum = self.pageNum-1;
     self.previousPageSemaphore = dispatch_semaphore_create(0);
     dispatch_async(bitmapQueue, ^{
+#ifdef DEBUG
+        NSLog(@"⚠️begin draw %@ %s textId:%@", @(afterPageNum), __FUNCTION__, self.attributedString.textId);
+#endif
     
 #if kTLTXTPerformanceLog
     NSDate *date = [NSDate date];
@@ -624,6 +634,15 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             [array removeObjectAtIndex:2];
             [array insertObject:cachePage atIndex:0];
             self.cachedArray = array;
+#ifdef DEBUG
+            NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+            for (NSInteger i=0; i<self.cachedArray.count; i++) {
+                TLTXTCachePage *oncePage = self.cachedArray[i];
+                [numberArray addObject:@(oncePage.pageNum)];
+            }
+            NSLog(@"⚠️end draw %@ %s %@ textId:%@", @(afterPageNum), __FUNCTION__, [numberArray componentsJoinedByString:@","], self.attributedString.textId);
+#endif
+            
 #if kTLTXTPerformanceLog
             NSLog(@"%s image create using time:%@", __func__, @(GetTimeDeltaValue(imageStartDate) ));
 #endif
@@ -688,6 +707,9 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
 
 +(void)load
 {
+    if (pagingQueue == NULL) {
+        pagingQueue = dispatch_queue_create("TextLayout.paging", DISPATCH_QUEUE_SERIAL);
+    }
     if (bitmapQueue == NULL) {
         bitmapQueue = dispatch_queue_create("TextLayout.bitmap", DISPATCH_QUEUE_SERIAL);
     }

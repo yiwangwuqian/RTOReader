@@ -31,7 +31,6 @@ void txt_page_cursor_array_destroy(RTOTXTPageCursorArray *array);
 void txt_color_split_from(size_t color, size_t *a, size_t *r, size_t *g, size_t*b);
 
 TLTXTAttributes txt_attributes_check_range(TLRangeArray rArray, TLTXTAttributesArray aArray, size_t index, int64_t *output_last_range_index);
-
 unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  hb_glyph_info_t *glyph_info,
                                                  unsigned int glyph_count,
@@ -46,11 +45,15 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  unsigned int *max_ascender,
                                                  unsigned int *oneline_count,
                                                  unsigned int *default_font_size,
-                                                 TLTXTWorker worker);
+                                                 TLTXTWorker worker,
+                                                 TLTXTRectArray rect_array);
 
 unsigned int txt_worker_get_recorded_font_width(TLTXTWorker worker,unsigned int font_size);
 
 void txt_worker_set_recorded_font_width(TLTXTWorker worker,unsigned int font_size,unsigned int font_size_width);
+
+unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned int row_index, unsigned int useable_width);
+
 //------
 
 struct TLTXTWorker_ {
@@ -67,12 +70,10 @@ struct TLTXTWorker_ {
     hb_buffer_t   *buf;
     hb_font_t     *font;
     hb_codepoint_t *codepoints;
-    TLTXTRowRectArray array;
-    
-    size_t current_page;
     
     size_t total_page;//总页数
     RTOTXTPageCursorArray cursor_array;
+    TLTXTPagingRectArray paging_rect_array;//绘制时只能在水平方向作为参考 不能作为每个字定位的依据
     
     TLTXTWorker_RangeAttributesFunc range_attributes_func;
     TLTXTWorker_DefaultAttributesFunc default_attributes_func;
@@ -170,6 +171,7 @@ void txt_worker_create(TLTXTWorker *worker, const char *text, int width, int hei
             object->height = height;
             
             txt_page_cursor_array_create(&object->cursor_array);
+            txt_paging_rect_array_create(&object->paging_rect_array);
             *worker = object;
         } else {
             hb_buffer_destroy(buf);
@@ -221,6 +223,9 @@ void txt_worker_destroy(TLTXTWorker *worker)
     free(object->codepoints);
     if (object->cursor_array != NULL) {
         txt_page_cursor_array_destroy(&object->cursor_array);
+    }
+    if (object->paging_rect_array != NULL) {
+        txt_paging_rect_array_destroy(&object->paging_rect_array);
     }
     free(object);
     *worker = NULL;
@@ -281,6 +286,10 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
     }
     
     while (glyph_count != now_cursor) {
+        TLTXTRowRectArray row_rect_array;
+        txt_row_rect_array_create(&row_rect_array);
+        
+        txt_paging_rect_array_add((*worker)->paging_rect_array, row_rect_array);
         
         unsigned int typeSettingY=0;
         unsigned int aLineHeightMax=0;
@@ -290,6 +299,10 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
         
         size_t i = before_cursor;
         while (i<glyph_count) {
+            TLTXTRectArray rect_array;
+            txt_rect_array_create(&rect_array);
+            txt_row_rect_array_add(row_rect_array, rect_array);
+            
             backup_last_range_index = last_range_index;
             
             unsigned int oneline_count = 0;
@@ -307,7 +320,8 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
                                                                  &aLineAscenderMax,
                                                                  &oneline_count,
                                                                  &font_size,
-                                                                 *worker);
+                                                                 *worker,
+                                                                 rect_array);
             
             if (!oneline_count) {
                 //目前只有首个字是换行符这种情况
@@ -475,6 +489,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
     tl_generic_array_create(&paragraph_tail_array);
     *page_paragraph_tail_array = paragraph_tail_array;
     
+    unsigned int last_row_index = 0;
+    unsigned int last_row_kern = 0;
+    
     for (size_t i = before_cursor; i<(*(*worker)->cursor_array).data[page]; i++) {
         unsigned int beforeALineHeightMax = aLineHeightMax;
         
@@ -496,7 +513,8 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                                                                      &aLineAscenderMax,
                                                                      &oneline_count,
                                                                      &font_size,
-                                                                     *worker);
+                                                                     *worker,
+                                                                     NULL);
                 checkedLineRange.location = i;
                 checkedLineRange.length = oneline_count;
             } else {
@@ -577,6 +595,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
             paragraph_spacing = defaultAttributes->paragraphSpacing;
         }
         
+        if (i == before_cursor){
+            last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
+        }
         /*
          以下这个if else if判断的作用在于检查是否修改Y坐标，或进行下一个字的绘制
          1.大于最大宽度,换行
@@ -593,6 +614,10 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                  */
                 if ((i > 0 && (*worker)->codepoints[i-1] == '\n') || i==0) {
                     typeSettingY += (beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight) + paragraph_spacing;
+                    last_row_index++;
+                    if (i != 0) {
+                        last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
+                    }
                 } else if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
                     //到了一段的末尾
                     tl_generic_array_add(paragraph_tail_array, i-1);
@@ -601,6 +626,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
             } else {
                 typeSettingX = 0;
                 typeSettingY += beforeALineHeightMax + paragraph_spacing;
+                last_row_index++;
+                last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
+                
                 if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
                     //到了一段的末尾
                     tl_generic_array_add(paragraph_tail_array, i-1);
@@ -610,6 +638,8 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
         } else if (typeSettingX + aCharAdvance > totalWidth) {
             typeSettingX = 0;
             typeSettingY += beforeALineHeightMax + line_spacing;
+            last_row_index++;
+            last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
         }
         if (typeSettingX == 0){
             TLTXTRectArray rect_array;
@@ -703,7 +733,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                 }
             }
         }
-        typeSettingX += aCharAdvance;
+        typeSettingX += aCharAdvance + last_row_kern;
         
         if (now_cursor != before_cursor) {
             break;
@@ -737,49 +767,6 @@ uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_
         return result;
     }
     return NULL;
-}
-
-/// 指定坐标获取对应位置文字的codepoint，如果坐标对应位置有文字的话
-/// @param x x坐标
-/// @param y y坐标
-/// @param contains 坐标包含在文字区域内
-uint32_t txt_worker_codepoint_at(TLTXTWorker *worker,int x,int y,TLTXTRect* contains)
-{
-    TLTXTRowRectArray array = (*worker)->array;
-    uint32_t result = 0;
-    size_t page = (*worker)->current_page;
-    size_t index = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0 ;
-    for (size_t i=0; i<array->count; i++) {
-        TLTXTRectArray *data = array->data;
-        TLTXTRectArray row_array = data[i];
-        for (size_t j=0; j<row_array->count; j++) {
-            struct TLTXTRect_ one_rect = row_array->data[j];
-            if (y >= one_rect.y && y <= one_rect.yy) {
-                if (x >= one_rect.x && x <= one_rect.xx) {
-                    *contains = calloc(1, sizeof(struct TLTXTRect_));
-                    (*contains)->x = one_rect.x;
-                    (*contains)->y = one_rect.y;
-                    (*contains)->xx = one_rect.xx;
-                    (*contains)->yy = one_rect.yy;
-                    result = (*worker)->codepoints[index];
-                    //坐标匹配退出第二层for循环
-                    break;
-                }
-            } else {
-                //y坐标对比失败直接换下一行
-                index +=row_array->count;
-                break;
-            }
-            index +=1;
-        }
-        
-        if (*contains) {
-            //坐标匹配退出for循环
-            break;
-        }
-    }
-    
-    return result;
 }
 
 size_t txt_worker_page_cursor_array_get(TLTXTWorker worker,size_t page)
@@ -845,7 +832,8 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                                                  unsigned int *max_ascender,
                                                  unsigned int *oneline_count,
                                                  unsigned int *default_font_size,
-                                                 TLTXTWorker worker)
+                                                 TLTXTWorker worker,
+                                                 TLTXTRectArray rect_array)
 {
     unsigned int typeSettingX=0;
     unsigned int onelineMaxHeight=0;
@@ -938,6 +926,10 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             onelineMaxAscender = wholeFontAscender;
         }
 
+        if (rect_array) {
+            struct TLTXTRect_ one_rect = {typeSettingX,0,typeSettingX+(int)aCharAdvance,onelineMaxHeight,(int32_t)i};
+            txt_rect_array_add(rect_array, one_rect);
+        }
         typeSettingX += aCharAdvance;
     }
     *max_ascender = onelineMaxAscender;
@@ -979,4 +971,33 @@ void txt_worker_set_recorded_font_width(TLTXTWorker worker,unsigned int font_siz
         tl_generic_array_create(&worker->font_size_width_array);
     }
     tl_generic_array_add(worker->font_size_width_array, font_size_width);
+}
+
+/// 获取某一页某一行的字间距
+/// - Parameters:
+///   - worker: worker对象
+///   - page: 页码
+///   - row_index: 行索引
+///   - useable_width: 可用宽度
+unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned int row_index, unsigned int useable_width)
+{
+    //暂注释
+    /*
+    TLTXTRowRectArray row_rect_array = txt_paging_rect_array_object_at(worker->paging_rect_array, page);
+    
+    size_t count = txt_row_rect_array_get_count(row_rect_array);
+    if (row_index < count) {
+        TLTXTRectArray one_row_rect_array = txt_row_rect_array_object_at(row_rect_array, row_index);
+        if (one_row_rect_array != NULL) {
+            size_t char_count = txt_worker_rect_array_get_count(&one_row_rect_array);
+            if (char_count > 1) {
+                TLTXTRect last_char_rect = txt_worker_rect_array_object_at(&one_row_rect_array, (int)char_count-1);
+                unsigned total_gap = useable_width - last_char_rect->xx;
+                unsigned gap = total_gap/(char_count-1);
+                return gap;
+            }
+        }
+    }
+     */
+    return 0;
 }
