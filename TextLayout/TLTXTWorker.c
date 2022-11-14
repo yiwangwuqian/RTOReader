@@ -52,8 +52,7 @@ unsigned int txt_worker_get_recorded_font_width(TLTXTWorker worker,unsigned int 
 
 void txt_worker_set_recorded_font_width(TLTXTWorker worker,unsigned int font_size,unsigned int font_size_width);
 
-unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned int row_index, unsigned int useable_width);
-
+unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned int row_index, unsigned int useable_width,unsigned int *the_remainder,unsigned int *the_remainder_start);
 //------
 
 struct TLTXTWorker_ {
@@ -491,6 +490,8 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
     
     unsigned int last_row_index = 0;
     unsigned int last_row_kern = 0;
+    unsigned int last_row_kern_the_remainder = 0;
+    unsigned int last_row_kern_the_remainder_start = 0;
     
     for (size_t i = before_cursor; i<(*(*worker)->cursor_array).data[page]; i++) {
         unsigned int beforeALineHeightMax = aLineHeightMax;
@@ -596,7 +597,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
         }
         
         if (i == before_cursor){
-            last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
+            last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth, &last_row_kern_the_remainder,&last_row_kern_the_remainder_start);
         }
         /*
          以下这个if else if判断的作用在于检查是否修改Y坐标，或进行下一个字的绘制
@@ -616,7 +617,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                     typeSettingY += (beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight) + paragraph_spacing;
                     last_row_index++;
                     if (i != before_cursor) {
-                        last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
+                        last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth, &last_row_kern_the_remainder,&last_row_kern_the_remainder_start);
                     }
                 } else if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
                     //到了一段的末尾
@@ -627,7 +628,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                 typeSettingX = 0;
                 typeSettingY += beforeALineHeightMax + paragraph_spacing;
                 last_row_index++;
-                last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
+                last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth, &last_row_kern_the_remainder,&last_row_kern_the_remainder_start);
                 
                 if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
                     //到了一段的末尾
@@ -639,7 +640,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
             typeSettingX = 0;
             typeSettingY += beforeALineHeightMax + line_spacing;
             last_row_index++;
-            last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
+            last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth, &last_row_kern_the_remainder,&last_row_kern_the_remainder_start);
         }
         if (typeSettingX == 0){
             TLTXTRectArray rect_array;
@@ -734,6 +735,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
             }
         }
         typeSettingX += aCharAdvance + last_row_kern;
+        if (last_row_kern_the_remainder && i>= last_row_kern_the_remainder_start) {
+            typeSettingX += 1;
+        }
         
         if (now_cursor != before_cursor) {
             break;
@@ -974,16 +978,18 @@ void txt_worker_set_recorded_font_width(TLTXTWorker worker,unsigned int font_siz
     tl_generic_array_add(worker->font_size_width_array, font_size_width);
 }
 
-/// 获取某一页某一行的字间距
+/// 获取某一页某一行的字间距。如果不是整数，则将余数返回。
+/// 余数从这一行的倒数第二个开始往前为余数个字分配1像素宽带。
 /// - Parameters:
 ///   - worker: worker对象
 ///   - page: 页码
 ///   - row_index: 行索引
 ///   - useable_width: 可用宽度
-unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned int row_index, unsigned int useable_width)
+///   - the_remainder: 余数
+///   - the_remainder_start: 余数开始使用的索引
+unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned int row_index, unsigned int useable_width,unsigned int *the_remainder,unsigned int *the_remainder_start)
 {
     //暂注释
-    /*
     TLTXTRowRectArray row_rect_array = txt_paging_rect_array_object_at(worker->paging_rect_array, page);
     
     size_t count = txt_row_rect_array_get_count(row_rect_array);
@@ -993,12 +999,32 @@ unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned i
             size_t char_count = txt_worker_rect_array_get_count(&one_row_rect_array);
             if (char_count > 1) {
                 TLTXTRect last_char_rect = txt_worker_rect_array_object_at(&one_row_rect_array, (int)char_count-1);
-                unsigned total_gap = useable_width - last_char_rect->xx;
-                unsigned gap = total_gap/(char_count-1);
-                return gap;
+                if (last_char_rect->codepoint_index+1 == worker->utf8_length) {
+                    //整个文本的最后一行
+
+                } else if (worker->codepoints[last_char_rect->codepoint_index+1] == '\n'){
+                    //整段文字的最后一行
+
+                } else {
+                    unsigned total_gap = useable_width - last_char_rect->xx;
+                    unsigned gap = total_gap/(char_count-1);
+                    
+                    if (the_remainder) {
+                        *the_remainder = total_gap%(char_count-1);
+                        if (*the_remainder > 0) {
+                            *the_remainder_start = last_char_rect->codepoint_index - *the_remainder;
+                        }
+                    }
+                    return gap;
+                }
             }
         }
     }
-     */
+    if (the_remainder) {
+        *the_remainder = 0;
+    }
+    if (the_remainder) {
+        *the_remainder_start = 0;
+    }
     return 0;
 }
