@@ -363,7 +363,28 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             *endIndex = pEndIndex;
         }
         if (pStartIndex >=0) {
-            return array;
+            NSMutableArray *result = [[NSMutableArray alloc] init];
+            
+            CGFloat lastOriginY = [array.firstObject CGRectValue].origin.y;
+            CGFloat lastOriginX = [array.firstObject CGRectValue].origin.x;
+            for (NSInteger i = 0; i<array.count; i++) {
+                CGRect onceRect = [array[i] CGRectValue];
+                if (onceRect.origin.y > lastOriginY) {
+                    CGRect beforeRect = [array[i-1] CGRectValue];
+                    [result addObject:[NSValue valueWithCGRect:CGRectMake(lastOriginX, lastOriginY, CGRectGetMaxX(beforeRect)-lastOriginX, CGRectGetMaxY(beforeRect) - lastOriginY)]];
+                    
+                    lastOriginY = onceRect.origin.y;
+                    lastOriginX = onceRect.origin.x;
+                } else if (i == array.count - 1) {
+                    [result addObject:[NSValue valueWithCGRect:CGRectMake(lastOriginX, lastOriginY, CGRectGetMaxX(onceRect)-lastOriginX, CGRectGetMaxY(onceRect) - lastOriginY)]];
+                }
+            }
+            //return array
+            /**
+             *之前是返回array，但是现在可能选中的段落中某些行有字间距(kern)
+             *上面的for循环里把每一行转用一个CGRect来表示了
+             */
+            return result;
         }
     }
     return nil;
