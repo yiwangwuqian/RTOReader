@@ -34,8 +34,33 @@
 
 - (void)pressedOpenButton
 {
+    /*
     RTOReadContentViewController *controller = [[RTOReadContentViewController alloc] init];
     [self presentViewController:controller animated:YES completion:NULL];
+     */
+    NSLog(@"%s", __FUNCTION__);
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self test];
+    });
+}
+
+- (void)test
+{
+    for (NSInteger i = 0; i<50000; i++) {
+        [self toTest:i];
+    }
+}
+
+- (void)toTest:(NSInteger)index
+{
+    //经过验证信号是可以阻塞当前执行线程的
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSLog(@"%s index:%@", __FUNCTION__, @(index));
+        dispatch_semaphore_signal(semaphore);
+    });
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 @end

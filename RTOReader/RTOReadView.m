@@ -83,13 +83,13 @@
             TLAttributedString *aString = [[TLAttributedString alloc] initWithString:fileContent attributes:@{} textId:@"1"];
             [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFFFF0000)} range:NSMakeRange(30, 10)];
             [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF00FF00)} range:NSMakeRange(100, 3)];
-            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF00FF00), @(TLTXTAttributesNameTypeFontSize): @(70)} range:NSMakeRange(650, 12)];
+//            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF00FF00), @(TLTXTAttributesNameTypeFontSize): @(70)} range:NSMakeRange(650, 12)];
             CGSize pageSize = CGSizeMake(drawWidth, drawHeight);
-            CGFloat endPageHeight;
-            NSArray *cursorArray = [TLTXTCore oncePaging:aString pageSize:pageSize endPageHeight:&endPageHeight];
-            self.cursorArray = cursorArray;
             NSString *coreId = @"xxx";
-            [[TLTXTCoreManager shared] prepareAttributedString:aString pageSize:pageSize cursorArray:cursorArray coreId:coreId];
+            [[TLTXTCoreManager shared] prepareAttributedString:aString pageSize:pageSize coreId:coreId];
+            CGFloat endPageHeight;
+            NSArray *cursorArray = [[[TLTXTCoreManager shared] coreWithId:coreId] oncePaging:aString.textId endPageHeight:&endPageHeight];
+            self.cursorArray = cursorArray;
             _txtCore = [[TLTXTCoreManager shared] coreWithId:coreId];
             _txtCore.drawDelegate = self;
             [_txtCore batchDraw:0 textId:aString.textId];

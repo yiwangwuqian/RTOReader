@@ -606,7 +606,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
          循环刚开始的时候在文本有属性的情况下，调用了txt_worker_check_oneline_max_height
          这个方法的执行个人认为最好在文本没有属性的情况下不调用，能避免一些耗时
          */
-        if ((*worker)->codepoints[i] == '\n' ? 1 : 0) {
+        if ((*worker)->codepoints[i] == '\n') {
             if (typeSettingX == 0) {
                 /**
                  *如果当前第一个字是换行符，它上一个字是换行即'\n'，它要单独占一行
@@ -615,7 +615,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                 if ((i > 0 && (*worker)->codepoints[i-1] == '\n') || i==0) {
                     typeSettingY += (beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight) + paragraph_spacing;
                     last_row_index++;
-                    if (i != 0) {
+                    if (i != before_cursor) {
                         last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth);
                     }
                 } else if (i > 0 && (*worker)->codepoints[i-1] != '\n'){
@@ -647,7 +647,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
             txt_row_rect_array_add(row_rect_array, rect_array);
         }
         
-        //段首行缩进处理
+        //整个文本的第一个字和所有换行符后的第一个字 段首行缩进处理
         if (i == 0 || (i > 0 && (*worker)->codepoints[i-1] == '\n')) {
             if (typeSettingX == 0) {
                 unsigned int tempCharAdvance = txt_worker_get_recorded_font_width(*worker, last_font_size);
@@ -898,6 +898,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
                 }
             }
             //注意:必须加1下一次从这个换行符之后开始
+            //所以这个换行符被计入了当前行内
             oneLineCharCount = countFromStart + 1;
             break;
         } else if (typeSettingX + aCharAdvance > totalWidth){
