@@ -375,7 +375,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     
                     lastOriginY = onceRect.origin.y;
                     lastOriginX = onceRect.origin.x;
-                } else if (i == array.count - 1) {
+                }
+                if (i == array.count - 1) {
                     [result addObject:[NSValue valueWithCGRect:CGRectMake(lastOriginX, lastOriginY, CGRectGetMaxX(onceRect)-lastOriginX, CGRectGetMaxY(onceRect) - lastOriginY)]];
                 }
             }
