@@ -34,15 +34,17 @@
 
 - (void)pressedOpenButton
 {
-    /*
+
     RTOReadContentViewController *controller = [[RTOReadContentViewController alloc] init];
     [self presentViewController:controller animated:YES completion:NULL];
-     */
+
+    /*
     NSLog(@"%s", __FUNCTION__);
     
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [self test];
     });
+     */
 }
 
 - (void)test

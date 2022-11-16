@@ -251,7 +251,7 @@
      */
 }
  
-- (void)firstPageEnd:(NSInteger)pageNum textId:(NSString *)textId
+- (void)firstPageEnd:(NSInteger)pageNum textId:(NSString *)textId isLast:(BOOL)isLast
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self firstPageEndWork];

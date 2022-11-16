@@ -374,7 +374,7 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
         page++;
         
         if (glyph_count == now_cursor) {
-            endPageHeight = typeSettingY + aLineHeightMax;
+            endPageHeight = typeSettingY;
         }
     }
     
