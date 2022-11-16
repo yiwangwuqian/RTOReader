@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *第一次绘制完成
  */
-- (void)firstPageEnd:(NSInteger)pageNum textId:(NSString *)textId;
+- (void)firstPageEnd:(NSInteger)pageNum textId:(NSString *)textId isLast:(BOOL)isLast;
 /**
  *具体某页绘制完成
  */

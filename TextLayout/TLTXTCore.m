@@ -238,7 +238,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                     NSInteger arrayCount = self.cachedArray.count;
 
                     if (self.drawDelegate) {
-                        [self.drawDelegate firstPageEnd:i textId:self.attributedString.textId];
+                        [self.drawDelegate firstPageEnd:i textId:self.attributedString.textId isLast:arrayCount == loopCount];
                     }
                     
                     if (arrayCount == loopCount) {
