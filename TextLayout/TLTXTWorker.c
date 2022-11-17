@@ -680,7 +680,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                     //此时操作的像素已经不在纹理面积里,观察一下再说
                     now_cursor = i;
                     break;
-                }else if (row>heightDelta-1 && row<heightDelta+bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width){
+                }else if (row>heightDelta-1 && row<heightDelta+bitmap.rows && column>=aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width){
                     unsigned char pixelValue = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*(row-heightDelta)];
                     //这样设置即bitmap上没有内容的像素点rgb为0x000000
                     if (pixelValue) {
@@ -691,7 +691,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                     }
                 }else{
                     
-                    if (heightDelta == 0 && row>0 && row<bitmap.rows && column>aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width) {
+                    if (heightDelta == 0 && row<bitmap.rows && column>=aCharHoriBearingX && column<aCharHoriBearingX+bitmap.width) {
                         unsigned char pixelValue = bitmap.buffer[column-aCharHoriBearingX + bitmap.width*row];
                         //这样设置即bitmap上没有内容的像素点rgb为0x000000
                         if (pixelValue) {
