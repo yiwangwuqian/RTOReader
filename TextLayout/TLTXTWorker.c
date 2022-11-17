@@ -12,7 +12,7 @@
 #include "FileWrapper.h"
 
 #include <ft2build.h>
-#include "ftoutln.h"
+#include <freetype/ftoutln.h>
 #include FT_FREETYPE_H
 
 #include "hb-ft.h"
