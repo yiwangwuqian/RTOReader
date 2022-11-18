@@ -53,6 +53,17 @@ unsigned int txt_worker_get_recorded_font_width(TLTXTWorker worker,unsigned int 
 void txt_worker_set_recorded_font_width(TLTXTWorker worker,unsigned int font_size,unsigned int font_size_width);
 
 unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned int row_index, unsigned int useable_width,unsigned int *the_remainder,unsigned int *the_remainder_start);
+
+/// 特殊符号的glyph index替换
+/// - Parameters:
+///   - face: face对象
+///   - glyphid: 原glyph index
+///   - codepoint: 对应于glyph index的codepoint
+hb_codepoint_t txt_worker_glyphid_special_symbols_replace(FT_Face face, hb_codepoint_t glyphid, hb_codepoint_t codepoint);
+
+/// 特殊符号替换
+/// - Parameter codepoint: 原codepoint
+hb_codepoint_t txt_worker_special_symbols_replace(hb_codepoint_t codepoint);
 //------
 
 struct TLTXTWorker_ {
@@ -555,7 +566,7 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
             }
         }
         
-        hb_codepoint_t glyphid = glyph_info[i].codepoint;
+        hb_codepoint_t glyphid = txt_worker_glyphid_special_symbols_replace(face, glyph_info[i].codepoint, (*worker)->codepoints[i]);
         FT_Int32 flags =  FT_LOAD_DEFAULT;
         
         error = FT_Load_Glyph(face,
@@ -705,9 +716,10 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                         //显示竖线
                         //不需要调试时加注释
 //                        if (column == 0) {
-//                            textureBuffer[absX+totalWidth*absY] = 255;
-//                        } else {
-//                            textureBuffer[absX+totalWidth*absY] = 0;
+//                            textureBuffer[pixelPosition*4] = last_red;
+//                            textureBuffer[pixelPosition*4+1] = last_green;
+//                            textureBuffer[pixelPosition*4+2] = last_blue;
+//                            textureBuffer[pixelPosition*4+3] = 255;
 //                        }
                         
                         //显示横线
@@ -868,7 +880,7 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             }
         }
         
-        hb_codepoint_t glyphid = glyph_info[i].codepoint;
+        hb_codepoint_t glyphid = txt_worker_glyphid_special_symbols_replace(face, glyph_info[i].codepoint, codepoints[i]);
         FT_Int32 flags =  FT_LOAD_DEFAULT;
         
         /* load glyph image into the slot without rendering */
@@ -1027,4 +1039,28 @@ unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned i
         *the_remainder_start = 0;
     }
     return 0;
+}
+
+hb_codepoint_t txt_worker_glyphid_special_symbols_replace(FT_Face face, hb_codepoint_t glyphid, hb_codepoint_t codepoint)
+{
+    hb_codepoint_t old_codepoint = codepoint;
+    hb_codepoint_t changed_codepoint = txt_worker_special_symbols_replace(codepoint);
+    if (old_codepoint != changed_codepoint) {
+        glyphid = FT_Get_Char_Index( face, changed_codepoint );
+    }
+    return glyphid;
+}
+
+hb_codepoint_t txt_worker_special_symbols_replace(hb_codepoint_t codepoint)
+{
+    switch (codepoint) {
+        case 12288:
+            //全角空格转英文空格
+            codepoint = 32;
+            break;
+            
+        default:
+            break;
+    }
+    return codepoint;
 }
