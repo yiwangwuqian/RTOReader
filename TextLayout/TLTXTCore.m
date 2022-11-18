@@ -277,51 +277,102 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             baseIndex = 0;
         }
         
+        /**
+         *以下两个变量不会同时>=0
+         */
+        NSInteger rowIndex = -1;//被包含时的行索引
+        NSInteger beforeRowIndex = -1;//所处位置的上一行的索引
+        
+        //先从y坐标判断属于第几行
         for (NSInteger i=0; i<desPage.rowRectArray->count; i++) {
             TLTXTRectArray data = desPage.rowRectArray->data[i];
             if (data->count > 0) {
-                for (NSInteger j=0; j<data->count; j++) {
-                    struct TLTXTRect_ rect = data->data[j];
-                    
-                    if (pStartIndex == -1) {
-                        if (rect.codepoint_index == 0 || (i==0 && j==0)) {
-                            //如果第一个字符是开头
+                struct TLTXTRect_ firstRect = data->data[0];
+                if (point.y >= firstRect.y && point.y <= firstRect.yy) {
+                    rowIndex = i;
+                    break;
+                } else if (firstRect.y > point.y) {
+                    if (i > 0) {
+                        TLTXTRectArray beforeRowData = desPage.rowRectArray->data[i-1];
+                        if (beforeRowData->count > 0) {
+                            struct TLTXTRect_ beforeRowFirstRect = beforeRowData->data[0];
+                            if (beforeRowFirstRect.yy < firstRect.y) {
+                                beforeRowIndex = i-1;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        //既没有落在某一行文字之内也没有落在段内空白之内
+        if (rowIndex == -1 && beforeRowIndex == -1) {
+            return nil;
+        }
+        
+        //排除在两段文字之间的情况
+        if (beforeRowIndex >= 0) {
+            TLTXTRectArray beforeRowData = desPage.rowRectArray->data[beforeRowIndex];
+            if (beforeRowData->count > 0) {
+                struct TLTXTRect_ lastRect = beforeRowData->data[beforeRowData->count-1];
+                //beforeRowIndex不是最后一行 这里可以直接+1
+                NSInteger lastRectNextIndex = lastRect.codepoint_index+1;
+                NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(lastRectNextIndex, 1)];
+                if ([oneString isEqualToString: @"\n"]) {
+                    //在某段最后一行之后的位置 没有哪段被选中
+                    return nil;
+                }
+            }
+        }
+        
+        for (NSInteger i=0; i<desPage.rowRectArray->count; i++) {
+            TLTXTRectArray data = desPage.rowRectArray->data[i];
+            if (data->count > 0) {
+                struct TLTXTRect_ firstRect = data->data[0];
+                struct TLTXTRect_ lastRect = data->data[data->count-1];
+                if (pStartIndex == -1) {
+                    if (firstRect.codepoint_index == 0 || i==0) {
+                        //如果第一个字符是开头
+                        newLineIndex = firstRect.codepoint_index;
+                    } else if (firstRect.codepoint_index>0) {
+                        NSInteger rectBeforeIndex = firstRect.codepoint_index - 1;
+                        NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectBeforeIndex, 1)];
+                        if ([oneString isEqualToString: @"\n"]) {
+                            //如果上一个字符是换行符
                             [array removeAllObjects];
-                            newLineIndex = rect.codepoint_index;
-                        } else if (rect.codepoint_index>0) {
-                            NSInteger rectBeforeIndex = rect.codepoint_index - 1;
-                            NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectBeforeIndex, 1)];
-                            if ([oneString isEqualToString: @"\n"]) {
-                                //如果上一个字符是换行符
-                                [array removeAllObjects];
-                                newLineIndex = rect.codepoint_index;
-                            }
-                        }
-                    } else if (pEndIndex == -1) {
-                        if (i == desPage.rowRectArray->count-1 && j == data->count) {
-                            //本页最后一个字
-                            pEndIndex = rect.codepoint_index;
-                        } else {
-                            NSInteger rectAfterIndex = rect.codepoint_index + 1;
-                            NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectAfterIndex, 1)];
-                            if ([oneString isEqualToString: @"\n"]) {
-                                //下一个字是换行
-                                pEndIndex = rect.codepoint_index;
-                            }
+                            newLineIndex = firstRect.codepoint_index;
                         }
                     }
-                    
-                    CGRect onceRect = CGRectMake(rect.x, rect.y, rect.xx - rect.x, rect.yy - rect.y);
-                    if (CGRectContainsPoint(onceRect, point) && pStartIndex == -1) {
-                        pStartIndex = newLineIndex;
+                }
+                
+                if ((i == rowIndex || i == beforeRowIndex) && pStartIndex == -1) {
+                    pStartIndex = newLineIndex;
+                }
+                
+                if (pStartIndex >=0 && pEndIndex == -1) {
+                    if (i == desPage.rowRectArray->count-1) {
+                        //本页最后一行
+                        pEndIndex = lastRect.codepoint_index;
+                    } else {
+                        NSInteger rectAfterIndex = lastRect.codepoint_index + 1;
+                        NSString *oneString = [self.attributedString.string substringWithRange:NSMakeRange(rectAfterIndex, 1)];
+                        if ([oneString isEqualToString: @"\n"]) {
+                            //下一个字是换行
+                            pEndIndex = lastRect.codepoint_index;
+                        }
                     }
-                    
-                    [array addObject:[NSValue valueWithCGRect:onceRect]];
-                    
-                    //pEndIndex被赋值此时结束
-                    if (pEndIndex >= 0) {
-                        break;
-                    }
+                }
+                
+                [array addObject:[NSValue valueWithCGRect:CGRectMake(firstRect.x, firstRect.y, firstRect.xx - firstRect.x, firstRect.yy - firstRect.y)]];
+                
+                if (data->count > 1) {
+                    [array addObject:[NSValue valueWithCGRect:CGRectMake(lastRect.x, lastRect.y, lastRect.xx - lastRect.x, lastRect.yy - lastRect.y)]];
+                }
+                
+                //pEndIndex被赋值此时结束
+                if (pEndIndex >= 0) {
+                    break;
                 }
             }
             
@@ -329,6 +380,7 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
                 break;
             }
         }
+        
         
         if (pStartIndex >=0 && pEndIndex >=0) {
             //找了具体某一段
@@ -351,14 +403,6 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
             [array addObject:[NSValue valueWithCGRect:onceRect]];
         }
         
-        if (pStartIndex >=0 && pEndIndex >=0) {
-            //开始位置+1不包含第一个换行
-            NSInteger startIndex = pStartIndex;
-            NSInteger length = pEndIndex - pStartIndex;
-#ifdef DEBUG
-            NSLog(@"page:%@ 被选中的文字：%@", @(page),[self.attributedString.string substringWithRange:NSMakeRange(startIndex, length)]);
-#endif
-        }
         if (pEndIndex >= 0 && *endIndex) {
             *endIndex = pEndIndex;
         }
