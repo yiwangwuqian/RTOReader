@@ -63,12 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (TLAttributedString *)attributedStringWithTextId:(NSString *)textId;
 
-/// 执行一次分页，返回结果为各页的游标，并返回最后一页的高度
-/// - Parameters:
-///   - textId: 文本id
-///   - height: 最后一页的高度
-- (NSArray<NSNumber *> *)oncePaging:(NSString *)textId endPageHeight:(CGFloat*)height;
-
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale;
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale nightMode:(BOOL)nightMode;
 @end
@@ -82,14 +76,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (TLTXTCore *)coreWithId:(nonnull NSString *)coreId;
 
 /// 为一段文字做准备，如果coreId对应的Core不存在则创建一个TLTXTCore对象保存起来
-/// 如果存在则放入对应的Core
+/// 执行一次分页，返回结果为各页的游标，并返回最后一页的高度
 /// - Parameters:
+///   - aString: 属性字符串
 ///   - aString: 属性字符串
 ///   - size: 页面大小
 ///   - coreId: TLTXTCore对象的id，实际使用过程中对应一本书
-- (void)prepareAttributedString:(TLAttributedString *)aString
-                       pageSize:(CGSize)size
-                         coreId:(NSString *)coreId;
+///   - height: 最后一页的高度
+- (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString
+                           pageSize:(CGSize)size
+                             coreId:(NSString *)coreId
+                      endPageHeight:(CGFloat*)height;
 
 /// 移除一个TLTXTCore对象
 /// - Parameter coreId: TLTXTCore对象的id

@@ -81,7 +81,6 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 {
     NSString *charSetString = @"$([{￡￥·‘“〈《「『【〔〖〝﹙﹛﹝＄（．［｛￡￥";
     TLTXTCoreUnit *txtCore = (__bridge TLTXTCoreUnit *)(txt_worker_get_context(worker));
-    NSString *onceString = [txtCore.string substringWithRange:NSMakeRange(char_index, 1)];
     if (txtCore.string.length > char_index) {
         NSString *onceString = [txtCore.string substringWithRange:NSMakeRange(char_index, 1)];
         return [charSetString containsString:onceString];
@@ -169,7 +168,6 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 - (NSArray<NSNumber *> *)oncePaging:(CGFloat*)endPageHeight
 {
     NSMutableArray *result = [[NSMutableArray alloc] init];
-    dispatch_sync(pagingQueue, ^{
         if (!txt_worker_total_page(&self->_worker)) {
 #if kTLTXTPerformanceLog
             NSDate *startDate = [NSDate date];
@@ -187,7 +185,6 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
                 [result addObject:@(cursor)];
             }
         }
-    });
     return result;
 }
 
@@ -888,6 +885,10 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     return unit.attributedString;
 }
 
+/// 执行一次分页，返回结果为各页的游标，并返回最后一页的高度
+/// - Parameters:
+///   - textId: 文本id
+///   - height: 最后一页的高度
 - (NSArray<NSNumber *> *)oncePaging:(NSString *)textId endPageHeight:(CGFloat*)height
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
@@ -1008,6 +1009,20 @@ static TLTXTCoreManager *manager = nil;
     return core;
 }
 
+/// 为一段文字做准备，如果coreId对应的Core不存在则创建一个TLTXTCore对象保存起来
+/// 如果存在则放入对应的Core
+///
+/// ⚠️说明一下：已经废弃，因为当前方法和TLTXTCore的oncePaging之前在外部是分开调用的
+///           所以有可能出现同一个对象的构造worker和分页两件事情在不同线程被执行了，
+///           目前能发现的是页码乱了，肯定还有别的麻烦，所以把当前方法和oncePaging
+///           整合成TLTXTCoreManager的oncePaging:pageSize:coreId:endPageHeight:
+///
+///           保留它还有一些参考的价值
+///           
+/// - Parameters:
+///   - aString: 属性字符串
+///   - size: 页面大小
+///   - coreId: TLTXTCore对象的id，实际使用过程中对应一本书
 - (void)prepareAttributedString:(TLAttributedString *)aString
                        pageSize:(CGSize)size
                          coreId:(NSString *)coreId
@@ -1019,6 +1034,25 @@ static TLTXTCoreManager *manager = nil;
         [self.coreArray addObject:core];
     }
     [core fillAttributedString:aString pageSize:size];
+}
+
+- (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString
+                           pageSize:(CGSize)size
+                             coreId:(NSString *)coreId
+                      endPageHeight:(CGFloat*)height
+{
+    TLTXTCore *core = [self coreWithId:coreId];
+    if (!core) {
+        core = [[TLTXTCore alloc] init];
+        core.coreId = coreId;
+        [self.coreArray addObject:core];
+    }
+    __block NSArray *result = nil;
+    dispatch_sync(pagingQueue, ^{
+        [core fillAttributedString:aString pageSize:size];
+        result = [core oncePaging:aString.textId endPageHeight:height];
+    });
+    return result;
 }
 
 - (void)removeOnce:(NSString *)coreId
