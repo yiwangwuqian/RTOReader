@@ -971,20 +971,24 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
          *一行最后一个字是避尾符号，将这个符号推至下一行
          *下一行第一个字是避头符号，将上一行的最后一个字推至这一行
          */
+        size_t last_index = start_cursor + oneLineCharCount-1;
         bool is_avoid_end = false;
         if (worker->end_avoid_func) {
-            size_t last_index = start_cursor + oneLineCharCount-1;
             if (worker->end_avoid_func(worker, last_index)) {
-                txt_rect_array_remove_last(rect_array);
+                if (rect_array) {
+                    txt_rect_array_remove_last(rect_array);
+                }
                 oneLineCharCount -= 1;
                 is_avoid_end = true;
             }
         }
-        
+
         if (!is_avoid_end && worker->start_avoid_func) {
             size_t next_first_index = start_cursor + oneLineCharCount;
-            if (next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index)) {
-                txt_rect_array_remove_last(rect_array);
+            if (next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index) && codepoints[last_index] != '\n') {
+                if (rect_array) {
+                    txt_rect_array_remove_last(rect_array);
+                }
                 oneLineCharCount -= 1;
             }
         }
