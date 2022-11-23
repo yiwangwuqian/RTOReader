@@ -810,9 +810,11 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 - (void)setDrawDelegate:(id<TLTXTCoreDrawDelegate>)drawDelegate
 {
     _drawDelegate = drawDelegate;
-    NSArray *unitArray = self.unitArray;
-    for (TLTXTCoreUnit *oneUnit in unitArray) {
-        oneUnit.drawDelegate = drawDelegate;
+    @synchronized (self.unitArray) {
+        NSArray *unitArray = self.unitArray;
+        for (TLTXTCoreUnit *oneUnit in unitArray) {
+            oneUnit.drawDelegate = drawDelegate;
+        }
     }
 }
 
@@ -832,7 +834,9 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     if (!unit) {
         unit = [[TLTXTCoreUnit alloc] init];
         unit.unitBackupDirPath = self.backupDirPath;
-        [self.unitArray addObject:unit];
+        @synchronized (self.unitArray) {
+            [self.unitArray addObject:unit];
+        }
     }
     unit.drawDelegate = self.drawDelegate;
     [unit resetAttributedString:aString pageSize:size];
@@ -872,7 +876,9 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
     if (unit) {
-        [self.unitArray removeObject:unit];
+        @synchronized (self.unitArray) {
+            [self.unitArray removeObject:unit];
+        }
     }
 }
 
@@ -880,11 +886,6 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
     return unit.attributedString;
-}
-
-+ (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height
-{
-    return [TLTXTPageHelper oncePaging:aString pageSize:pageSize endPageHeight:height];
 }
 
 - (NSArray<NSNumber *> *)oncePaging:(NSString *)textId endPageHeight:(CGFloat*)height
@@ -942,15 +943,17 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 
 - (TLTXTCoreUnit *)unitWithTextId:(nonnull NSString *)textId
 {
-    TLTXTCoreUnit *unit = nil;
-    NSArray *unitArray = self.unitArray;
-    for (TLTXTCoreUnit *oneUnit in unitArray) {
-        if ([oneUnit.attributedString.textId isEqualToString:textId]) {
-            unit = oneUnit;
-            break;
+    @synchronized (self.unitArray) {
+        TLTXTCoreUnit *unit = nil;
+        NSArray *unitArray = self.unitArray;
+        for (TLTXTCoreUnit *oneUnit in unitArray) {
+            if ([oneUnit.attributedString.textId isEqualToString:textId]) {
+                unit = oneUnit;
+                break;
+            }
         }
+        return unit;
     }
-    return unit;
 }
 
 - (NSString *)backupDirPath

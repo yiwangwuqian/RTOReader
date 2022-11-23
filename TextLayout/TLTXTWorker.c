@@ -1058,31 +1058,32 @@ unsigned int txt_worker_one_row_kern(TLTXTWorker worker, size_t page, unsigned i
 {
     //暂注释
     TLTXTRowRectArray row_rect_array = txt_paging_rect_array_object_at(worker->paging_rect_array, page);
-    
-    size_t count = txt_row_rect_array_get_count(row_rect_array);
-    if (row_index < count) {
-        TLTXTRectArray one_row_rect_array = txt_row_rect_array_object_at(row_rect_array, row_index);
-        if (one_row_rect_array != NULL) {
-            size_t char_count = txt_worker_rect_array_get_count(&one_row_rect_array);
-            if (char_count > 1) {
-                TLTXTRect last_char_rect = txt_worker_rect_array_object_at(&one_row_rect_array, (int)char_count-1);
-                if (last_char_rect->codepoint_index+1 == worker->utf8_length) {
-                    //整个文本的最后一行
-
-                } else if (worker->codepoints[last_char_rect->codepoint_index+1] == '\n'){
-                    //整段文字的最后一行
-
-                } else {
-                    unsigned total_gap = useable_width - last_char_rect->xx;
-                    unsigned gap = total_gap/(char_count-1);
-                    
-                    if (the_remainder) {
-                        *the_remainder = total_gap%(char_count-1);
-                        if (*the_remainder > 0) {
-                            *the_remainder_start = last_char_rect->codepoint_index - *the_remainder;
+    if (row_rect_array) {
+        size_t count = txt_row_rect_array_get_count(row_rect_array);
+        if (row_index < count) {
+            TLTXTRectArray one_row_rect_array = txt_row_rect_array_object_at(row_rect_array, row_index);
+            if (one_row_rect_array != NULL) {
+                size_t char_count = txt_worker_rect_array_get_count(&one_row_rect_array);
+                if (char_count > 1) {
+                    TLTXTRect last_char_rect = txt_worker_rect_array_object_at(&one_row_rect_array, (int)char_count-1);
+                    if (last_char_rect->codepoint_index+1 == worker->utf8_length) {
+                        //整个文本的最后一行
+                        
+                    } else if (worker->codepoints[last_char_rect->codepoint_index+1] == '\n'){
+                        //整段文字的最后一行
+                        
+                    } else {
+                        unsigned total_gap = useable_width - last_char_rect->xx;
+                        unsigned gap = total_gap/(char_count-1);
+                        
+                        if (the_remainder) {
+                            *the_remainder = total_gap%(char_count-1);
+                            if (*the_remainder > 0) {
+                                *the_remainder_start = last_char_rect->codepoint_index - *the_remainder;
+                            }
                         }
+                        return gap;
                     }
-                    return gap;
                 }
             }
         }
