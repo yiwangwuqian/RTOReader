@@ -984,9 +984,6 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         if (!is_avoid_end && worker->start_avoid_func) {
             size_t next_first_index = start_cursor + oneLineCharCount;
             if (next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index)) {
-                //TEST
-                printf("next_first_index %ld codepoints[next_first_index %u\n", next_first_index, codepoints[next_first_index]);
-                //TEST END
                 txt_rect_array_remove_last(rect_array);
                 oneLineCharCount -= 1;
             }

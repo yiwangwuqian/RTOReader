@@ -70,8 +70,11 @@ static bool isInAvoidLineStartFunc(TLTXTWorker worker,size_t char_index)
 {
     NSString *charSetString = @"!%),.:;>?]}¢¨°·ˇˉ―‖’”…‰′″›℃∶、。〃〉》」』】〕〗〞︶︺︾﹀﹄﹚﹜﹞！＂％＇），．：；？］｀｜｝～￠";
     TLTXTCoreUnit *txtCore = (__bridge TLTXTCoreUnit *)(txt_worker_get_context(worker));
-    NSString *onceString = [txtCore.string substringWithRange:NSMakeRange(char_index, 1)];
-    return [charSetString containsString:onceString];
+    if (txtCore.string.length > char_index) {
+        NSString *onceString = [txtCore.string substringWithRange:NSMakeRange(char_index, 1)];
+        return [charSetString containsString:onceString];
+    }
+    return false;
 }
 
 static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
@@ -79,7 +82,11 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     NSString *charSetString = @"$([{￡￥·‘“〈《「『【〔〖〝﹙﹛﹝＄（．［｛￡￥";
     TLTXTCoreUnit *txtCore = (__bridge TLTXTCoreUnit *)(txt_worker_get_context(worker));
     NSString *onceString = [txtCore.string substringWithRange:NSMakeRange(char_index, 1)];
-    return [charSetString containsString:onceString];
+    if (txtCore.string.length > char_index) {
+        NSString *onceString = [txtCore.string substringWithRange:NSMakeRange(char_index, 1)];
+        return [charSetString containsString:onceString];
+    }
+    return false;
 }
 
 - (void)dealloc
@@ -121,9 +128,7 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     self.needCleanCache = _attributedString != nil;
     self.attributedString = aString;
     self.pageSize = size;
-    if (!self.string) {
-        self.string = [aString string];
-    }
+    self.string = [aString string];
     
     /**
      *对象创建也是需要消耗一些时间的，
