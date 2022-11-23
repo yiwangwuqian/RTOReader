@@ -974,22 +974,32 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         size_t last_index = start_cursor + oneLineCharCount-1;
         bool is_avoid_end = false;
         if (worker->end_avoid_func) {
-            if (worker->end_avoid_func(worker, last_index)) {
-                if (rect_array) {
-                    txt_rect_array_remove_last(rect_array);
+            //避免第一次避尾后原先的倒数第二个字又需要避尾 执行两次
+            for (size_t i=0; i<2; i++) {
+                if (worker->end_avoid_func(worker, last_index)) {
+                    if (rect_array) {
+                        txt_rect_array_remove_last(rect_array);
+                    }
+                    oneLineCharCount -= 1;
+                    is_avoid_end = true;
+                } else {
+                    break;
                 }
-                oneLineCharCount -= 1;
-                is_avoid_end = true;
             }
         }
 
         if (!is_avoid_end && worker->start_avoid_func) {
-            size_t next_first_index = start_cursor + oneLineCharCount;
-            if (next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index) && codepoints[last_index] != '\n') {
-                if (rect_array) {
-                    txt_rect_array_remove_last(rect_array);
+            //避免第一次避头后从上一行推下来一个字而这个字又需要避头 执行两次
+            for (size_t i=0; i<2; i++) {
+                size_t next_first_index = start_cursor + oneLineCharCount;
+                if (next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index) && codepoints[last_index] != '\n') {
+                    if (rect_array) {
+                        txt_rect_array_remove_last(rect_array);
+                    }
+                    oneLineCharCount -= 1;
+                } else {
+                    break;
                 }
-                oneLineCharCount -= 1;
             }
         }
     }
