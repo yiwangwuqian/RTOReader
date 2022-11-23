@@ -27,6 +27,8 @@ typedef void (*TLTXTWorker_RangeAttributesFunc)(TLTXTWorker worker,
                                                 TLRange range,
                                                 TLRangeArray *rArray,
                                                 TLTXTAttributesArray *aArray);
+typedef bool (*TLTXTWorker_CharAvoidFunc)(TLTXTWorker worker,
+                                          size_t char_index);
 
 //获取默认属性 调用者需要负责返回结果的销毁
 typedef TLTXTAttributes (*TLTXTWorker_DefaultAttributesFunc)(TLTXTWorker worker);
@@ -36,6 +38,10 @@ void txt_worker_create(TLTXTWorker *worker, const char *text, int width, int hei
 void txt_worker_set_range_attributes_callback(TLTXTWorker worker, TLTXTWorker_RangeAttributesFunc func);
 
 void txt_worker_set_default_attributes_callback(TLTXTWorker worker, TLTXTWorker_DefaultAttributesFunc func);
+
+void txt_worker_set_avoid_line_start_callback(TLTXTWorker worker, TLTXTWorker_CharAvoidFunc func);
+
+void txt_worker_set_avoid_line_end_callback(TLTXTWorker worker, TLTXTWorker_CharAvoidFunc func);
 
 void txt_worker_set_context(TLTXTWorker worker, void *context);
 

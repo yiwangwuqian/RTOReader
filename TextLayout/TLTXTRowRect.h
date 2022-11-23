@@ -50,6 +50,10 @@ void txt_rect_array_create(TLTXTRectArray *array);
 
 bool txt_rect_array_add(struct TLTXTRectArray_ *array,struct TLTXTRect_ rect);
 
+/// 移除最后一个元素
+/// @param array 数组对象
+void txt_rect_array_remove_last(struct TLTXTRectArray_ *array);
+
 /// 销毁对象
 /// @param array 待销毁对象
 void txt_rect_array_destroy(TLTXTRectArray *array);

@@ -95,6 +95,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Parameter coreId: TLTXTCore对象的id
 - (void)removeOnce:(NSString *)coreId;
 
+
+/// 移除一个所有对象
+- (void)removeAllCore;
+
 @end
 
 NS_ASSUME_NONNULL_END

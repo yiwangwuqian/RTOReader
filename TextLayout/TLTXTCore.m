@@ -66,6 +66,22 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     return [TLTXTPageHelper checkDefaultAttributes:txtCore.attributedString];
 }
 
+static bool isInAvoidLineStartFunc(TLTXTWorker worker,size_t char_index)
+{
+    NSString *charSetString = @"!%),.:;>?]}¢¨°·ˇˉ―‖’”…‰′″›℃∶、。〃〉》」』】〕〗〞︶︺︾﹀﹄﹚﹜﹞！＂％＇），．：；？］｀｜｝～￠";
+    TLTXTCoreUnit *txtCore = (__bridge TLTXTCoreUnit *)(txt_worker_get_context(worker));
+    NSString *onceString = [txtCore.string substringWithRange:NSMakeRange(char_index, 1)];
+    return [charSetString containsString:onceString];
+}
+
+static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
+{
+    NSString *charSetString = @"$([{￡￥·‘“〈《「『【〔〖〝﹙﹛﹝＄（．［｛￡￥";
+    TLTXTCoreUnit *txtCore = (__bridge TLTXTCoreUnit *)(txt_worker_get_context(worker));
+    NSString *onceString = [txtCore.string substringWithRange:NSMakeRange(char_index, 1)];
+    return [charSetString containsString:onceString];
+}
+
 - (void)dealloc
 {
 #ifdef DEBUG
@@ -136,6 +152,8 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     txt_worker_set_context(_worker, (__bridge void *)(self));
     txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
     txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
+    txt_worker_set_avoid_line_start_callback(_worker, isInAvoidLineStartFunc);
+    txt_worker_set_avoid_line_end_callback(_worker, isInAvoidLineEndFunc);
 #if kTLTXTPerformanceLog
     NSLog(@"%s worker create using time:%@", __func__, @(GetTimeDeltaValue(startDate) ));
 #endif
@@ -1004,6 +1022,11 @@ static TLTXTCoreManager *manager = nil;
             break;
         }
     }
+}
+
+- (void)removeAllCore
+{
+    [self.coreArray removeAllObjects];
 }
 
 @end

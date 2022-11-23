@@ -87,6 +87,8 @@ struct TLTXTWorker_ {
     
     TLTXTWorker_RangeAttributesFunc range_attributes_func;
     TLTXTWorker_DefaultAttributesFunc default_attributes_func;
+    TLTXTWorker_CharAvoidFunc start_avoid_func;
+    TLTXTWorker_CharAvoidFunc end_avoid_func;
     void *context;
     
     //以下两个属性要同时使用
@@ -205,6 +207,20 @@ void txt_worker_set_default_attributes_callback(TLTXTWorker worker, TLTXTWorker_
 {
     if (worker != NULL) {
         worker->default_attributes_func = func;
+    }
+}
+
+void txt_worker_set_avoid_line_start_callback(TLTXTWorker worker, TLTXTWorker_CharAvoidFunc func)
+{
+    if (worker != NULL) {
+        worker->start_avoid_func = func;
+    }
+}
+
+void txt_worker_set_avoid_line_end_callback(TLTXTWorker worker, TLTXTWorker_CharAvoidFunc func)
+{
+    if (worker != NULL) {
+        worker->end_avoid_func = func;
     }
 }
 
@@ -950,6 +966,32 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         typeSettingX += aCharAdvance;
     }
     *max_ascender = onelineMaxAscender;
+    if (oneLineCharCount) {
+        /**
+         *一行最后一个字是避尾符号，将这个符号推至下一行
+         *下一行第一个字是避头符号，将上一行的最后一个字推至这一行
+         */
+        bool is_avoid_end = false;
+        if (worker->end_avoid_func) {
+            size_t last_index = start_cursor + oneLineCharCount-1;
+            if (worker->end_avoid_func(worker, last_index)) {
+                txt_rect_array_remove_last(rect_array);
+                oneLineCharCount -= 1;
+                is_avoid_end = true;
+            }
+        }
+        
+        if (!is_avoid_end && worker->start_avoid_func) {
+            size_t next_first_index = start_cursor + oneLineCharCount;
+            if (next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index)) {
+                //TEST
+                printf("next_first_index %ld codepoints[next_first_index %u\n", next_first_index, codepoints[next_first_index]);
+                //TEST END
+                txt_rect_array_remove_last(rect_array);
+                oneLineCharCount -= 1;
+            }
+        }
+    }
     //这一行有内容但是没有换行，此时到了内容的末尾
     if (typeSettingX > 0 && oneLineCharCount == 0) {
         oneLineCharCount = (unsigned int)(glyph_count - start_cursor);

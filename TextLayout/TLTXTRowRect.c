@@ -37,6 +37,15 @@ bool txt_rect_array_add(struct TLTXTRectArray_ *array,struct TLTXTRect_ rect)
     return true;
 }
 
+void txt_rect_array_remove_last(struct TLTXTRectArray_ *array)
+{
+    if ((*array).count) {
+        struct TLTXTRect_ reseted_rect = {0,0,0,0,0};
+        (*array).data[(*array).count] = reseted_rect;
+        (*array).count-=1;
+    }
+}
+
 void txt_rect_array_destroy(TLTXTRectArray *array)
 {
     free((*array)->data);
