@@ -971,12 +971,12 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
          *一行最后一个字是避尾符号，将这个符号推至下一行
          *下一行第一个字是避头符号，将上一行的最后一个字推至这一行
          */
-        size_t last_index = start_cursor + oneLineCharCount-1;
         bool is_avoid_end = false;
         if (worker->end_avoid_func) {
             //避免第一次避尾后原先的倒数第二个字又需要避尾 执行两次
             for (size_t i=0; i<2; i++) {
-                if (worker->end_avoid_func(worker, last_index)) {
+                size_t last_index = start_cursor + oneLineCharCount-1;
+                if (last_index >=0 && worker->end_avoid_func(worker, last_index)) {
                     if (rect_array) {
                         txt_rect_array_remove_last(rect_array);
                     }
@@ -988,11 +988,13 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
             }
         }
 
-        if (!is_avoid_end && worker->start_avoid_func) {
+        //避尾以后有可能从上一行推下来的还需要避头
+        if (worker->start_avoid_func) {
             //避免第一次避头后从上一行推下来一个字而这个字又需要避头 执行两次
             for (size_t i=0; i<2; i++) {
+                size_t last_index = start_cursor + oneLineCharCount-1;
                 size_t next_first_index = start_cursor + oneLineCharCount;
-                if (next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index) && codepoints[last_index] != '\n') {
+                if (last_index >=0 && next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index) && codepoints[last_index] != '\n') {
                     if (rect_array) {
                         txt_rect_array_remove_last(rect_array);
                     }
