@@ -32,6 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic,weak)id<TLTXTCoreDrawDelegate>  drawDelegate;
 
+/// 在指定的页，检查某一坐标是否落在一段的区域之内。
+/// - Parameters:
+///   - page: 页索引
+///   - point: 坐标点
+///   - endIndex: 如果找到了对应段，返回结尾处在完整文本中的索引
+///   - textId: 文本id，对应一个章节
 - (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point endIndex:(NSInteger *)endIndex textId:(NSString *)textId;
 
 /**
