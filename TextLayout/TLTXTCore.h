@@ -40,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///   - textId: 文本id，对应一个章节
 - (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point endIndex:(NSInteger *)endIndex textId:(NSString *)textId;
 
+- (NSArray<NSValue *> *_Nullable)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId;
+
 /**
  *某一页的所有段尾索引和rect
  */

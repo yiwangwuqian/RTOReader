@@ -455,6 +455,74 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     return nil;
 }
 
+- (NSArray<NSValue *> *_Nullable)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId
+{
+    TLTXTCachePage *desPage;
+    for (NSInteger i=0; i<self.cachedArray.count; i++) {
+        TLTXTCachePage *oncePage = self.cachedArray[i];
+        if (oncePage.pageNum == page) {
+            desPage = oncePage;
+            break;
+        }
+    }
+    
+    if (!desPage){
+        return nil;
+    }
+
+    NSInteger rangeIndexMax = range.location + range.length - 1;
+    NSInteger rStartIndex = -1;
+    NSInteger rEndIndex = -1;
+    
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    for (NSInteger i=0; i<desPage.rowRectArray->count; i++) {
+        TLTXTRectArray data = desPage.rowRectArray->data[i];
+        if ( !(data->count > 0) ) {
+            continue;
+        }
+        
+        struct TLTXTRect_ firstRect = data->data[0];
+        struct TLTXTRect_ lastRect = data->data[data->count-1];
+        //TEST
+        NSLog(@"firstRect %ld lastRect %ld", firstRect.codepoint_index, lastRect.codepoint_index);
+        //TEST END
+        if (!(rStartIndex > 0) && range.location >= firstRect.codepoint_index && range.location <= lastRect.codepoint_index) {
+            //找到开始行
+            rStartIndex = i;
+        }
+        
+        if ( !(rStartIndex >=0) ) {
+            //没有找到换下一行
+            continue;
+        }
+        
+        if (rangeIndexMax >= firstRect.codepoint_index && rangeIndexMax <= lastRect.codepoint_index) {
+            if (rStartIndex == i) {
+                [array addObjectsFromArray:[self oneRectArrayRects:data codepointRange:range]];
+            } else {
+                [array addObjectsFromArray:[self oneRectArrayRects:data toCodepointIndex:rangeIndexMax]];
+            }
+            rEndIndex = i;
+            break;
+        } else {
+            if (rStartIndex == i) {
+                [array addObjectsFromArray:[self oneRectArrayRects:data fromCodepointIndex:range.location]];
+            } else {
+                //取整行的rect值
+                [array addObject:[NSValue valueWithCGRect:CGRectMake(firstRect.x, firstRect.y, firstRect.xx - firstRect.x, firstRect.yy - firstRect.y)]];
+                [array addObject:[NSValue valueWithCGRect:CGRectMake(lastRect.x, lastRect.y, lastRect.xx - lastRect.x, lastRect.yy - lastRect.y)]];
+            }
+        }
+    }
+    
+    if (rStartIndex >=0) {
+        NSArray *changedArray = [self usingScreenScaleRectArray:array];
+        NSArray *result = [self margeTwoRectToOneRowOneRow:changedArray];
+        return result;
+    }
+    return nil;
+}
+
 - (NSDictionary<NSNumber *,NSValue *> *_Nullable)paragraphTailIndexAndRect:(NSInteger)page
 {
     TLTXTCachePage *desPage;
@@ -772,6 +840,103 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     }
 }
 
+/// 取两个rect一个开始，一个比较索引直到值相等
+/// - Parameter maxIndex: 最大索引
+- (NSArray *)oneRectArrayRects:(TLTXTRectArray)data toCodepointIndex:(NSInteger)maxIndex
+{
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    for (NSInteger i=0; i<data->count; i++) {
+        struct TLTXTRect_ currentRect = data->data[i];
+        if (i == 0) {
+            [result addObject:[NSValue valueWithCGRect:CGRectMake(currentRect.x, currentRect.y, currentRect.xx - currentRect.x, currentRect.yy - currentRect.y)]];
+        }
+        if (currentRect.codepoint_index == maxIndex) {
+            [result addObject:[NSValue valueWithCGRect:CGRectMake(currentRect.x, currentRect.y, currentRect.xx - currentRect.x, currentRect.yy - currentRect.y)]];
+            break;
+        }
+    }
+    return result;
+}
+
+/// 取两个rect一个比较索引直到值相等开始，一个是最后一个
+/// - Parameter startIndex: 最大索引
+- (NSArray *)oneRectArrayRects:(TLTXTRectArray)data fromCodepointIndex:(NSInteger)startIndex
+{
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    for (NSInteger i=0; i<data->count; i++) {
+        struct TLTXTRect_ currentRect = data->data[i];
+        if (currentRect.codepoint_index == startIndex) {
+            [result addObject:[NSValue valueWithCGRect:CGRectMake(currentRect.x, currentRect.y, currentRect.xx - currentRect.x, currentRect.yy - currentRect.y)]];
+        }
+        if (i == data->count-1) {
+            [result addObject:[NSValue valueWithCGRect:CGRectMake(currentRect.x, currentRect.y, currentRect.xx - currentRect.x, currentRect.yy - currentRect.y)]];
+        }
+    }
+    return result;
+}
+
+
+/// 在指定范围内取两个rect，要比较索引值
+/// - Parameters:
+///   - data: 数组数据
+///   - range: 范围
+- (NSArray *)oneRectArrayRects:(TLTXTRectArray)data codepointRange:(NSRange)range
+{
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    NSInteger codepointIndexNotContainsMax = range.location + range.length;
+    for (NSInteger i=0; i<data->count; i++) {
+        struct TLTXTRect_ currentRect = data->data[i];
+        if (currentRect.codepoint_index == range.location) {
+            [result addObject:[NSValue valueWithCGRect:CGRectMake(currentRect.x, currentRect.y, currentRect.xx - currentRect.x, currentRect.yy - currentRect.y)]];
+        }
+        if (currentRect.codepoint_index == codepointIndexNotContainsMax-1) {
+            [result addObject:[NSValue valueWithCGRect:CGRectMake(currentRect.x, currentRect.y, currentRect.xx - currentRect.x, currentRect.yy - currentRect.y)]];
+        }
+    }
+    return result;
+}
+
+/// 将数组中的元素(CGRect)每两个一组，一组对应一个CGRect，最后返回
+/// - Parameter array: 原数据
+- (NSArray *)margeTwoRectToOneRowOneRow:(NSArray *)array
+{
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    
+    CGFloat lastOriginY = [array.firstObject CGRectValue].origin.y;
+    CGFloat lastOriginX = [array.firstObject CGRectValue].origin.x;
+    for (NSInteger i = 0; i<array.count; i++) {
+        CGRect onceRect = [array[i] CGRectValue];
+        if (onceRect.origin.y > lastOriginY) {
+            CGRect beforeRect = [array[i-1] CGRectValue];
+            [result addObject:[NSValue valueWithCGRect:CGRectMake(lastOriginX, lastOriginY, CGRectGetMaxX(beforeRect)-lastOriginX, CGRectGetMaxY(beforeRect) - lastOriginY)]];
+            
+            lastOriginY = onceRect.origin.y;
+            lastOriginX = onceRect.origin.x;
+        }
+        if (i == array.count - 1) {
+            [result addObject:[NSValue valueWithCGRect:CGRectMake(lastOriginX, lastOriginY, CGRectGetMaxX(onceRect)-lastOriginX, CGRectGetMaxY(onceRect) - lastOriginY)]];
+        }
+    }
+    
+    return result;
+}
+
+- (NSArray *)usingScreenScaleRectArray:(NSArray *)array
+{
+    CGFloat scale = [UIScreen mainScreen].scale;
+    
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    for (NSValue *rectValue in array) {
+        CGRect onceRect = [rectValue CGRectValue];
+        onceRect.origin.x = onceRect.origin.x/scale;
+        onceRect.origin.y = onceRect.origin.y/scale;
+        onceRect.size.width = onceRect.size.width/scale;
+        onceRect.size.height = onceRect.size.height/scale;
+        [result addObject:[NSValue valueWithCGRect:onceRect]];
+    }
+    return result;
+}
+
 @end
 
 @interface TLTXTCore()
@@ -843,6 +1008,12 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
     return [unit paragraphStartEnd:page point:point endIndex:endIndex];
+}
+
+- (NSArray<NSValue *> *)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return [unit shortPartRectIn:page range:range textId:textId];
 }
 
 - (NSDictionary<NSNumber *,NSValue *> *_Nullable)paragraphTailIndexAndRect:(NSInteger)page textId:(NSString *)textId
