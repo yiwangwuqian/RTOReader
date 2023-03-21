@@ -483,12 +483,19 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
         
         struct TLTXTRect_ firstRect = data->data[0];
         struct TLTXTRect_ lastRect = data->data[data->count-1];
-        //TEST
-        NSLog(@"firstRect %ld lastRect %ld", firstRect.codepoint_index, lastRect.codepoint_index);
-        //TEST END
+        
+        //找开始行
         if (!(rStartIndex > 0) && range.location >= firstRect.codepoint_index && range.location <= lastRect.codepoint_index) {
-            //找到开始行
+            //开始位置包含在当前行
             rStartIndex = i;
+        } else if (!(rStartIndex > 0) && range.location > 0 && range.location <= firstRect.codepoint_index) {
+            //开始位置在当前行之前，应该是跨页了，而且应该是本页第一行，暂时如此判断跨页。
+            rStartIndex = i;
+            
+            //修改range，因为range指定了被选中的内容
+            NSInteger lengthDelta = firstRect.codepoint_index - range.location;
+            range.location = firstRect.codepoint_index;
+            range.length -= lengthDelta;
         }
         
         if ( !(rStartIndex >=0) ) {
@@ -503,6 +510,10 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
                 [array addObjectsFromArray:[self oneRectArrayRects:data toCodepointIndex:rangeIndexMax]];
             }
             rEndIndex = i;
+            break;
+        } else if (firstRect.codepoint_index > rangeIndexMax) {
+            //这种情况目前是因为换行符这种没有展示的内容，下一行的第一个字索引又大于换行符
+            rEndIndex = i-1;
             break;
         } else {
             if (rStartIndex == i) {
