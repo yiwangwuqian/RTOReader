@@ -1061,6 +1061,25 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     }
 }
 
+- (void)removeNotContains:(NSArray *)textIds
+{
+    @synchronized (self.unitArray) {
+        NSArray *unitArray = self.unitArray;
+        if (unitArray.count) {
+            NSMutableArray *resultArray = [NSMutableArray array];
+            for (TLTXTCoreUnit *oneUnit in unitArray) {
+                if (![textIds containsObject:oneUnit.attributedString.textId]) {
+                    [resultArray addObject:oneUnit];
+                }
+            }
+            
+            if (resultArray.count) {
+                [self.unitArray removeObjectsInArray:resultArray];
+            }
+        }
+    }
+}
+
 - (TLAttributedString *)attributedStringWithTextId:(NSString *)textId
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];

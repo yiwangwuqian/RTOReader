@@ -67,6 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeOnce:(NSString *)textId;
 
 /**
+ *移除不在范围内的文字(内容)
+ */
+- (void)removeNotContains:(NSArray *)textIds;
+
+/**
  *获取属性字符串，修改属性使用
  */
 - (TLAttributedString *)attributedStringWithTextId:(NSString *)textId;
