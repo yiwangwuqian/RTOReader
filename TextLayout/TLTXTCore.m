@@ -1004,7 +1004,26 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
                     pageSize:(CGSize)size
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:aString.textId];
-    if (!unit) {
+    if (unit) {
+        /**
+         * 执行到了这里即是对同一段文字重新分页，这里的处理等于销毁旧对象了
+         *
+         * 当前方法内的resetAttributedString调用会让unit内部判断为未执行绘制
+         * 但unit对象有可能已经完成过一次firstTimeDraw，这时的现象是前三页有内容，继续阅读不执行绘制了。
+         *
+         * 概述：unit完成了前三页的绘制但是又重新分页；重新分页后没有调用firstTimeDraw，内部不能继续绘制;
+         * 实际上重新分页后再去调用firstTimeDraw也矛盾，因为前三页已经有内容了。
+         *
+         * 这里修改了对TLTXTCoreUnit对象的使用策略:
+         * 一个对象只分页一次从第一页读至最后一页；因为其它原因需要再次分页，重新创建对象。
+         */
+        @synchronized (self.unitArray) {
+            [self.unitArray removeObject:unit];
+            unit = [[TLTXTCoreUnit alloc] init];
+            unit.unitBackupDirPath = self.backupDirPath;
+            [self.unitArray addObject:unit];
+        }
+    } else {
         unit = [[TLTXTCoreUnit alloc] init];
         unit.unitBackupDirPath = self.backupDirPath;
         @synchronized (self.unitArray) {
