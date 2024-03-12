@@ -10,6 +10,8 @@
 
 #define GetTimeDeltaValue(a) [[NSDate date] timeIntervalSince1970] - [(a) timeIntervalSince1970]
 
+#define kCachePageMaxCount 4 //20240311增加
+
 #import "TLTXTCore.h"
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
@@ -606,6 +608,7 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 //    NSLog(@"%s ⚠️pageNum %@ textId:%@", __FUNCTION__, @(pageNum), self.attributedString.textId);
 //#endif
     //self.pageNum初始化为-1所以>=0表示可以去缓存了
+    //20240311将缓存改为最大4页以适应缓存时机提前的调整
     if (self.pageNum >=0 && pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
         NSInteger index = -1;
         for (NSInteger i=0; i<self.cachedArray.count; i++) {
@@ -645,6 +648,20 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
                     if (whetherEnd && [self totalPage] > 2 && pageNum == [self totalPage] - 2) {
                         *whetherEnd = YES;
                     }
+                }
+            }
+        } else if (index == -1) {
+            TLTXTCachePage *firstPage = self.cachedArray.firstObject;
+            TLTXTCachePage *lastPage = self.cachedArray.lastObject;
+            if (pageNum < firstPage.pageNum && (pageNum - 1 == firstPage.pageNum) ) {
+                [self toPreviousPage];
+                if (pageNum == 0 && whetherEnd) {
+                    *whetherEnd = YES;
+                }
+            } else if ( (pageNum <= [self totalPage] - 1) && pageNum > lastPage.pageNum && (pageNum == lastPage.pageNum + 1) ) {
+                [self toNextPage];
+                if (whetherEnd && pageNum == [self totalPage] - 1) {
+                    *whetherEnd = YES;
                 }
             }
         }
@@ -716,7 +733,9 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
             cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
             cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
             NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
-            [array removeObjectAtIndex:0];
+            if (array.count == kCachePageMaxCount) {
+                [array removeObjectAtIndex:0];
+            }
             [array addObject:cachePage];
             
             self.cachedArray = array;
@@ -796,7 +815,9 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
             cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
             cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
             NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
-            [array removeObjectAtIndex:2];
+            if (array.count == kCachePageMaxCount) {
+                [array removeObject:array.lastObject];
+            }
             [array insertObject:cachePage atIndex:0];
             self.cachedArray = array;
 #ifdef DEBUG
@@ -1016,6 +1037,8 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
          *
          * 这里修改了对TLTXTCoreUnit对象的使用策略:
          * 一个对象只分页一次从第一页读至最后一页；因为其它原因需要再次分页，重新创建对象。
+         *
+         * 后续，这里是可以解决内存泄露的，但是空白页没有复现。
          */
         @synchronized (self.unitArray) {
             [self.unitArray removeObject:unit];
