@@ -604,9 +604,9 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 ///   - whetherEnd: 在当前方向是否到了结束的位置
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum whetherEnd:(BOOL *)whetherEnd
 {
-//#ifdef DEBUG
-//    NSLog(@"%s ⚠️pageNum %@ textId:%@", __FUNCTION__, @(pageNum), self.attributedString.textId);
-//#endif
+#ifdef DEBUG
+    NSLog(@"%s ⚠️pageNum %@ textId:%@", __FUNCTION__, @(pageNum), self.attributedString.textId);
+#endif
     //self.pageNum初始化为-1所以>=0表示可以去缓存了
     //20240311将缓存改为最大4页以适应缓存时机提前的调整
     if (self.pageNum >=0 && pageNum >=0 && pageNum < [self totalPage] && self.cachedArray.count) {
@@ -619,7 +619,6 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
         }
         bool pageNumIsEqual = true;
         if (self.pageNum != pageNum){
-            self.pageNum = pageNum;
             pageNumIsEqual = false;
         }
         if (index == 0) {
@@ -629,6 +628,7 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
                 }
             } else {
                 if (!pageNumIsEqual){
+                    self.pageNum = pageNum;
                     [self toPreviousPage];
                     //大于两页的情况下 上一句是去缓存第一页内容
                     if (whetherEnd && [self totalPage] > 2 && pageNum == 1) {
@@ -643,6 +643,7 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
                 }
             } else {
                 if (!pageNumIsEqual){
+                    self.pageNum = pageNum;
                     [self toNextPage];
                     //大于两页的情况下 上一句是去缓存最后一页内容
                     if (whetherEnd && [self totalPage] > 2 && pageNum == [self totalPage] - 2) {
@@ -654,11 +655,13 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
             TLTXTCachePage *firstPage = self.cachedArray.firstObject;
             TLTXTCachePage *lastPage = self.cachedArray.lastObject;
             if (pageNum < firstPage.pageNum && (pageNum - 1 == firstPage.pageNum) ) {
+                self.pageNum = firstPage.pageNum;
                 [self toPreviousPage];
                 if (pageNum == 0 && whetherEnd) {
                     *whetherEnd = YES;
                 }
             } else if ( (pageNum <= [self totalPage] - 1) && pageNum > lastPage.pageNum && (pageNum == lastPage.pageNum + 1) ) {
+                self.pageNum = lastPage.pageNum;
                 [self toNextPage];
                 if (whetherEnd && pageNum == [self totalPage] - 1) {
                     *whetherEnd = YES;
@@ -1090,6 +1093,19 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 - (void)toCacheWhenMoveTo:(NSInteger)pageNum textId:(NSString *)textId whetherEnd:(BOOL*)whetherEnd
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+#ifdef DEBUG
+    if (unit) {
+        if (unit.cachedArray) {
+            NSMutableString *pageNumString = [NSMutableString string];
+            for (TLTXTCachePage *oncePage in unit.cachedArray) {
+                [pageNumString appendString:[NSString stringWithFormat:@"%@,", @(oncePage.pageNum)]];
+            }
+            NSLog(@"%@ 's unit pageNum %@", textId, pageNumString);
+        } else {
+            NSLog(@"%@ 's unit is empty", textId);
+        }
+    }
+#endif
     [unit toCacheWhenMoveTo:pageNum whetherEnd:whetherEnd];
 }
 
@@ -1109,11 +1125,20 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
         NSArray *unitArray = self.unitArray;
         if (unitArray.count) {
             NSMutableArray *resultArray = [NSMutableArray array];
+#ifdef DEBUG
+            NSMutableString *pageNumString = [NSMutableString string];
+#endif
             for (TLTXTCoreUnit *oneUnit in unitArray) {
                 if (![textIds containsObject:oneUnit.attributedString.textId]) {
                     [resultArray addObject:oneUnit];
+#ifdef DEBUG
+                    [pageNumString appendString:[NSString stringWithFormat:@"%@,", oneUnit.attributedString.textId]];
+#endif
                 }
             }
+#ifdef DEBUG
+            NSLog(@"%@ 's unit is removed", pageNumString);
+#endif
             
             if (resultArray.count) {
                 [self.unitArray removeObjectsInArray:resultArray];
@@ -1135,6 +1160,9 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 - (NSArray<NSNumber *> *)oncePaging:(NSString *)textId endPageHeight:(CGFloat*)height
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+#ifdef DEBUG
+    NSLog(@"%@ 's unit is oncePaging", textId);
+#endif
     return [unit oncePaging:height];
 }
 
