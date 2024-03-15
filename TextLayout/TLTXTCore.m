@@ -654,7 +654,7 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
         } else if (index == -1) {
             TLTXTCachePage *firstPage = self.cachedArray.firstObject;
             TLTXTCachePage *lastPage = self.cachedArray.lastObject;
-            if (pageNum < firstPage.pageNum && (pageNum - 1 == firstPage.pageNum) ) {
+            if (pageNum < firstPage.pageNum && (pageNum == firstPage.pageNum - 1) ) {
                 self.pageNum = firstPage.pageNum;
                 [self toPreviousPage];
                 if (pageNum == 0 && whetherEnd) {
