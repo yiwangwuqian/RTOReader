@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString
                            pageSize:(CGSize)size
                              coreId:(NSString *)coreId
-                      endPageHeight:(CGFloat*)height;
+                        heightArray:(NSMutableArray *)heightArray;
 
 /// 移除一个TLTXTCore对象
 /// - Parameter coreId: TLTXTCore对象的id

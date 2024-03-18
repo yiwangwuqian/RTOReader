@@ -94,6 +94,9 @@ struct TLTXTWorker_ {
     //以下两个属性要同时使用
     TLGenericArray font_size_array;
     TLGenericArray font_size_width_array;
+    
+    //保存每页高度信息 参考paging_rect_array的注释，这里单加一个属性
+    TLGenericArray page_height_array;
 };
 
 //------RTOTXTPageCursorArray_ 数组只有创建、新增元素、销毁操作
@@ -253,6 +256,15 @@ void txt_worker_destroy(TLTXTWorker *worker)
     if (object->paging_rect_array != NULL) {
         txt_paging_rect_array_destroy(&object->paging_rect_array);
     }
+    if (object->font_size_array != NULL) {
+        tl_generic_array_destroy(&object->font_size_array);
+    }
+    if (object->font_size_width_array != NULL) {
+        tl_generic_array_destroy(&object->font_size_width_array);
+    }
+    if (object->page_height_array != NULL) {
+        tl_generic_array_destroy(&object->page_height_array);
+    }
     free(object);
     *worker = NULL;
 }
@@ -311,6 +323,8 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
         paragraph_spacing = defaultAttributes->paragraphSpacing;
     }
     
+    tl_generic_array_create(&(*worker)->page_height_array);
+    
     while (glyph_count != now_cursor) {
         TLTXTRowRectArray row_rect_array;
         txt_row_rect_array_create(&row_rect_array);
@@ -324,6 +338,7 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
         before_cursor = now_cursor;
         
         size_t i = before_cursor;
+        size_t page_height = 0;
         while (i<glyph_count) {
             TLTXTRectArray rect_array;
             txt_rect_array_create(&rect_array);
@@ -376,11 +391,20 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
                     //大于最大高度,停止 恢复last_range_index
                     now_cursor = i;
                     last_range_index = backup_last_range_index;
+                    
+                    page_height = typeSettingY;
                 } else {
                     //放得下
                     
                     //停止
                     now_cursor = i + oneline_count;
+                    
+                    /**
+                     * 这个高度实际上是比totalHeight大的
+                     * 这里对应的一种场景：同一个worker下的内容如果从头到尾连起来行间距、段间距保持一致；
+                     * 既没有大段空白，也不会出现某两行间距过小，也就是间距符合规则既不过大也不过小。
+                     */
+                    page_height = typeSettingY + aLineHeightMax + one_line_spacing;
                 }
                 break;
             } else {
@@ -394,11 +418,15 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
         }
         if (before_cursor == now_cursor) {
             now_cursor += glyph_count - before_cursor;
+            
+            page_height = typeSettingY;
         }
         
         txt_page_cursor_array_add((*worker)->cursor_array, now_cursor);
         //此处是循环的结尾
         page++;
+        
+        tl_generic_array_add((*worker)->page_height_array, page_height);
         
         if (glyph_count == now_cursor) {
             endPageHeight = typeSettingY;
@@ -805,6 +833,18 @@ size_t txt_worker_page_cursor_array_get(TLTXTWorker worker,size_t page)
 {
     RTOTXTPageCursorArray array = worker->cursor_array;
     return array->data[page];
+}
+
+size_t txt_worker_page_till_last_line_height(TLTXTWorker worker,size_t page)
+{
+    if (worker->page_height_array == NULL) {
+        return 0;
+    }
+    size_t count = tl_generic_array_get_count(worker->page_height_array);
+    if (count && page < count) {
+        return tl_generic_array_object_at(worker->page_height_array, (int)page);
+    }
+    return 0;
 }
 
 void txt_worker_page_cursor_array_prefill(TLTXTWorker worker,size_t cursor)

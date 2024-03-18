@@ -167,14 +167,14 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     self.pageNum = -1;
 }
 
-- (NSArray<NSNumber *> *)oncePaging:(CGFloat*)endPageHeight
+- (NSArray<NSNumber *> *)oncePaging:(NSMutableArray *)heightArray
 {
     NSMutableArray *result = [[NSMutableArray alloc] init];
         if (!txt_worker_total_page(&self->_worker)) {
 #if kTLTXTPerformanceLog
             NSDate *startDate = [NSDate date];
 #endif
-            *endPageHeight = txt_worker_data_paging(&self->_worker);
+            txt_worker_data_paging(&self->_worker);
 #if kTLTXTPerformanceLog
             NSLog(@"%s paging using time:%@", __func__, @(GetTimeDeltaValue(startDate) ));
 #endif
@@ -185,6 +185,10 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
             for (NSInteger i=0; i<total_page; i++) {
                 size_t cursor = txt_worker_page_cursor_array_get(self->_worker, i);
                 [result addObject:@(cursor)];
+                if (heightArray) {
+                    size_t height = txt_worker_page_till_last_line_height(self->_worker, i);
+                    [heightArray addObject:@(height)];
+                }
             }
         }
     return result;
@@ -1157,13 +1161,13 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 /// - Parameters:
 ///   - textId: 文本id
 ///   - height: 最后一页的高度
-- (NSArray<NSNumber *> *)oncePaging:(NSString *)textId endPageHeight:(CGFloat*)height
+- (NSArray<NSNumber *> *)oncePaging:(NSString *)textId heightArray:(NSMutableArray *)heightArray
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
 #ifdef DEBUG
     NSLog(@"%@ 's unit is oncePaging", textId);
 #endif
-    return [unit oncePaging:height];
+    return [unit oncePaging:heightArray];
 }
 
 + (UIImage *)imageWith:(uint8_t *)bytes width:(CGFloat)bWidth height:(CGFloat)bHeight scale:(CGFloat)scale
@@ -1310,7 +1314,7 @@ static TLTXTCoreManager *manager = nil;
 - (NSArray<NSNumber *> *)oncePaging:(TLAttributedString *)aString
                            pageSize:(CGSize)size
                              coreId:(NSString *)coreId
-                      endPageHeight:(CGFloat*)height
+                        heightArray:(NSMutableArray *)heightArray
 {
     TLTXTCore *core = [self coreWithId:coreId];
     if (!core) {
@@ -1321,7 +1325,7 @@ static TLTXTCoreManager *manager = nil;
     __block NSArray *result = nil;
     dispatch_sync(pagingQueue, ^{
         [core fillAttributedString:aString pageSize:size];
-        result = [core oncePaging:aString.textId endPageHeight:height];
+        result = [core oncePaging:aString.textId heightArray:heightArray];
     });
     return result;
 }

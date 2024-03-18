@@ -16,21 +16,6 @@
 @property(nonatomic)TLTXTWorker         worker;
 @end
 
-static void rangeAttributesFunc(TLTXTWorker worker,
-                                TLRange range,
-                                TLRangeArray *rArray,
-                                TLTXTAttributesArray *aArray)
-{
-    TLTXTPageHelper *helper = (__bridge TLTXTPageHelper *)(txt_worker_get_context(worker));
-    [TLTXTPageHelper checkRangeAttributes:helper.attributedString range:range rArray:rArray aArray:aArray];
-}
-
-static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
-{
-    TLTXTPageHelper *helper = (__bridge TLTXTPageHelper *)(txt_worker_get_context(worker));
-    return [TLTXTPageHelper checkDefaultAttributes:helper.attributedString];
-}
-
 @implementation TLTXTPageHelper
 
 - (void)dealloc
@@ -39,35 +24,6 @@ static TLTXTAttributes defaultAttributesFunc(TLTXTWorker worker)
     NSLog(@"%@ dealloc", self);
 #endif
     txt_worker_destroy(&_worker);
-}
-
-+ (NSArray<NSNumber*> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height;
-{
-    TLTXTPageHelper *helper = [[TLTXTPageHelper alloc] init];
-    helper.attributedString = aString;
-    helper.pageSize = pageSize;
-    NSArray *result = [helper paging:height];
-    return result;
-}
-
-- (NSArray<NSNumber*> *)paging:(CGFloat*)endPageHeight
-{
-    txt_worker_create(&_worker, [[self.attributedString string] UTF8String], self.pageSize.width, self.pageSize.height);
-    txt_worker_set_context(_worker, (__bridge void *)(self));
-    txt_worker_set_range_attributes_callback(_worker, rangeAttributesFunc);
-    txt_worker_set_default_attributes_callback(_worker, defaultAttributesFunc);
-    *endPageHeight = txt_worker_data_paging(&self->_worker);
-    
-    size_t total_page = txt_worker_total_page(&self->_worker);
-    if (total_page) {
-        NSMutableArray *result = [[NSMutableArray alloc] init];
-        for (NSInteger i=0; i<total_page; i++) {
-            size_t cursor = txt_worker_page_cursor_array_get(self->_worker, i);
-            [result addObject:@(cursor)];
-        }
-        return result;
-    }
-    return NULL;
 }
 
 #pragma mark- Public methods

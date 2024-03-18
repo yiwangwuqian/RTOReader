@@ -80,6 +80,12 @@ uint32_t* txt_worker_codepoint_in_range(TLTXTWorker *worker, size_t start, size_
 
 size_t txt_worker_page_cursor_array_get(TLTXTWorker worker,size_t page);
 
+/// TLTXTWorker某一页最后一行结束的高度。注意，如果这一行是段末那么包含了段间距，如果是段内则包含了行间距。
+/// - Parameters:
+///   - worker: worker对象
+///   - page: 页码
+size_t txt_worker_page_till_last_line_height(TLTXTWorker worker,size_t page);
+
 ///  TLTXTWorker游标数组从外部预填入(存在分页和绘制上下文不一致的情况，该函数后续不一定保留)
 /// - Parameters:
 ///   - worker: worker对象

@@ -13,13 +13,6 @@
 
 @interface TLTXTPageHelper : NSObject
 
-/// 执行一次分页，返回结果为各页的游标，并返回最后一页的高度
-/// - Parameters:
-///   - aString: 属性字符串
-///   - pageSize: 页面大小
-///   - height: 最后一页的高度
-+ (NSArray<NSNumber*> *)oncePaging:(TLAttributedString *)aString pageSize:(CGSize)pageSize endPageHeight:(CGFloat*)height;
-
 /// 检查属性字符串在某一范围内是否有属性
 /// - Parameters:
 ///   - aString: 属性字符串
