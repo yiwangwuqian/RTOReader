@@ -38,7 +38,22 @@ NS_ASSUME_NONNULL_BEGIN
 ///   - point: 坐标点
 ///   - endIndex: 如果找到了对应段，返回结尾处在完整文本中的索引
 ///   - textId: 文本id，对应一个章节
-- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point endIndex:(NSInteger *)endIndex textId:(NSString *)textId;
+///   - pointStartIndex: point所在行开始那个字的索引
+- (NSArray<NSValue *> *_Nullable)paragraphStartEnd:(NSInteger)page point:(CGPoint)point endIndex:(NSInteger *)endIndex textId:(NSString *)textId pointStartIndex:(NSInteger *_Nullable)pointStartIndex;
+
+/// 在指定的页，检查某一坐标落在的那行或邻近的那行(y坐标会大于point)第一个字在文本中的索引
+/// - Parameters:
+///   - page: 页索引
+///   - point: 坐标点
+///   - textId: 文本id，对应一个章节
+- (NSNumber *_Nullable)nearestLineStartIndex:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
+
+/// 在指定的页，检查某一坐标落在的那行或邻近的那行(y坐标会小于point)最后一个字在文本中的索引
+/// - Parameters:
+///   - page: 页索引
+///   - point: 坐标点
+///   - textId: 文本id，对应一个章节
+- (NSNumber *_Nullable)nearestLineEndIndex:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
 
 - (NSArray<NSValue *> *_Nullable)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId;
 
