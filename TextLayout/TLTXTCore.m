@@ -42,6 +42,7 @@ dispatch_queue_t    imageQueue;//UIImage创建专用
 
 @property(nonatomic)NSInteger           pageNum;//页码翻页时的判断使用 最后一次被请求的页码
 @property(nonatomic)NSMutableArray      *cachedArray;//被缓存数组(每个元素包含有这些字段：页码、图片、图片中每个字位置信息)
+@property(nonatomic)NSMutableArray      *cachingNumArray;//记录缓冲中的页码
 
 /**
  *以下两个属性 内容的绘制和生成UIImage都是异步的，翻页时确保上一个操作完成了
@@ -103,6 +104,7 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     self = [super init];
     if (self) {
         _cachedArray = [NSMutableArray array];
+        _cachingNumArray = [NSMutableArray array];
         _pageNum = -1;
     }
     return self;
@@ -753,11 +755,16 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
         } else if (index == -1) {
             TLTXTCachePage *firstPage = self.cachedArray.firstObject;
             TLTXTCachePage *lastPage = self.cachedArray.lastObject;
+            BOOL toCache = NO;
             if (pageNum < firstPage.pageNum && (pageNum == firstPage.pageNum - 1) ) {
                 self.pageNum = firstPage.pageNum;
                 [self toPreviousPage];
                 if (pageNum == 0 && whetherEnd) {
                     *whetherEnd = YES;
+                }
+                toCache = YES;
+                @synchronized (self.cachingNumArray) {
+                    [self.cachingNumArray addObject:@(firstPage.pageNum-1)];
                 }
             } else if ( (pageNum <= [self totalPage] - 1) && pageNum > lastPage.pageNum && (pageNum == lastPage.pageNum + 1) ) {
                 self.pageNum = lastPage.pageNum;
@@ -765,6 +772,29 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
                 if (whetherEnd && pageNum == [self totalPage] - 1) {
                     *whetherEnd = YES;
                 }
+                toCache = YES;
+                @synchronized (self.cachingNumArray) {
+                    [self.cachingNumArray addObject:@(lastPage.pageNum+1)];
+                }
+            }
+            
+            if (!toCache) {
+                //如果在几毫秒甚至更短时间内有多次翻页 增加支持，按目前的逻辑只支持连续的两页(因为需要相邻)
+                NSArray *numArray = nil;
+                @synchronized (self.cachingNumArray) {
+                    if (self.cachingNumArray.count) {
+                        numArray = [self.cachingNumArray sortedArrayUsingComparator:^NSComparisonResult(NSNumber *obj1, NSNumber *obj2) {
+                            if ([obj1 integerValue] < [obj2 integerValue]) {
+                                return NSOrderedAscending;
+                            }
+                            return NSOrderedDescending;
+                        }];
+                    }
+                }
+                NSInteger firstNum = [numArray.firstObject integerValue];
+                NSInteger lastNum = [numArray.lastObject integerValue];
+                //如果在synchronized里执行可能会死锁 虽然没有被包进去但导致的问题无非是同一页多绘制一次的可能 后续再优化
+                [self toCache:&toCache pageNum:pageNum firstNum:firstNum lastNum:lastNum whetherEnd:whetherEnd];
             }
         }
 #ifdef DEBUG
@@ -817,56 +847,62 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 #if kTLTXTPerformanceLog
     NSLog(@"%s bitmap using time:%@", __func__, @(GetTimeDeltaValue(bitmapStartDate) ));
 #endif
-    if (bitmap != NULL) {
-        
-        dispatch_async(imageQueue, ^{
+        if (bitmap != NULL) {
+            
+            dispatch_async(imageQueue, ^{
 #if kTLTXTPerformanceLog
-            NSDate *imageStartDate = [NSDate date];
+                NSDate *imageStartDate = [NSDate date];
 #endif
-            NSNumber *nightMode = self.attributedString.defaultAttributes[@(TLTXTAttributesNameTypeColorMode)];
-            UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1 nightMode:[nightMode integerValue]];
-            TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
-            cachePage.pageNum = afterPageNum;
-            cachePage.image = image;
-            cachePage.backupPath = self.pageBackupDirPath;
-            cachePage.backupBytes = bitmap;
-            cachePage.rowRectArray = row_rect_array;
-            cachePage.paragraphTailArray = paragraph_tail_array;
-            cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
-            cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
-            NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
-            if (array.count == kCachePageMaxCount) {
-                [array removeObjectAtIndex:0];
-            }
-            [array addObject:cachePage];
-            
-            self.cachedArray = array;
-            
+                NSNumber *nightMode = self.attributedString.defaultAttributes[@(TLTXTAttributesNameTypeColorMode)];
+                UIImage *image = [TLTXTCore imageWith:bitmap width:self.pageSize.width height:self.pageSize.height scale:1 nightMode:[nightMode integerValue]];
+                TLTXTCachePage *cachePage = [[TLTXTCachePage alloc] init];
+                cachePage.pageNum = afterPageNum;
+                cachePage.image = image;
+                cachePage.backupPath = self.pageBackupDirPath;
+                cachePage.backupBytes = bitmap;
+                cachePage.rowRectArray = row_rect_array;
+                cachePage.paragraphTailArray = paragraph_tail_array;
+                cachePage.cursor = txt_worker_page_cursor_array_get(self.worker, afterPageNum);
+                cachePage.beforeCursor = afterPageNum>0 ? txt_worker_page_cursor_array_get(self.worker, afterPageNum-1) : -1;
+                NSMutableArray *array = [NSMutableArray arrayWithArray:self.cachedArray];
+                if (array.count == kCachePageMaxCount) {
+                    [array removeObjectAtIndex:0];
+                }
+                [array addObject:cachePage];
+                
+                self.cachedArray = array;
+                
+                @synchronized (self.cachingNumArray) {
+                    NSNumber *pageNumber = @(afterPageNum);
+                    if ([self.cachingNumArray containsObject:@(afterPageNum)]) {
+                        [self.cachingNumArray removeObject:pageNumber];
+                    }
+                }
 #ifdef DEBUG
-            NSMutableArray *numberArray = [[NSMutableArray alloc] init];
-            for (NSInteger i=0; i<self.cachedArray.count; i++) {
-                TLTXTCachePage *oncePage = self.cachedArray[i];
-                [numberArray addObject:@(oncePage.pageNum)];
-            }
-            NSLog(@"⚠️end draw %@ %s %@ textId:%@", @(afterPageNum), __FUNCTION__, [numberArray componentsJoinedByString:@","], self.attributedString.textId);
+                NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+                for (NSInteger i=0; i<self.cachedArray.count; i++) {
+                    TLTXTCachePage *oncePage = self.cachedArray[i];
+                    [numberArray addObject:@(oncePage.pageNum)];
+                }
+                NSLog(@"⚠️end draw %@ %s %@ textId:%@", @(afterPageNum), __FUNCTION__, [numberArray componentsJoinedByString:@","], self.attributedString.textId);
 #endif
-            
+                
 #if kTLTXTPerformanceLog
-            NSLog(@"%s image create using time:%@", __func__, @(GetTimeDeltaValue(imageStartDate) ));
+                NSLog(@"%s image create using time:%@", __func__, @(GetTimeDeltaValue(imageStartDate) ));
 #endif
-            
+                
 #if kTLTXTPerformanceLog
-    NSLog(@"%s using time:%@", __func__, @(GetTimeDeltaValue(date) ));
+                NSLog(@"%s using time:%@", __func__, @(GetTimeDeltaValue(date) ));
 #endif
+                dispatch_semaphore_signal(self.nextPageSemaphore);
+                if (self.drawDelegate) {
+                    [self.drawDelegate didDrawPageEnd:afterPageNum textId:self.attributedString.textId];
+                }
+            });
+            
+        } else {
             dispatch_semaphore_signal(self.nextPageSemaphore);
-            if (self.drawDelegate) {
-                [self.drawDelegate didDrawPageEnd:afterPageNum textId:self.attributedString.textId];
-            }
-        });
-            
-    } else {
-        dispatch_semaphore_signal(self.nextPageSemaphore);
-    }
+        }
     });
 }
 
@@ -922,6 +958,13 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
             }
             [array insertObject:cachePage atIndex:0];
             self.cachedArray = array;
+            
+            @synchronized (self.cachingNumArray) {
+                NSNumber *pageNumber = @(afterPageNum);
+                if ([self.cachingNumArray containsObject:@(afterPageNum)]) {
+                    [self.cachingNumArray removeObject:pageNumber];
+                }
+            }
 #ifdef DEBUG
             NSMutableArray *numberArray = [[NSMutableArray alloc] init];
             for (NSInteger i=0; i<self.cachedArray.count; i++) {
@@ -1069,6 +1112,41 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
         [result addObject:[NSValue valueWithCGRect:onceRect]];
     }
     return result;
+}
+
+- (void)toCache:(BOOL *)toCache 
+        pageNum:(NSInteger)pageNum
+       firstNum:(NSInteger)firstNum
+        lastNum:(NSInteger)lastNum
+     whetherEnd:(BOOL *)whetherEnd
+{
+    if (pageNum < firstNum && (pageNum == firstNum - 1) ) {
+        self.pageNum = firstNum;
+        [self toPreviousPage];
+        if (pageNum == 0 && whetherEnd) {
+            *whetherEnd = YES;
+        }
+        if (toCache) {
+            *toCache = YES;
+        }
+        
+        @synchronized (self.cachingNumArray) {
+            [self.cachingNumArray addObject:@(firstNum-1)];
+        }
+    } else if ( (pageNum <= [self totalPage] - 1) && pageNum > lastNum && (pageNum == lastNum + 1) ) {
+        self.pageNum = lastNum;
+        [self toNextPage];
+        if (whetherEnd && pageNum == [self totalPage] - 1) {
+            *whetherEnd = YES;
+        }
+        if (toCache) {
+            *toCache = YES;
+        }
+        
+        @synchronized (self.cachingNumArray) {
+            [self.cachingNumArray addObject:@(lastNum+1)];
+        }
+    }
 }
 
 @end
