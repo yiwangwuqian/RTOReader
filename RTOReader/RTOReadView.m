@@ -86,8 +86,8 @@
 //            [aString addAttributes:@{@(TLTXTAttributesNameTypeColor): @(0xFF00FF00), @(TLTXTAttributesNameTypeFontSize): @(70)} range:NSMakeRange(650, 12)];
             CGSize pageSize = CGSizeMake(drawWidth, drawHeight);
             NSString *coreId = @"xxx";
-            CGFloat endPageHeight;
-            NSArray *cursorArray = [[TLTXTCoreManager shared] oncePaging:aString pageSize:pageSize coreId:coreId endPageHeight:&endPageHeight];
+            NSMutableArray *heightArray = [NSMutableArray array];
+            NSArray *cursorArray = [[TLTXTCoreManager shared] oncePaging:aString pageSize:pageSize coreId:coreId heightArray:heightArray];
             self.cursorArray = cursorArray;
             _txtCore = [[TLTXTCoreManager shared] coreWithId:coreId];
             _txtCore.drawDelegate = self;
