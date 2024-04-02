@@ -691,6 +691,9 @@ uint8_t *txt_worker_bitmap_one_page(TLTXTWorker *worker,
                 }
                 continue;
             }
+        } else if (i == (*worker)->utf8_length-1) {
+            //最后一个字没有换行但也是一段的末尾
+            tl_generic_array_add(paragraph_tail_array, i);
         } else if (typeSettingX + aCharAdvance > totalWidth) {
             typeSettingX = 0;
             typeSettingY += beforeALineHeightMax + line_spacing;
