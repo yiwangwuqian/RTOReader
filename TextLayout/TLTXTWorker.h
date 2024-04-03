@@ -14,6 +14,7 @@
 #include "TLTXTRowRect.h"
 #include "TLTXTAttributes.h"
 #include "TLGenericArray.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 
