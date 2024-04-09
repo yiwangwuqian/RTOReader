@@ -211,7 +211,27 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
          *所以这里加了if和return，外部如果有办法区分以上两种情况只调一次本方法时，
          *if和return才能去掉
          */
-        if (!self.needCleanCache && self.cachedArray.count > 0) {
+        
+        //存在这样的情况：分页后进入当前章的下一章节第一页再往回翻，这种情况要支持
+        BOOL needsDrawAgain = NO;
+        if (self.cachedArray.count) {
+            TLTXTCachePage *desPage;
+            for (NSInteger i=0; i<self.cachedArray.count; i++) {
+                TLTXTCachePage *oncePage = self.cachedArray[i];
+                if (oncePage.pageNum == pageNum) {
+                    desPage = oncePage;
+                    break;
+                }
+            }
+            size_t total_page = txt_worker_total_page(&self->_worker);
+            if (desPage == nil && ( (total_page > 3 && pageNum == total_page-3) || total_page < 3) ) {
+                needsDrawAgain = YES;
+                self.needCleanCache = YES;
+            }
+        }
+        if (self.cachedArray.count > 0 && !needsDrawAgain) {
+            return;
+        } else if (!self.needCleanCache && self.cachedArray.count > 0) {
             return;
         }
         BOOL cleanCache = self.needCleanCache;
