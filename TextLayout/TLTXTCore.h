@@ -55,6 +55,20 @@ NS_ASSUME_NONNULL_BEGIN
 ///   - textId: 文本id，对应一个章节
 - (NSNumber *_Nullable)nearestLineEndIndex:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
 
+/// 在指定的页，检查某一坐标落在的那行或邻近的那行(y坐标会大于point)的底部坐标(行首第一个字即可)
+/// - Parameters:
+///   - page: 页索引
+///   - point: 坐标点
+///   - textId: 文本id，对应一个章节
+- (NSValue *_Nullable)nearestLineStartBottomOrigin:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
+
+/// 在指定的页，检查某一坐标落在的那行或邻近的那行(y坐标会小于point)的坐标(行首第一个字即可)
+/// - Parameters:
+///   - page: 页索引
+///   - point: 坐标点
+///   - textId: 文本id，对应一个章节
+- (NSValue *_Nullable)nearestLineEndOrigin:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
+
 - (NSArray<NSValue *> *_Nullable)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId;
 
 /**

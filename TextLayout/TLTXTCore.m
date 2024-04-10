@@ -578,6 +578,90 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     return nil;
 }
 
+- (NSValue *_Nullable)nearestLineStartBottomOrigin:(NSInteger)page point:(CGPoint)point
+{
+    TLTXTCachePage *desPage;
+    for (NSInteger i=0; i<self.cachedArray.count; i++) {
+        TLTXTCachePage *oncePage = self.cachedArray[i];
+        if (oncePage.pageNum == page) {
+            desPage = oncePage;
+            break;
+        }
+    }
+    
+    if (desPage && desPage.rowRectArray->count > 0){
+        CGFloat scale = [UIScreen mainScreen].scale;
+        point.x = scale * point.x;
+        point.y = scale * point.y;
+        
+        NSInteger baseIndex = desPage.beforeCursor;
+        if (baseIndex == -1) {
+            baseIndex = 0;
+        }
+        
+        //先从y坐标判断属于第几行
+        for (NSInteger i=0; i<desPage.rowRectArray->count; i++) {
+            TLTXTRectArray data = desPage.rowRectArray->data[i];
+            if (data->count > 0) {
+                struct TLTXTRect_ firstRect = data->data[0];
+                BOOL finded = NO;
+                if (point.y >= firstRect.y && point.y <= firstRect.yy) {
+                    finded = YES;
+                } else if (firstRect.y > point.y) {
+                    finded = YES;
+                }
+                if (finded) {
+                    return [NSValue valueWithCGPoint:CGPointMake(firstRect.x/scale, firstRect.yy/scale)];
+                }
+            }
+        }
+    }
+    
+    return nil;
+}
+
+- (NSValue *_Nullable)nearestLineEndOrigin:(NSInteger)page point:(CGPoint)point
+{
+    TLTXTCachePage *desPage;
+    for (NSInteger i=0; i<self.cachedArray.count; i++) {
+        TLTXTCachePage *oncePage = self.cachedArray[i];
+        if (oncePage.pageNum == page) {
+            desPage = oncePage;
+            break;
+        }
+    }
+    
+    if (desPage && desPage.rowRectArray->count > 0){
+        CGFloat scale = [UIScreen mainScreen].scale;
+        point.x = scale * point.x;
+        point.y = scale * point.y;
+        
+        NSInteger baseIndex = desPage.beforeCursor;
+        if (baseIndex == -1) {
+            baseIndex = 0;
+        }
+        
+        //先从y坐标判断属于第几行
+        for (NSInteger i=desPage.rowRectArray->count-1; i>=0; i--) {
+            TLTXTRectArray data = desPage.rowRectArray->data[i];
+            if (data->count > 0) {
+                struct TLTXTRect_ firstRect = data->data[0];
+                BOOL finded = NO;
+                if (point.y >= firstRect.y && point.y <= firstRect.yy) {
+                    finded = YES;
+                } else if (firstRect.y < point.y) {
+                    finded = YES;
+                }
+                if (finded) {
+                    return [NSValue valueWithCGPoint:CGPointMake(firstRect.x/scale, firstRect.y/scale)];
+                }
+            }
+        }
+    }
+    
+    return nil;
+}
+
 - (NSArray<NSValue *> *_Nullable)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId
 {
     TLTXTCachePage *desPage;
@@ -1273,6 +1357,18 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
     return [unit nearestLineEndIndex:page point:point];
+}
+
+- (NSValue *_Nullable)nearestLineStartBottomOrigin:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return [unit nearestLineStartBottomOrigin:page point:point];
+}
+
+- (NSValue *_Nullable)nearestLineEndOrigin:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return [unit nearestLineEndOrigin:page point:point];
 }
 
 - (NSArray<NSValue *> *)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId
