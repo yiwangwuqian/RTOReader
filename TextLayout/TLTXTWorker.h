@@ -92,6 +92,8 @@ size_t txt_worker_page_till_last_line_height(TLTXTWorker worker,size_t page);
 ///   - worker: worker对象
 ///   - cursor: 一个游标数据
 void txt_worker_page_cursor_array_prefill(TLTXTWorker worker,size_t cursor);
+
+TLTXTRowRectArray txt_worker_page_row_rect_array_get(TLTXTWorker worker,size_t page);
 #ifdef __cplusplus
 }
 #endif

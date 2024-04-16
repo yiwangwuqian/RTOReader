@@ -654,6 +654,34 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
     return nil;
 }
 
+- (NSValue *_Nullable)exactStartOrigin:(NSInteger)page wordIndex:(NSInteger)wordIndex
+{
+    if (page >= txt_worker_total_page(&self->_worker)) {
+        return nil;
+    }
+    
+    TLTXTRowRectArray result = txt_worker_page_row_rect_array_get(self->_worker, page);
+    if (result && result->count > 0){
+        
+        CGFloat scale = [UIScreen mainScreen].scale;
+        
+        //先从y坐标判断属于第几行
+        for (NSInteger i=0; i<result->count; i++) {
+            TLTXTRectArray data = result->data[i];
+            if (data->count > 0) {
+                for (NSInteger j=0; j<data->count; j++) {
+                    struct TLTXTRect_ onceRect = data->data[j];
+                    if (onceRect.codepoint_index == wordIndex) {
+                        return [NSValue valueWithCGPoint:CGPointMake(onceRect.x/scale, onceRect.y/scale)];
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return nil;
+}
+
 - (NSArray<NSValue *> *_Nullable)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId
 {
     TLTXTCachePage *desPage;
@@ -1361,6 +1389,12 @@ static bool isInAvoidLineEndFunc(TLTXTWorker worker,size_t char_index)
 {
     TLTXTCoreUnit *unit = [self unitWithTextId:textId];
     return [unit nearestLineEndOrigin:page point:point];
+}
+
+- (NSValue *_Nullable)exactStartOrigin:(NSInteger)page wordIndex:(NSInteger)wordIndex textId:(NSString *)textId
+{
+    TLTXTCoreUnit *unit = [self unitWithTextId:textId];
+    return [unit exactStartOrigin:page wordIndex:wordIndex];
 }
 
 - (NSArray<NSValue *> *)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId

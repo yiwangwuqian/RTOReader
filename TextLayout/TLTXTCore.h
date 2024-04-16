@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- *TXT相关功能的核心，便于iOS使用。
+ * TXT相关功能的核心，便于iOS使用。
  */
 @interface TLTXTCore : NSObject
 
@@ -68,6 +68,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///   - point: 坐标点
 ///   - textId: 文本id，对应一个章节
 - (NSValue *_Nullable)nearestLineEndOrigin:(NSInteger)page point:(CGPoint)point textId:(NSString *)textId;
+
+/// 在指定的页，检查某一字的坐标，分页后即可使用
+/// - Parameters:
+///   - page: 页索引
+///   - wordIndex: 字索引
+///   - textId: 文本id，对应一个章节
+- (NSValue *_Nullable)exactStartOrigin:(NSInteger)page wordIndex:(NSInteger)wordIndex textId:(NSString *)textId;
 
 - (NSArray<NSValue *> *_Nullable)shortPartRectIn:(NSInteger)page range:(NSRange)range textId:(NSString *)textId;
 

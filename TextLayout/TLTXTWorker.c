@@ -18,6 +18,7 @@
 #include "hb-ft.h"
 
 #include "TLTXTTypes.h"
+#include <time.h>
 
 typedef struct RTOTXTPageCursorArray_* RTOTXTPageCursorArray;
 
@@ -64,6 +65,12 @@ hb_codepoint_t txt_worker_glyphid_special_symbols_replace(FT_Face face, hb_codep
 /// 特殊符号替换
 /// - Parameter codepoint: 原codepoint
 hb_codepoint_t txt_worker_special_symbols_replace(hb_codepoint_t codepoint);
+
+/// 将worker的对应页的每个字位置填充进page_row_rect_array
+void txt_worker_bitmap_one_page_fill_rect(TLTXTWorker *worker,
+                                          size_t page,
+                                          TLTXTRowRectArray *page_row_rect_array);
+
 //------
 
 struct TLTXTWorker_ {
@@ -333,7 +340,6 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
         
         unsigned int typeSettingY=0;
         unsigned int aLineHeightMax=0;
-        unsigned int aLineAscenderMax=0;
         
         before_cursor = now_cursor;
         
@@ -358,7 +364,7 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
                                                                  totalWidth,
                                                                  pFirstLineHeadIndent,
                                                                  (*worker)->codepoints,
-                                                                 &aLineAscenderMax,
+                                                                 NULL,
                                                                  &oneline_count,
                                                                  &font_size,
                                                                  *worker,
@@ -444,6 +450,25 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
     }
     
     (*worker)->total_page = page;
+    
+    if (page > 0) {
+        for (size_t i=0; i<page; i++) {
+#ifdef DEBUG
+            clock_t start_clock = clock();
+#endif
+            TLTXTRowRectArray page_row_rect_array = NULL;
+            txt_worker_bitmap_one_page_fill_rect(worker, i, &page_row_rect_array);
+            TLTXTRowRectArray old_page_row_rect_array = (*worker)->paging_rect_array->data[i];
+            txt_row_rect_array_destroy(&old_page_row_rect_array);
+            (*worker)->paging_rect_array->data[i] = page_row_rect_array;
+#ifdef DEBUG
+            clock_t end_clock = clock();
+            double time_diff = (double)(end_clock - start_clock) / CLOCKS_PER_SEC; // 计算时间差
+            printf("xxxxxx 共%ld页 填充位置耗时 %lf\n", page, time_diff );
+#endif
+        }
+    }
+    
     return endPageHeight;
 }
 
@@ -858,6 +883,21 @@ void txt_worker_page_cursor_array_prefill(TLTXTWorker worker,size_t cursor)
     txt_page_cursor_array_add(worker->cursor_array, cursor);
 }
 
+TLTXTRowRectArray txt_worker_page_row_rect_array_get(TLTXTWorker worker,size_t page)
+{
+    if (page >= worker->total_page) {
+        return NULL;
+    }
+    
+    if (page >= txt_paging_rect_array_get_count(worker->paging_rect_array)) {
+        return NULL;
+    }
+    
+    return txt_paging_rect_array_object_at(worker->paging_rect_array, page);
+    
+    return NULL;
+}
+
 void txt_color_split_from(size_t color, size_t *a, size_t *r, size_t *g, size_t*b)
 {
     int32_t c = (int32_t)color;
@@ -1008,7 +1048,9 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         }
         typeSettingX += aCharAdvance;
     }
-    *max_ascender = onelineMaxAscender;
+    if (max_ascender) {
+        *max_ascender = onelineMaxAscender;
+    }
     if (oneLineCharCount) {
         /**
          *一行最后一个字是避尾符号，将这个符号推至下一行
@@ -1162,4 +1204,235 @@ hb_codepoint_t txt_worker_special_symbols_replace(hb_codepoint_t codepoint)
             break;
     }
     return codepoint;
+}
+
+
+//这个方法拷贝了txt_worker_bitmap_one_page删掉了绘制相关逻辑，这么实现有点懒但确实快
+void txt_worker_bitmap_one_page_fill_rect(TLTXTWorker *worker,
+                                          size_t page,
+                                          TLTXTRowRectArray *page_row_rect_array)
+{
+    if ( page >= (*worker)->total_page ) {
+        return;
+    }
+    
+    TLTXTAttributes defaultAttributes = NULL;
+    if ((*worker)->default_attributes_func) {
+        defaultAttributes = (*worker)->default_attributes_func(*worker);
+    }
+    unsigned int font_size = (defaultAttributes != NULL && defaultAttributes->fontSize) ? defaultAttributes->fontSize : GetDeviceFontSize(21);
+    unsigned int last_font_size = font_size;
+    FT_Face       face = (*worker)->face;
+    
+    FT_Error      error;
+    
+    hb_buffer_t *buf = (*worker)->buf;
+    
+    FT_Set_Pixel_Sizes(face, 0, font_size);
+    
+    unsigned int glyph_count;
+    hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(buf, &glyph_count);
+    
+    unsigned int totalWidth=0;
+    unsigned int totalHeight=0;
+    totalWidth = (*worker)->width;
+    totalHeight = (*worker)->height;
+    
+    unsigned int typeSettingX=0;
+    unsigned int typeSettingY=0;
+    unsigned int aLineHeightMax=0;
+    unsigned int aLineAscenderMax=0;
+    unsigned int wholeFontAscenderMax = (unsigned int)(face->size->metrics.ascender)/64;
+    unsigned int wholeFontHeight = (unsigned int)(face->size->metrics.height/64);
+    size_t before_cursor = page > 0 ? (*(*worker)->cursor_array).data[page-1] : 0;
+    
+    TLRangeArray rArray = NULL;
+    TLTXTAttributesArray aArray = NULL;
+    struct TLRange_ checkedLineRange = {0,0};
+    if ((*worker)->range_attributes_func) {
+        size_t next_cursor = page < (*worker)->total_page ? (*(*worker)->cursor_array).data[page] : glyph_count-1;
+        struct TLRange_ page_range = {before_cursor, next_cursor-before_cursor};
+        (*worker)->range_attributes_func(*worker, &page_range, &rArray, &aArray);
+    }
+    unsigned int pFirstLineHeadIndent = (defaultAttributes != NULL && defaultAttributes->firstHeadIndent) ? defaultAttributes->firstHeadIndent : 0;
+    unsigned int oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
+    
+    size_t range_total_count = rArray != NULL ? tl_range_array_get_count(rArray) : 0;
+    int64_t last_range_index = range_total_count > 0 ? 0 : -1;
+    
+    size_t now_cursor = before_cursor;
+    TLTXTRowRectArray row_rect_array;
+    txt_row_rect_array_create(&row_rect_array);
+    *page_row_rect_array = row_rect_array;
+    
+    unsigned int last_row_index = 0;
+    unsigned int last_row_kern = 0;
+    unsigned int last_row_kern_the_remainder = 0;
+    unsigned int last_row_kern_the_remainder_start = 0;
+    
+    for (size_t i = before_cursor; i<(*(*worker)->cursor_array).data[page]; i++) {
+        unsigned int beforeALineHeightMax = aLineHeightMax;
+        
+        size_t checkedLineRangeMax = checkedLineRange.location + checkedLineRange.length;
+        if (typeSettingX == 0 || (checkedLineRange.length != 0 && checkedLineRangeMax == i)){
+            if (last_range_index >= 0 && last_range_index < range_total_count) {
+                unsigned int oneline_count = 0;
+                aLineHeightMax = txt_worker_check_oneline_max_height(face,
+                                                                     glyph_info,
+                                                                     glyph_count,
+                                                                     i,
+                                                                     rArray,
+                                                                     aArray,
+                                                                     &last_range_index,
+                                                                     false,
+                                                                     totalWidth,
+                                                                     pFirstLineHeadIndent,
+                                                                     (*worker)->codepoints,
+                                                                     &aLineAscenderMax,
+                                                                     &oneline_count,
+                                                                     &font_size,
+                                                                     *worker,
+                                                                     NULL);
+                checkedLineRange.location = i;
+                checkedLineRange.length = oneline_count;
+            } else {
+                aLineHeightMax = wholeFontHeight;
+                aLineAscenderMax = wholeFontAscenderMax;
+            }
+        }
+        
+        bool bold_font_style = false;
+        if (last_range_index >= 0 && last_range_index < range_total_count) {
+            TLTXTAttributes onceAttributes = txt_attributes_check_range(rArray, aArray, i, &last_range_index);
+
+            if (onceAttributes && onceAttributes->fontSize) {
+                FT_Set_Pixel_Sizes(face, 0, onceAttributes->fontSize);
+                last_font_size = onceAttributes->fontSize;
+            } else {
+                FT_Set_Pixel_Sizes(face, 0, font_size);
+                last_font_size = font_size;
+            }
+            if (onceAttributes) {
+                oneLineFirstLineHeadIndent = onceAttributes->firstHeadIndent;
+                bold_font_style = onceAttributes->fontStyle > 0;
+            } else {
+                oneLineFirstLineHeadIndent = pFirstLineHeadIndent;
+            }
+        }
+        
+        hb_codepoint_t glyphid = txt_worker_glyphid_special_symbols_replace(face, glyph_info[i].codepoint, (*worker)->codepoints[i]);
+        FT_Int32 flags =  FT_LOAD_DEFAULT;
+        
+        error = FT_Load_Glyph(face,
+                              glyphid,
+                              flags
+                              );
+        if ( error ) {
+            printf("FT_Load_Glyph error code: %d",error);
+        }
+        if (bold_font_style && face->glyph->format == FT_GLYPH_FORMAT_OUTLINE ) {
+            FT_Outline_Embolden( &face->glyph->outline, TLTXTWorkerBoldStrength );
+        }
+        
+        //        printf("bitmap.rows:%d face->glyph->metrics.height/64:%ld\n", bitmap.rows, face->glyph->metrics.height/64);
+        //一个字符占位宽
+        FT_Pos aCharAdvance = face->glyph->metrics.horiAdvance/64;
+        FT_Pos aCharHoriBearingX = face->glyph->metrics.horiBearingX/64;
+        
+        size_t line_spacing = 0;
+        if (defaultAttributes && defaultAttributes->lineSpacing > 0) {
+            line_spacing = defaultAttributes->lineSpacing;
+        }
+        size_t paragraph_spacing = 0;
+        if (defaultAttributes && defaultAttributes->paragraphSpacing > 0) {
+            paragraph_spacing = defaultAttributes->paragraphSpacing;
+        }
+        
+        if (i == before_cursor){
+            last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth, &last_row_kern_the_remainder,&last_row_kern_the_remainder_start);
+        }
+        /*
+         以下这个if else if判断的作用在于检查是否修改Y坐标，或进行下一个字的绘制
+         1.大于最大宽度,换行
+         2.遇到换行符,换行并继续循环
+         
+         循环刚开始的时候在文本有属性的情况下，调用了txt_worker_check_oneline_max_height
+         这个方法的执行个人认为最好在文本没有属性的情况下不调用，能避免一些耗时
+         */
+        if ((*worker)->codepoints[i] == '\n') {
+            if (typeSettingX == 0) {
+                /**
+                 *如果当前第一个字是换行符，它上一个字是换行即'\n'，它要单独占一行
+                 *无论上一个字是什么都需要continue
+                 */
+                if ((i > 0 && (*worker)->codepoints[i-1] == '\n') || i==0) {
+                    typeSettingY += (beforeALineHeightMax > 0 ? beforeALineHeightMax : wholeFontHeight) + paragraph_spacing;
+                    last_row_index++;
+                    if (i != before_cursor) {
+                        last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth, &last_row_kern_the_remainder,&last_row_kern_the_remainder_start);
+                    }
+                }
+                continue;
+            } else {
+                typeSettingX = 0;
+                typeSettingY += beforeALineHeightMax + paragraph_spacing;
+                last_row_index++;
+                last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth, &last_row_kern_the_remainder,&last_row_kern_the_remainder_start);
+                
+                continue;
+            }
+        } else if (i == (*worker)->utf8_length-1) {
+            //最后一个字没有换行但也是一段的末尾
+
+        } else if (typeSettingX + aCharAdvance > totalWidth) {
+            typeSettingX = 0;
+            typeSettingY += beforeALineHeightMax + line_spacing;
+            last_row_index++;
+            last_row_kern = txt_worker_one_row_kern(*worker, page, last_row_index, totalWidth, &last_row_kern_the_remainder,&last_row_kern_the_remainder_start);
+        }
+        if (typeSettingX == 0){
+            TLTXTRectArray rect_array;
+            txt_rect_array_create(&rect_array);
+            txt_row_rect_array_add(row_rect_array, rect_array);
+        }
+        
+        //整个文本的第一个字和所有换行符后的第一个字 段首行缩进处理
+        if (i == 0 || (i > 0 && (*worker)->codepoints[i-1] == '\n')) {
+            if (typeSettingX == 0) {
+                unsigned int tempCharAdvance = txt_worker_get_recorded_font_width(*worker, last_font_size);
+                typeSettingX = oneLineFirstLineHeadIndent*tempCharAdvance;
+            }
+        }
+        
+        //大于最大高度,停止
+        if (typeSettingY + aLineHeightMax > totalHeight){
+            now_cursor = i;
+            break;
+        }
+        
+        TLTXTRectArray rect_array = txt_row_rect_array_current(row_rect_array);
+        struct TLTXTRect_ one_rect = {typeSettingX,typeSettingY,typeSettingX+(int)aCharAdvance,typeSettingY+aLineHeightMax,(int32_t)i};
+        txt_rect_array_add(rect_array, one_rect);
+        
+        typeSettingX += aCharAdvance + last_row_kern;
+        if (last_row_kern_the_remainder && i>= last_row_kern_the_remainder_start) {
+            typeSettingX += 1;
+        }
+        
+        if (now_cursor != before_cursor) {
+            break;
+        }
+    }
+    if (before_cursor == now_cursor) {
+        now_cursor += glyph_count - before_cursor;
+    }
+    if (rArray) {
+        tl_range_array_destroy(&rArray);
+    }
+    if (aArray) {
+        tl_txt_attributes_array_destroy(&aArray);
+    }
+    if (defaultAttributes) {
+        free(defaultAttributes);
+    }
 }
