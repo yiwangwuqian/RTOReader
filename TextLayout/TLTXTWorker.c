@@ -92,6 +92,8 @@ struct TLTXTWorker_ {
     RTOTXTPageCursorArray cursor_array;
     TLTXTPagingRectArray paging_rect_array;//绘制时只能在水平方向作为参考 不能作为每个字定位的依据
     
+    TLTXTPagingRectArray locate_use_paging_rect_array;//分页时填充完毕，用户定位某个字在哪一行
+    
     TLTXTWorker_RangeAttributesFunc range_attributes_func;
     TLTXTWorker_DefaultAttributesFunc default_attributes_func;
     TLTXTWorker_CharAvoidFunc start_avoid_func;
@@ -194,6 +196,7 @@ void txt_worker_create(TLTXTWorker *worker, const char *text, int width, int hei
             
             txt_page_cursor_array_create(&object->cursor_array);
             txt_paging_rect_array_create(&object->paging_rect_array);
+            txt_paging_rect_array_create(&object->locate_use_paging_rect_array);
             *worker = object;
         } else {
             hb_buffer_destroy(buf);
@@ -263,6 +266,11 @@ void txt_worker_destroy(TLTXTWorker *worker)
     if (object->paging_rect_array != NULL) {
         txt_paging_rect_array_destroy(&object->paging_rect_array);
     }
+    /*
+    if (object->locate_use_paging_rect_array != NULL) {
+        txt_paging_rect_array_destroy(&object->locate_use_paging_rect_array);
+    }
+     */
     if (object->font_size_array != NULL) {
         tl_generic_array_destroy(&object->font_size_array);
     }
@@ -458,9 +466,7 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
 #endif
             TLTXTRowRectArray page_row_rect_array = NULL;
             txt_worker_bitmap_one_page_fill_rect(worker, i, &page_row_rect_array);
-            TLTXTRowRectArray old_page_row_rect_array = (*worker)->paging_rect_array->data[i];
-            txt_row_rect_array_destroy(&old_page_row_rect_array);
-            (*worker)->paging_rect_array->data[i] = page_row_rect_array;
+            (*worker)->locate_use_paging_rect_array->data[i] = page_row_rect_array;
 #ifdef DEBUG
             clock_t end_clock = clock();
             double time_diff = (double)(end_clock - start_clock) / CLOCKS_PER_SEC; // 计算时间差
@@ -908,11 +914,11 @@ TLTXTRowRectArray txt_worker_page_row_rect_array_get(TLTXTWorker worker,size_t p
         return NULL;
     }
     
-    if (page >= txt_paging_rect_array_get_count(worker->paging_rect_array)) {
+    if (page >= txt_paging_rect_array_get_count(worker->locate_use_paging_rect_array)) {
         return NULL;
     }
     
-    return txt_paging_rect_array_object_at(worker->paging_rect_array, page);
+    return txt_paging_rect_array_object_at(worker->locate_use_paging_rect_array, page);
     
     return NULL;
 }
@@ -1071,45 +1077,45 @@ unsigned int txt_worker_check_oneline_max_height(FT_Face face,
         *max_ascender = onelineMaxAscender;
     }
     //去掉避头尾的逻辑
-//    if (oneLineCharCount) {
-//        /**
-//         *一行最后一个字是避尾符号，将这个符号推至下一行
-//         *下一行第一个字是避头符号，将上一行的最后一个字推至这一行
-//         */
-//        bool is_avoid_end = false;
-//        if (worker->end_avoid_func) {
-//            //避免第一次避尾后原先的倒数第二个字又需要避尾 执行两次
-//            for (size_t i=0; i<2; i++) {
-//                size_t last_index = start_cursor + oneLineCharCount-1;
-//                if (last_index >=0 && worker->end_avoid_func(worker, last_index)) {
-//                    if (rect_array) {
-//                        txt_rect_array_remove_last(rect_array);
-//                    }
-//                    oneLineCharCount -= 1;
-//                    is_avoid_end = true;
-//                } else {
-//                    break;
-//                }
-//            }
-//        }
-//
-//        //避尾以后有可能从上一行推下来的还需要避头
-//        if (worker->start_avoid_func) {
-//            //避免第一次避头后从上一行推下来一个字而这个字又需要避头 执行两次
-//            for (size_t i=0; i<2; i++) {
-//                size_t last_index = start_cursor + oneLineCharCount-1;
-//                size_t next_first_index = start_cursor + oneLineCharCount;
-//                if (last_index >=0 && next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index) && codepoints[last_index] != '\n') {
-//                    if (rect_array) {
-//                        txt_rect_array_remove_last(rect_array);
-//                    }
-//                    oneLineCharCount -= 1;
-//                } else {
-//                    break;
-//                }
-//            }
-//        }
-//    }
+    if (oneLineCharCount) {
+        /**
+         *一行最后一个字是避尾符号，将这个符号推至下一行
+         *下一行第一个字是避头符号，将上一行的最后一个字推至这一行
+         */
+        bool is_avoid_end = false;
+        if (worker->end_avoid_func) {
+            //避免第一次避尾后原先的倒数第二个字又需要避尾 执行两次
+            for (size_t i=0; i<2; i++) {
+                size_t last_index = start_cursor + oneLineCharCount-1;
+                if (last_index >=0 && worker->end_avoid_func(worker, last_index)) {
+                    if (rect_array) {
+                        txt_rect_array_remove_last(rect_array);
+                    }
+                    oneLineCharCount -= 1;
+                    is_avoid_end = true;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        //避尾以后有可能从上一行推下来的还需要避头
+        if (worker->start_avoid_func) {
+            //避免第一次避头后从上一行推下来一个字而这个字又需要避头 执行两次
+            for (size_t i=0; i<2; i++) {
+                size_t last_index = start_cursor + oneLineCharCount-1;
+                size_t next_first_index = start_cursor + oneLineCharCount;
+                if (last_index >=0 && next_first_index < glyph_count && worker->start_avoid_func(worker, next_first_index) && codepoints[last_index] != '\n') {
+                    if (rect_array) {
+                        txt_rect_array_remove_last(rect_array);
+                    }
+                    oneLineCharCount -= 1;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
     //这一行有内容但是没有换行，此时到了内容的末尾
     if (typeSettingX > 0 && oneLineCharCount == 0) {
         oneLineCharCount = (unsigned int)(glyph_count - start_cursor);
