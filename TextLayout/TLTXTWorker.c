@@ -266,11 +266,9 @@ void txt_worker_destroy(TLTXTWorker *worker)
     if (object->paging_rect_array != NULL) {
         txt_paging_rect_array_destroy(&object->paging_rect_array);
     }
-    /*
     if (object->locate_use_paging_rect_array != NULL) {
         txt_paging_rect_array_destroy(&object->locate_use_paging_rect_array);
     }
-     */
     if (object->font_size_array != NULL) {
         tl_generic_array_destroy(&object->font_size_array);
     }
@@ -466,7 +464,7 @@ size_t txt_worker_data_paging(TLTXTWorker *worker)
 #endif
             TLTXTRowRectArray page_row_rect_array = NULL;
             txt_worker_bitmap_one_page_fill_rect(worker, i, &page_row_rect_array);
-            (*worker)->locate_use_paging_rect_array->data[i] = page_row_rect_array;
+            txt_paging_rect_array_add((*worker)->locate_use_paging_rect_array, page_row_rect_array);
 #ifdef DEBUG
             clock_t end_clock = clock();
             double time_diff = (double)(end_clock - start_clock) / CLOCKS_PER_SEC; // 计算时间差
